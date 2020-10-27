@@ -1,0 +1,54 @@
+<view class="bg-white">
+<view class="cu-bar margin-top bg-white solid-bottom">
+    <view class="action">
+      <text class="cuIcon-title text-orange"></text> 我的消息
+    </view>
+</view>
+<scroll-view scroll-x class="nav">
+    <view class="flex bg-white text-center">
+      <view class="cu-item flex-sub {{item.id==TabCur?'text-black cur':''}}" wx:for="{{listname}}" wx:key bindtap="tabSelect" data-id="{{item.id}}">
+        {{item.title}}
+      </view>
+    </view>
+</scroll-view>
+  <view class="cu-list menu-avatar " wx:if="{{TabCur==0}}" wx:for="{{invatation}}" wx:key="key" wx:for-index="key" id="{{key}}">
+        <view class="cu-item" >
+          <view class="cu-avatar bg-white round lg">
+            <text class="cuIcon-message"></text>
+          </view>
+          <view class="content">
+            <text class="text-grey text-lg">{{item.groupName}}</text>
+          </view>
+          <view class="action">
+            <button class="cu-btn round bg-red text-center light">
+              <text class="cuIcon-close"></text></button>
+          </view>
+          <view class="action">
+            <button class="cu-btn round bg-olive text-center light">
+              <text class="cuIcon-check"></text></button>
+          </view>
+        </view>
+  </view>
+  <view class="cu-list menu-avatar " wx:if="{{TabCur==1}}" wx:for="{{newtask}}" wx:key="key" wx:for-index="key" id="{{key}}">
+        <view class="cu-item" >
+          <view class="cu-avatar bg-white round lg">
+            <text class="cuIcon-edit"></text>
+          </view>
+          <view class="content">
+            <view class="text-grey">{{item.groupID+" : "+item.content}}</view>
+            <view class="text-gray text-sm flex">
+              <text class="text-cut">
+                  <text class="cuIcon-calendar margin-right-xs"></text> {{item.startTime+"~"+item.endTime}}</text>
+            </view>
+          </view>          
+          <view class="action">
+            <button class="cu-btn round bg-red text-center light">
+              <text class="cuIcon-close"></text></button>
+          </view>
+          <view class="action">
+            <button class="cu-btn round bg-olive text-center light">
+              <text class="cuIcon-check"></text></button>
+          </view>
+        </view>
+  </view>
+</view>
