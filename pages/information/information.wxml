@@ -10,8 +10,8 @@
       </view>
     </view>
 </scroll-view>
-  <view class="cu-list menu-avatar " wx:if="{{TabCur==0}}" wx:for="{{invatation}}" wx:key="key" wx:for-index="key" id="{{key}}">
-        <view class="cu-item" >
+  <view class="cu-list menu-avatar " wx:if="{{TabCur==0}}">
+        <view class="cu-item"  wx:for="{{invatation}}" wx:key="key" wx:for-index="key" id="{{key}}">
           <view class="cu-avatar bg-white round lg">
             <text class="cuIcon-message"></text>
           </view>
@@ -28,8 +28,8 @@
           </view>
         </view>
   </view>
-  <view class="cu-list menu-avatar " wx:if="{{TabCur==1}}" wx:for="{{newtask}}" wx:key="key" >
-        <view class="cu-item" >
+  <view class="cu-list menu-avatar " wx:if="{{TabCur==1}}">
+        <view class="cu-item"  wx:for="{{newtask}}" wx:key="key" >
           <view class="cu-avatar bg-white round lg">
             <text class="cuIcon-edit"></text>
           </view>
