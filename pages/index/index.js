@@ -17,6 +17,16 @@ Page({
       url: '../logs/logs'
     })
   },
+  gotoinformation:function(){
+    wx.navigateTo({
+      url: '../information/information'
+    })
+  },
+  gotocreateactivity:function(){
+    wx.navigateTo({
+      url: '../create_activity/create_activity'
+    })
+  },
   onLoad: function () {
     if (app.globalData.userInfo) {
       this.setData({

@@ -1,8 +1,8 @@
 {
   "pages": [
+    "pages/index/index",    
     "pages/information/information",
-    "pages/create_activity/create_activity",    
-    "pages/index/index"
+    "pages/create_activity/create_activity"
   ],
   "window": {
     "backgroundTextStyle": "light",

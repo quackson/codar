@@ -62,7 +62,8 @@ Page({
 			  startTime:"?",
 			  endTime:"?",
 			  content:"test",
-			  prior:1
+        prior:1,
+        checked:false
       },
       {
         groupID:2,
@@ -70,14 +71,28 @@ Page({
 			  startTime:"?",
 			  endTime:"?",
 			  content:"test",
-			  prior:2
+			  prior:2,
+        checked:false
       }
-    ]
+    ],
+    checkbox:{}
   },
   tabSelect(e) {
     this.setData({
       TabCur: e.currentTarget.dataset.id,
       scrollLeft: (e.currentTarget.dataset.id-1)*60
+    })
+  },
+  showModal(e) {
+    console.log(e);
+    this.setData({
+      checkbox:this.data.newtask[e.currentTarget.dataset.id],
+      modalName: e.currentTarget.dataset.target
+    })
+  },
+  hideModal(e) {
+    this.setData({
+      modalName: null
     })
   },
 

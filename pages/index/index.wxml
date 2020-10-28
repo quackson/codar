@@ -8,13 +8,15 @@
     <block wx:else>
       <view class='text-center'>
         <view class="cu-avatar xl round solids" style="background-image:url({{userInfo.avatarUrl}})"></view>
-            <button>
-            <navigator open-type="navigateTo" url="pages/create_activity/create_activity">跳转</navigator>
-            </button>
+            
       </view>
     </block>
+    
   </view>
 </view>
+
+<button bindtap="gotoinformation">information</button>
+<button bindtap="gotocreateactivity">gotocreateactivity</button>
 <view class="text-center margin-top">
   <text class="text-grey text-xl">{{motto}}</text>
 </view>

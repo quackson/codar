@@ -1,12 +1,11 @@
+<cu-custom bgColor="bg-cyan light" isBack="{{true}}">
+  <view slot="backText">返回</view>
+  <view slot="content">我的消息</view>
+</cu-custom>
 <view class="bg-white">
-<view class="cu-bar margin-top bg-white solid-bottom">
-    <view class="action">
-      <text class="cuIcon-title text-orange"></text> 我的消息
-    </view>
-</view>
 <scroll-view scroll-x class="nav">
-    <view class="flex bg-white text-center">
-      <view class="cu-item flex-sub {{item.id==TabCur?'text-black cur':''}}" wx:for="{{listname}}" wx:key bindtap="tabSelect" data-id="{{item.id}}">
+    <view class="flex bg-cyan light text-center">
+      <view class="cu-item flex-sub {{item.id==TabCur?'text-cyan cur':''}}" wx:for="{{listname}}" wx:key bindtap="tabSelect" data-id="{{item.id}}">
         {{item.title}}
       </view>
     </view>
@@ -29,18 +28,22 @@
           </view>
         </view>
   </view>
-  <view class="cu-list menu-avatar " wx:if="{{TabCur==1}}" wx:for="{{newtask}}" wx:key="key" wx:for-index="key" id="{{key}}">
+  <view class="cu-list menu-avatar " wx:if="{{TabCur==1}}" wx:for="{{newtask}}" wx:key="key" >
         <view class="cu-item" >
           <view class="cu-avatar bg-white round lg">
             <text class="cuIcon-edit"></text>
           </view>
           <view class="content">
-            <view class="text-grey">{{item.groupID+" : "+item.content}}</view>
+            <view class="text-grey">{{item.groupID}}</view>
             <view class="text-gray text-sm flex">
               <text class="text-cut">
                   <text class="cuIcon-calendar margin-right-xs"></text> {{item.startTime+"~"+item.endTime}}</text>
             </view>
-          </view>          
+          </view>     
+          <view class="action">
+            <button class="cu-btn round bg-blue text-center light" bindtap="showModal" data-target="Modal" data-id="{{index}}">
+              <text class="cuIcon-form"></text></button>
+          </view>    
           <view class="action">
             <button class="cu-btn round bg-red text-center light">
               <text class="cuIcon-close"></text></button>
@@ -50,5 +53,22 @@
               <text class="cuIcon-check"></text></button>
           </view>
         </view>
+        <view class="cu-modal {{modalName=='Modal'?'show':''}}">
+            <view class="cu-dialog">
+              <view class="cu-bar bg-white justify-end">
+                <view class="content">{{checkbox.groupID}}</view>
+                <view class="action" bindtap="hideModal">
+                  <text class="cuIcon-close text-red"></text>
+                </view>
+              </view>
+              <view class="padding-xl">
+                {{checkbox.content}}
+              </view>
+              <view class="solid-bottom text-sm padding">
+                <text class="text-grey">{{item.startTime+"~"+item.endTime}}</text>
+              </view>
+            </view>
+          </view> 
   </view>
+  
 </view>
