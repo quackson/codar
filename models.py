@@ -37,9 +37,12 @@ user_take_assign = db.Table('user_take_assign',
 
 class User(db.Model):
     __tablename__ = 'user'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, autoincrement = True,primary_key=True)
     userName = db.Column(db.String(20))
     
+    taskList = db.relationship('Task', backref = 'user')
+    assignmentList = db.relationship('Assignment', backref = 'user')
+    pendingTaskList = db.relationship('PendingTask',backref = 'user')
     groupList = db.relationship('Group',secondary= user_in_group,backref = db.backref('userList'))
     adminGroupList = db.relationship('Group',secondary= user_admin_group,backref = db.backref('adminList'))
     assignList = db.relationship('Assignment',secondary= user_take_assign,backref = db.backref('executorList'))
@@ -48,39 +51,39 @@ class User(db.Model):
 
 class Group(db.Model):
     __tablename__ = 'group'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, autoincrement = True, primary_key=True)
     groupName = db.Column(db.String(20))
     owner_id = db.Column(db.Integer)
+    taskList = db.relationship('Task',backref = 'group')
+    pendingTaskList = db.relationship('PendingTask',backref = 'group')
+    assignList = db.relationship('Assignment',backref = 'group')
     
 class Task(db.Model):
     __tablename__ = 'task'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, autoincrement = True, primary_key=True)
     startTime = db.Column(db.DateTime)
     endTime = db.Column(db.DateTime)
     content = db.Column(db.Text)
     name = db.Column(db.String(20))
     group_id = db.Column(db.Integer,db.ForeignKey('group.id'),nullable = False)
-    group = db.relationship('Group',backref = db.backref('taskList'))
     user_id = db.Column(db.Integer,db.ForeignKey('user.id'),nullable = False)
-    user = db.relationship('User',backref = db.backref('taskList'))
     
 class PendingTask(db.Model):
     __tablename__ = 'pendingtask'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, autoincrement = True, primary_key=True)
     startTime = db.Column(db.DateTime)
     endTime = db.Column(db.DateTime)
     content = db.Column(db.Text)
     name = db.Column(db.String(20))
     voteNum = db.Column(db.Integer)
     group_id = db.Column(db.Integer,db.ForeignKey('group.id'),nullable = False)
-    group = db.relationship('Group',backref = db.backref('pendingTaskList'))
     user_id = db.Column(db.Integer)
     
     voterList = db.relationship('User',secondary= user_vote_pendingTask,backref = db.backref('voteList'))
     
 class Assignment(db.Model):
     __tablename__ = 'assignment'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, autoincrement = True, primary_key=True)
     startTime = db.Column(db.DateTime)
     endTime = db.Column(db.DateTime)
     content = db.Column(db.Text)
@@ -88,7 +91,6 @@ class Assignment(db.Model):
     category = db.Column(db.Integer)
     prior = db.Column(db.Integer)
     group_id = db.Column(db.Integer,db.ForeignKey('group.id'),nullable = False)
-    group = db.relationship('Group',backref = db.backref('assignList'))
     publisher_id = db.Column(db.Integer)
     
 db.create_all()
