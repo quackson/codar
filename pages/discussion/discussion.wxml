@@ -1,3 +1,78 @@
 <!--pages/discussion/discussion.wxml-->
+<cu-custom bgColor="bg-cyan light">
+  <view slot="content">讨论版@{{groupName}}</view>
+</cu-custom>
 
+<view class="proposals">
+  <scroll-view class="proposals-scroll" scroll-y style="height: 100%">
+    <view class="cu-card dynamic {{isCard?'no-card':''}}" >
+      <view class="cu-item shadow" wx:for="{{pendingTasks}}" wx:key="key" wx:for-index="key" id="{{key}}">
+        <view class="cu-list menu-avatar">
+          <view class="cu-item  padding-xs">      
+            <view class="cu-avatar bg-white round lg">
+                <text class="cuIcon-people"></text>
+            </view>
+            <view class="content flex-sub">
+              <view>{{item.userName}}</view>
+            </view>
+          </view>
+        </view>
+        <view class="text-content">
+          {{item.pendingTaskContent}}
+        </view>
+        <view class="text-gray text-sm text-right padding">
+          <text class="cuIcon-appreciatefill margin-lr-xs"></text> {{item.voteNum}}
+          <text class="cuIcon-roundcheckfill margin-lr-xs" wx:if="{{item.myvote==1}}"></text> 
+          <text class="cuIcon-roundcheck margin-lr-xs"wx:if="{{item.myvote!=1}}"></text> 
+          <text class="cuIcon-roundclose margin-lr-xs" wx:if="{{item.myvote!=2}}"></text>
+          <text class="cuIcon-roundclosefill margin-lr-xs" wx:if="{{item.myvote==2}}"></text>
+        </view>    
+      </view>
+    </view>
+  </scroll-view>
+</view>
+
+<view class="myproposal cu-card dynamic {{isCard?'no-card':''}}" >
+      <view class="cu-item shadow">
+        <view class="cu-list menu-avatar">
+          <view class="cu-item  padding-xs">      
+            <view class="cu-avatar bg-white round lg">
+                <text class="cuIcon-people"></text>
+            </view>
+            <view class="content flex-sub">
+              <view>User</view>
+            </view>
+            <view class="action" bindtap="createPropsal">
+                  <text class="cuIcon-upload text-cyan light"></text>
+            </view>
+          </view>
+        </view>
+        <view class="cu-form-group align-start">
+          <textarea maxlength="-1" disabled="{{modalName!=null}}" bindinput="textareaBInput" placeholder="内容"></textarea>
+        </view>
+      </view>
+    </view>
+
+<view class="cu-bar tabbar bg-white shadow foot">
+  <view class="action" bindtap="NavChange" data-cur="groupList">
+    <view class="cuIcon-group {{NavCur=='groupList'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='groupList'?'text-orange':'text-gray'}}">团队列表</view>
+  </view>
+  <view class="action" bindtap="NavChange" data-cur="createGroup">
+    <view class="cuIcon-add {{NavCur=='createGroup'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='createGroup'?'text-orange':'text-gray'}}">创建团队</view>
+  </view>
+  <view class="action" bindtap="NavChange" data-cur="index">
+    <view class="cuIcon-home {{NavCur=='index'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='index'?'text-orange':'text-gray'}}">主页</view>
+  </view>
+  <view class="action" bindtap="NavChange" data-cur="personalCalendar">
+    <view class="cuIcon-calendar {{NavCur=='personalCalendar'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='personalCalendar'?'text-orange':'text-gray'}}">个人日历</view>
+  </view>
+  <view class="action" bindtap="NavChange" data-cur="messages">
+    <view class="cuIcon-message {{NavCur=='messages'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='messages'?'text-orange':'text-gray'}}">消息</view>
+  </view>
+</view>
 

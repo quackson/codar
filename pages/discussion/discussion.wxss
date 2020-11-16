@@ -1,1 +1,21 @@
 /* pages/discussion/discussion.wxss */
+.myproposal{
+  width: 100%;
+  position: fixed;
+  bottom: 42px;
+  justify-content: center;
+}
+.proposals{
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 10%;
+  bottom: 35%;
+}
+.proposals-scroll{
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}

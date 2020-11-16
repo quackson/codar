@@ -107,6 +107,9 @@ Page({
   gotodiscussboard:function(){
     console.log('goto group discussion board!')
     //TODO
+    wx.navigateTo({
+      url: '../discussion/discussion' //?userid= &groupid=
+    })
   },
   exitgroup:function(){
     console.log('exit group!')
