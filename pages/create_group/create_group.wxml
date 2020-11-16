@@ -1,24 +1,5 @@
-<cu-custom bgColor="bg-gradual-pink">
-  <view slot="content">Codar</view>
-</cu-custom>
-
-<view class="margin-xl padding-xl bg-white radius shadow shadow-lg">
-  <view class="flex justify-center">
-    <button wx:if="{{!hasUserInfo && canIUse}}" open-type="getUserInfo" bindgetuserinfo="getUserInfo" class='cu-btn round bg-green shadow'> 获取头像昵称 </button>
-    <block wx:else>
-      <view class='text-center'>
-        <view class="cu-avatar xl round solids" style="background-image:url({{userInfo.avatarUrl}})"></view>
-            
-      </view>
-    </block>
-    
-  </view>
-</view>
-
-<button bindtap="gotocreateactivity">gotocreateactivity</button>
-<view class="text-center margin-top">
-  <text class="text-grey text-xl">{{motto}}</text>
-</view>
+<!--pages/create_group/create_group.wxml-->
+<text>pages/create_group/create_group.wxml</text>
 
 <view class="cu-bar tabbar bg-white shadow foot">
   <view class="action" bindtap="NavChange" data-cur="groupList">

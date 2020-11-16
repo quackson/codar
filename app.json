@@ -2,7 +2,10 @@
   "pages": [
     "pages/index/index",    
     "pages/information/information",
-    "pages/create_activity/create_activity"
+    "pages/create_activity/create_activity",
+    "pages/group_list/group_list",
+    "pages/calendar/personal_calendar",
+    "pages/calendar/group_calendar"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -12,7 +15,8 @@
     "navigationBarTextStyle": "white"
   },
   "usingComponents": {
-    "cu-custom": "/colorui/components/cu-custom"
+    "cu-custom": "/colorui/components/cu-custom",
+    "calendar": "/calendar-component/index"
   },
   "sitemapLocation": "sitemap.json"
 }

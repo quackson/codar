@@ -1,4 +1,4 @@
-// pages/information/information.js
+// pages/group_list/group_list.js
 const app = getApp()
 
 Page({
@@ -9,17 +9,18 @@ Page({
   data: {
     TabCur: 0,
     scrollLeft:0,
+    NavCur: app.globalData.NavCur,
     listname:[
       {
-        title:"群组邀请",
+        title:"我创建的",
         id:0
       },
       {
-        title:"新增任务",
+        title:"我加入的",
         id:1
       }
     ],
-    invatation:[
+    created_groups:[
       {
         groupID:1,
         groupName:"Group1"
@@ -54,27 +55,28 @@ Page({
       },
       {
         groupID:9,
-        groupName:"Group7"
+        groupName:"Group9"
+      },
+      {
+        groupID:10,
+        groupName:"Group10"
       }
     ],
-    newtask:[
+    joined_groups:[
       {
         groupID:1,
-     		assignmentID:2,
-			  startTime:"?",
-			  endTime:"?",
-			  content:"test",
-        prior:1,
-        checked:false
+        groupName:"Group1",
+        creatorName:"abc"
       },
       {
         groupID:2,
-     		assignmentID:2,
-			  startTime:"?",
-			  endTime:"?",
-			  content:"test",
-			  prior:2,
-        checked:false
+        groupName:"Group2",
+        creatorName:"小明"
+      },      
+      {
+        groupID:3,
+        groupName:"Group3",
+        creatorName:"a_老师"
       }
     ],
     checkbox:{}
@@ -97,6 +99,23 @@ Page({
       modalName: null
     })
   },
+  gotogroupcalendar:function(){
+    wx.navigateTo({
+      url: '../calendar/group_calendar' //?userid= &groupid=
+    })
+  },
+  gotodiscussboard:function(){
+    console.log('goto group discussion board!')
+    //TODO
+  },
+  exitgroup:function(){
+    console.log('exit group!')
+    //TODO
+  },
+  deletegroup:function(){
+    console.log('delete group!')
+    //TODO
+  },
   NavChange:function(e){
     app.globalData.NavCur = e.currentTarget.dataset.cur
     
@@ -104,11 +123,6 @@ Page({
       case 'index':
         wx.redirectTo({
           url: '../index/index'
-        })
-        break;
-      case 'groupList':
-        wx.redirectTo({
-          url: '../group_list/group_list' //?userid=
         })
         break;
       case 'createGroup':
@@ -119,6 +133,11 @@ Page({
       case 'personalCalendar':
         wx.redirectTo({
           url: '../calendar/personal_calendar' //?userid=
+        })
+        break;
+      case 'messages':
+        wx.redirectTo({
+          url: '../information/information' //?userid=
         })
         break;
       default:

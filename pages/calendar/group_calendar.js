@@ -1,4 +1,4 @@
-// pages/information/information.js
+// pages/calendar/group_calendar.js
 const app = getApp()
 
 Page({
@@ -7,60 +7,19 @@ Page({
    * 页面的初始数据
    */
   data: {
-    TabCur: 0,
-    scrollLeft:0,
-    listname:[
+    // 此处为日历自定义配置字段
+    calendarConfig: {
+      defaultDay: true, // 默认选中指定某天；当为 boolean 值 true 时则默认选中当天，非真值则在初始化时不自动选中日期，
+      highlightToday: true // 是否高亮显示当天，区别于选中样式（初始化时当天高亮并不代表已选中当天）
+    },
+    groupName: "某团队",
+    isManager: true,
+    assignments:[
       {
-        title:"群组邀请",
-        id:0
-      },
-      {
-        title:"新增任务",
-        id:1
-      }
-    ],
-    invatation:[
-      {
-        groupID:1,
-        groupName:"Group1"
-      },
-      {
-        groupID:2,
-        groupName:"Group2"
-      },      
-      {
-        groupID:3,
-        groupName:"Group3"
-      },
-      {
-        groupID:4,
-        groupName:"Group4"
-      },
-      {
-        groupID:5,
-        groupName:"Group5"
-      },
-      {
-        groupID:6,
-        groupName:"Group6"
-      },
-      {
-        groupID:7,
-        groupName:"Group7"
-      },
-      {
-        groupID:8,
-        groupName:"Group8"
-      },
-      {
-        groupID:9,
-        groupName:"Group7"
-      }
-    ],
-    newtask:[
-      {
-        groupID:1,
-     		assignmentID:2,
+        groupName:"个人",
+        assignmentName:"期中考试",
+        priority_icon:"cuIcon-form line-red",
+        assignToMe:false,
 			  startTime:"?",
 			  endTime:"?",
 			  content:"test",
@@ -68,8 +27,10 @@ Page({
         checked:false
       },
       {
-        groupID:2,
-     		assignmentID:2,
+        groupName:"实验室",
+        assignmentName:"pre",
+        priority_icon:"cuIcon-form line-blue",
+        assignToMe:true,
 			  startTime:"?",
 			  endTime:"?",
 			  content:"test",
@@ -79,16 +40,10 @@ Page({
     ],
     checkbox:{}
   },
-  tabSelect(e) {
-    this.setData({
-      TabCur: e.currentTarget.dataset.id,
-      scrollLeft: (e.currentTarget.dataset.id-1)*60
-    })
-  },
   showModal(e) {
     console.log(e);
     this.setData({
-      checkbox:this.data.newtask[e.currentTarget.dataset.id],
+      checkbox:this.data.assignments[e.currentTarget.dataset.id],
       modalName: e.currentTarget.dataset.target
     })
   },
@@ -121,9 +76,20 @@ Page({
           url: '../calendar/personal_calendar' //?userid=
         })
         break;
+      case 'messages':
+        wx.redirectTo({
+          url: '../information/information' //?userid=
+        })
+        break;
       default:
         break;
     }
+  },
+
+  gotocreateactivity:function(){
+    wx.navigateTo({
+      url: '../create_activity/create_activity' // ?userid......
+    })
   },
 
   /**

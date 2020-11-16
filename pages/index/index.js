@@ -9,7 +9,7 @@ Page({
     motto: 'Hi 开发者！',
     userInfo: {},
     hasUserInfo: false,
-    canIUse: wx.canIUse('button.open-type.getUserInfo')
+    canIUse: wx.canIUse('button.open-type.getUserInfo'),
   },
   //事件处理函数
   bindViewTap: function() {
@@ -17,17 +17,43 @@ Page({
       url: '../logs/logs'
     })
   },
-  gotoinformation:function(){
-    wx.navigateTo({
-      url: '../information/information'
-    })
-  },
   gotocreateactivity:function(){
     wx.navigateTo({
       url: '../create_activity/create_activity'
     })
   },
+  NavChange:function(e){
+    app.globalData.NavCur = e.currentTarget.dataset.cur
+    
+    switch (app.globalData.NavCur) {
+      case 'groupList':
+        wx.redirectTo({
+          url: '../group_list/group_list' //?userid=
+        })
+        break;
+      case 'createGroup':
+        wx.redirectTo({
+          url: '../create_group/create_group' //TODO
+        })
+        break;
+      case 'personalCalendar':
+        wx.redirectTo({
+          url: '../calendar/personal_calendar' //?userid=
+        })
+        break;
+      case 'messages':
+        wx.redirectTo({
+          url: '../information/information' //?userid=
+        })
+        break;
+      default:
+        break;
+    }
+  },
   onLoad: function () {
+    this.setData({
+      NavCur: app.globalData.NavCur
+    })
     if (app.globalData.userInfo) {
       this.setData({
         userInfo: app.globalData.userInfo,

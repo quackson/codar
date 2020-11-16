@@ -1,0 +1,80 @@
+<!--pages/calendar/personal_calendar.wxml-->
+<cu-custom bgColor="bg-cyan light">
+  <view slot="content">我的日历</view>
+</cu-custom>
+<calendar
+  calendarConfig="{{calendarConfig}}"
+  bind:onTapDay="onTapDay"
+  bind:afterTapDay="afterTapDay"
+  bind:onSwipe="onSwipe"
+  bind:whenChangeWeek="whenChangeWeek"
+  bind:whenChangeMonth="whenChangeMonth"
+  bind:afterCalendarRender="afterCalendarRender"
+/>
+<view class="cu-list menu-avatar ">
+  <view class="cu-item" bindtap="gotocreateactivity">
+    <view class="cu-avatar bg-white round lg">
+      <text class="cuIcon-add line-green"></text>
+    </view>
+    <view class="content">
+      <text class="text-grey text-lg">添加个人任务</text>
+    </view>
+  </view>
+  <view class="cu-item" wx:for="{{assignments}}" wx:key="key">
+    <view class="cu-avatar bg-white round lg">
+      <text class="{{item.priority_icon}}"></text>
+    </view>
+    <view class="content">
+      <text class="text-grey text-lg">{{item.assignmentName}} ({{item.groupName}})</text>
+      <view class="text-gray text-sm flex">
+        <text class="text-cut">
+          <text class="cuIcon-calendar margin-right-xs"></text>{{item.startTime+"~"+item.endTime}}
+        </text>
+      </view>
+    </view>
+    <view class="action">
+      <button class="cu-btn round bg-green text-center light" bindtap="showModal" data-target="Modal" data-id="{{index}}">
+        <text class="cuIcon-form"></text>
+      </button>
+    </view>
+  </view>
+  <view class="cu-modal {{modalName=='Modal'?'show':''}}">
+    <view class="cu-dialog">
+      <view class="cu-bar bg-white justify-end">
+        <view class="content">{{checkbox.groupName}} - {{checkbox.assignmentName}}</view>
+        <view class="action" bindtap="hideModal">
+          <text class="cuIcon-close text-red"></text>
+        </view>
+      </view>
+      <view class="padding-xl">
+        {{checkbox.content}}
+      </view>
+      <view class="solid-bottom text-sm padding">
+        <text class="text-grey">{{checkbox.startTime+"~"+checkbox.endTime}}</text>
+      </view>
+    </view>
+  </view> 
+</view>
+
+<view class="cu-bar tabbar bg-white shadow foot">
+  <view class="action" bindtap="NavChange" data-cur="groupList">
+    <view class="cuIcon-group {{NavCur=='groupList'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='groupList'?'text-orange':'text-gray'}}">团队列表</view>
+  </view>
+  <view class="action" bindtap="NavChange" data-cur="createGroup">
+    <view class="cuIcon-add {{NavCur=='createGroup'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='createGroup'?'text-orange':'text-gray'}}">创建团队</view>
+  </view>
+  <view class="action" bindtap="NavChange" data-cur="index">
+    <view class="cuIcon-home {{NavCur=='index'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='index'?'text-orange':'text-gray'}}">主页</view>
+  </view>
+  <view class="action" bindtap="NavChange" data-cur="personalCalendar">
+    <view class="cuIcon-calendar {{NavCur=='personalCalendar'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='personalCalendar'?'text-orange':'text-gray'}}">个人日历</view>
+  </view>
+  <view class="action" bindtap="NavChange" data-cur="messages">
+    <view class="cuIcon-message {{NavCur=='messages'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='messages'?'text-orange':'text-gray'}}">消息</view>
+  </view>
+</view>

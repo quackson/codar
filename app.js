@@ -47,6 +47,7 @@ App({
     })
   },
   globalData: {
-    userInfo: null
+    userInfo: null,
+    NavCur: "index" // current navigation tab
   }
 })
