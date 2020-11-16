@@ -1,57 +1,63 @@
 // pages/create_activity/create_activity.js
+const app = getApp()
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
-    groupID:1,
-    groupName:"initialgroup",
+    NavCur:'',
+    groupName:"testGroup",
     prior_:[
       0,1,2,3,4
+    ],
+    type_:[
+      '是',
+      '否'
     ],
     content:'',
     title:'',
     prior_index:-1,
+    taskType_index:-1,
     startTime: '00:00',
     startDate: '2020-10-28',
     endTime: '00:00',
     endDate: '2020-10-28',
     users:[
       {
-        userID:0,
+        userID:'ID1',
         checked:false,
         role:1
       },
       {
-        userID:1,
+        userID:'ID2',
         checked:false,
         role:0
       },
       {
-        userID:2,
+        userID:'ID3',
         checked:false,
         role:0
       },
       {
-        userID:3,
-        checked:false,
-        role:0
-      },
-      {
-        userID:4,
+        userID:'ID4',
         checked:false,
         role:0
       }
     ]
   },
   PickerChange(e) {
-    console.log(e);
+    //console.log(e);
     this.setData({
       prior_index: e.detail.value
     })
   },
-
+  taskTypeChange(e) {
+    //console.log(e);
+    this.setData({
+      type_index: e.detail.value
+    })
+  },
   startTimeChange(e) {
     this.setData({
       startTime: e.detail.value
@@ -88,12 +94,42 @@ Page({
     this.data.users[e.target.dataset.index]['checked']=!temp;
     //console.log(this.data.users[e.target.dataset.index]['checked']);
   },
+  NavChange:function(e){
+    app.globalData.NavCur = e.currentTarget.dataset.cur
+    
+    switch (app.globalData.NavCur) {
+      case 'index':
+        wx.redirectTo({
+          url: '../index/index'
+        })
+        break;
+      case 'groupList':
+        wx.redirectTo({
+          url: '../group_list/group_list' //?userid=
+        })
+        break;
+      case 'personalCalendar':
+        wx.redirectTo({
+          url: '../calendar/personal_calendar' //?userid=
+        })
+        break;
+      case 'messages':
+        wx.redirectTo({
+          url: '../information/information' //?userid=
+        })
+        break;
+      default:
+        break;
+    }
+  },
+
   /**
    * 生命周期函数--监听页面加载
    */
-  
   onLoad: function (options) {
-
+    this.setData({
+      NavCur: app.globalData.NavCur
+    })
   },
 
   /**

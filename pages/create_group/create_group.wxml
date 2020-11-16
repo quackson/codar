@@ -1,5 +1,38 @@
 <!--pages/create_group/create_group.wxml-->
-<text>pages/create_group/create_group.wxml</text>
+<cu-custom bgColor="bg-cyan light" isBack="{{true}}">
+  <view slot="backText">返回</view>
+  <view slot="content">创建团队</view>
+</cu-custom>
+<form >
+	<view class="cu-form-group">
+		<view class="title">团队名称</view>
+		<input name="title" bindinput="groupNameInput" placeholder="输入名称"></input>
+	</view>
+	<view class="cu-form-group">
+		<view class="title">邀请成员</view>
+    <input name="title" bindinput="memNameInput" placeholder="输入ID"></input>
+    <view class="action">
+            <button class="cu-btn round bg-cyan text-center light" bindtap="sendInvitation">
+              <text class="cuIcon-search"></text></button>
+    </view>
+	</view>
+  
+  <view class="cu-list menu-avatar " >
+        <view class="cu-item" wx:for="{{members}}" wx:key="key">
+          <view class="cu-avatar bg-white round lg">
+            <text class="cuIcon-peoplelist"></text>
+          </view>
+          <view class="content">
+            <view class="text-grey">{{item}}</view>
+          </view> 
+        </view>
+        <view class="createGroup padding-xl bg-white">
+          <button class="cu-btn block bg-cyan light lg" bindtap="createGroup">
+            <text class="cuIcon-upload"></text> 提交</button>
+        </view>
+  </view>
+</form>
+
 
 <view class="cu-bar tabbar bg-white shadow foot">
   <view class="action" bindtap="NavChange" data-cur="groupList">

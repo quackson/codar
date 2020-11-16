@@ -1,11 +1,13 @@
 {
   "pages": [
-    "pages/index/index",    
+    "pages/index/index",
     "pages/information/information",
     "pages/create_activity/create_activity",
+    "pages/create_group/create_group",
     "pages/group_list/group_list",
     "pages/calendar/personal_calendar",
-    "pages/calendar/group_calendar"
+    "pages/calendar/group_calendar",
+    "pages/discussion/discussion"
   ],
   "window": {
     "backgroundTextStyle": "light",

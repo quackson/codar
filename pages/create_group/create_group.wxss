@@ -1,1 +1,8 @@
 /* pages/create_group/create_group.wxss */
+.createGroup{
+  width: 100%;
+  position: fixed;
+  bottom:0px;
+  display: flex;
+  justify-content: center;
+}

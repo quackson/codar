@@ -6,9 +6,41 @@ Page({
    * 页面的初始数据
    */
   data: {
-
+    NavCur:'',
+    groupName:"",
+    members:[
+      'leader',
+      'mem2',
+      'mem2',
+      'mem3',
+      'mem4',
+      'mem5',
+      'mem6'
+    ],
+    newMember:''
   },
-
+  groupNameInput(e){
+    this.setData({
+      groupName: e.detail.value
+    });
+  },
+  memNameInput(e){
+    this.setData({
+      newMember: e.detail.value     
+    });
+    console.log(this.data.newMember)
+  },
+  sendInvitation(e){
+    var temp=this.data.members;
+    temp.push(this.data.newMember);
+    this.setData({
+      members: temp  
+    });
+    console.log(this.data.members);
+  },
+  createGroup(e){
+    console.log("创建团队");
+  },
   NavChange:function(e){
     app.globalData.NavCur = e.currentTarget.dataset.cur
     

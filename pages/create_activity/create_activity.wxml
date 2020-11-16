@@ -2,6 +2,7 @@
   <view slot="backText">返回</view>
   <view slot="content">新建任务@{{groupName}}</view>
 </cu-custom>
+
 <form >
 	<view class="cu-form-group">
 		<view class="title">任务名称</view>
@@ -12,10 +13,18 @@
 		<input name="content" bindinput="contentInput" placeholder="输入详细描述"></input>
 	</view>	
 	<view class="cu-form-group flex">
-		<view class="title">普通选择</view>
+		<view class="title">紧迫级别</view>
 		<picker bindchange="PickerChange" value="{{prior_index}}" range="{{prior_}}">
 			<view class="picker">
 				{{prior_index>=0?prior_[prior_index]:'0——4 紧 迫 级 别 依 次 上 升'}}
+			</view>
+		</picker>
+	</view>
+	<view class="cu-form-group flex">
+		<view class="title">任务类型</view>
+		<picker bindchange="taskTypeChange" value="{{taskType_index}}" range="{{type_}}">
+			<view class="picker">
+				{{taskType_index>=0?type_[taskType_index]:'是 否 需 要 独 占 时 间 段'}}
 			</view>
 		</picker>
 	</view>
@@ -65,10 +74,34 @@
               <checkbox data-index="{{index}}"></checkbox>
             </checkbox-group>
           </view>
-        </view>
-  </view>
+				</view>
+				<view class="createTask padding-xl bg-white">
+				<button class="cu-btn block bg-cyan light lg">
+						<text class="cuIcon-upload"></text>提交</button>
+				</view>
+	</view>
+	
 </form>
-<view class="padding-xl bg-white">
-  <button class="cu-btn block bg-cyan light lg">
-    <text class="cuIcon-upload"></text> 提交</button>
+
+<view class="cu-bar tabbar bg-white shadow foot">
+  <view class="action" bindtap="NavChange" data-cur="groupList">
+    <view class="cuIcon-group {{NavCur=='groupList'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='groupList'?'text-orange':'text-gray'}}">团队列表</view>
+  </view>
+  <view class="action" bindtap="NavChange" data-cur="createGroup">
+    <view class="cuIcon-add {{NavCur=='createGroup'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='createGroup'?'text-orange':'text-gray'}}">创建团队</view>
+  </view>
+  <view class="action" bindtap="NavChange" data-cur="index">
+    <view class="cuIcon-home {{NavCur=='index'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='index'?'text-orange':'text-gray'}}">主页</view>
+  </view>
+  <view class="action" bindtap="NavChange" data-cur="personalCalendar">
+    <view class="cuIcon-calendar {{NavCur=='personalCalendar'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='personalCalendar'?'text-orange':'text-gray'}}">个人日历</view>
+  </view>
+  <view class="action" bindtap="NavChange" data-cur="messages">
+    <view class="cuIcon-message {{NavCur=='messages'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='messages'?'text-orange':'text-gray'}}">消息</view>
+  </view>
 </view>

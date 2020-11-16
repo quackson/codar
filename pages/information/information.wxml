@@ -1,4 +1,4 @@
-<cu-custom bgColor="bg-cyan light">
+<cu-custom bgColor="bg-cyan light" >
   <view slot="content">我的消息</view>
 </cu-custom>
 <view class="bg-white">
@@ -65,6 +65,70 @@
               </view>
               <view class="solid-bottom text-sm padding">
                 <text class="text-grey">{{item.startTime+"~"+item.endTime}}</text>
+              </view>
+            </view>
+          </view> 
+  </view>
+  <view class="cu-list menu-avatar " wx:if="{{TabCur==2}}">
+        <view class="cu-item"  wx:for="{{myInvatation}}" wx:key="key" >
+          <view class="cu-avatar bg-white round lg">
+            <text class="cuIcon-forward"></text>
+          </view>
+          <view class="content">
+            <text class="text-grey text-lg">{{item.groupName}}</text>
+          </view>
+          <view class="action">
+            <button class="cu-btn round bg-blue text-center light"
+            bindtap="showModal" data-target="Modal" data-id="{{index}}">
+              <text class="cuIcon-form"></text></button>
+          </view>
+          <view class="action">
+            <button class="cu-btn round bg-red text-center light">
+              <text class="cuIcon-close"></text></button>
+          </view>
+        </view>
+        <view class="cu-modal {{modalName=='Modal'?'show':''}}">
+            <view class="cu-dialog">
+              <view class="cu-bar bg-white justify-end">
+                <view class="content">{{checkbox.groupID}}</view>
+                <view class="action" bindtap="hideModal">
+                  <text class="cuIcon-close text-red"></text>
+                </view>
+              </view>
+              <view class="padding-xl">
+                {{checkbox.acceptUsers}}
+              </view>
+            </view>
+          </view> 
+  </view>
+  <view class="cu-list menu-avatar " wx:if="{{TabCur==3}}">
+        <view class="cu-item"  wx:for="{{mydelivertask}}" wx:key="key" >
+          <view class="cu-avatar bg-white round lg">
+            <text class="cuIcon-forward"></text>
+          </view>
+          <view class="content">
+            <text class="text-grey text-lg">{{item.groupID}}</text>
+          </view>
+          <view class="action">
+            <button class="cu-btn round bg-blue text-center light"
+            bindtap="showModal" data-target="Modal" data-id="{{index}}">
+              <text class="cuIcon-form"></text></button>
+          </view>
+          <view class="action">
+            <button class="cu-btn round bg-red text-center light">
+              <text class="cuIcon-close"></text></button>
+          </view>
+        </view>
+        <view class="cu-modal {{modalName=='Modal'?'show':''}}">
+            <view class="cu-dialog">
+              <view class="cu-bar bg-white justify-end">
+                <view class="content">{{checkbox.groupID}}</view>
+                <view class="action" bindtap="hideModal">
+                  <text class="cuIcon-close text-red"></text>
+                </view>
+              </view>
+              <view class="padding-xl">
+                {{checkbox.acceptmembers}}
               </view>
             </view>
           </view> 
