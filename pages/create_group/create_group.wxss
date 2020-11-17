@@ -1,8 +1,15 @@
 /* pages/create_group/create_group.wxss */
-.createGroup{
-  width: 100%;
+.creategroup{
   position: fixed;
-  bottom:0px;
-  display: flex;
-  justify-content: center;
+  left: 0;
+  right: 0;
+  top: 60px;
+  bottom: 42px;
+}
+.creategroup-scroll{
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
 }

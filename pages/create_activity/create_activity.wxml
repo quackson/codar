@@ -3,6 +3,8 @@
   <view slot="content">新建任务@{{groupName}}</view>
 </cu-custom>
 
+<view class="createtask">
+	<scroll-view class="createtask-scroll" scroll-y style="height: 100%">
 <form >
 	<view class="cu-form-group">
 		<view class="title">任务名称</view>
@@ -79,10 +81,10 @@
 				<button class="cu-btn block bg-cyan light lg">
 						<text class="cuIcon-upload"></text>提交</button>
 				</view>
-	</view>
-	
-</form>
-
+		</view>
+	</form>
+	</scroll-view>
+</view>
 <view class="cu-bar tabbar bg-white shadow foot">
   <view class="action" bindtap="NavChange" data-cur="groupList">
     <view class="cuIcon-group {{NavCur=='groupList'?'line-orange':'line-gray'}}"></view>

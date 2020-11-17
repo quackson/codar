@@ -3,6 +3,8 @@
   <view slot="backText">返回</view>
   <view slot="content">创建团队</view>
 </cu-custom>
+<view class="creategroup">
+	<scroll-view class="creategroup-scroll" scroll-y style="height: 100%">
 <form >
 	<view class="cu-form-group">
 		<view class="title">团队名称</view>
@@ -32,7 +34,8 @@
         </view>
   </view>
 </form>
-
+</scroll-view>
+</view>
 
 <view class="cu-bar tabbar bg-white shadow foot">
   <view class="action" bindtap="NavChange" data-cur="groupList">
