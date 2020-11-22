@@ -2,47 +2,125 @@ from flask import Blueprint, render_template, redirect,request, jsonify
 from models import db, User, Group, Assignment, Task, PendingTask
 from init import app
 import datetime
+import requests
+import json
 
+def sameDay(day,task):
+    days = day.split(':')
+    startTimes = task.startTime.split(':')
+    endTimes = task.endTime.split(':')
+    if days[0] == startTimes[0] and days[1]== startTimes[1] and days[2]==startTimes[2]:
+        return True
+    if days[0] == endTimes[0] and days[1]== endTimes[1] and days[2]==endTimes[2]:
+        return True
+    return False
+    
+def earlierThan(x,y):
+    xs = x.split(':')
+    ys = y.split(':')
+    for i in range(5):
+        if int(xs[i])<int(ys[i]):
+            return True
+        elif int(xs[i])>int(ys[i]):
+            return False
+    return True
+    
+def compatible(task1,task2):
+    if earlierThan(task1.endTime,task2.startTime) or earlierThan(task2.endTime,task1.startTime):
+        return True
+    return False
 
-def time2str(x):
-    return x.strftime('%Y:%m:%d:%H:%M')
-
-def str2time(x):
-    return datetime.datetime.strptime(x+':00', "%Y:%m:%d:%H:%M:%S")
-@app.route('/')
+@app.route('/hello',methods=['GET'])
 def index():
     return "Hello World"
 
-@app.route('/login',methods=['POST'])
+@app.route('/test',methods=['POST'])
+def test():
+    open_id = request.form.get('openID',None)
+    userName = request.form.get('userName',None)
+    user = User(
+        openID = open_id,
+        name = userName
+    )
+    db.session.add(user)
+    db.session.flush()
+    userID = user.id
+    db.session.commit()
+    res = {
+        'retCode':200,
+        'userID':userID
+    }
+    return jsonify(res)
+
+@app.route('/user/login',methods=['POST'])
 def login():
     if request.method == 'POST':
         code = request.form.get('code',None)
-        return None
+        appid = 'wxf3e65585a89d7dca'
+        appSecret = 'ad87f8d64da7c5a2a363563f993b2129'
+        url1 ="https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code" % (appid, appSecret, code)
+        res = requests.get(url1)
+        res_dict = json.loads(res.text)
+        open_id = res_dict['openid']
+        access_token = res_dict['access_token']
+        user = User.query.filter_by(openID=open_id).first()
+        if user:
+            res = {
+            'retCode':200,
+            'userID':user.id
+            }
+            return jsonify(res)
+        
+        url2 = "https://api.weixin.qq.com/sns/userinfo?access_token=%s&openid=%s&lang=zh_CN" % (access_token, open_id)
+        res = requests.get(url2)
+        res_dict = json.loads(res.text)
+        userName = res_dict['nickname']
+        user = User(
+            openID = open_id,
+            name = userName
+        )
+        db.session.add(user)
+        db.session.flush()
+        userID = user.id
+        db.session.commit()
+        res = {
+            'retCode':200,
+            'userID':userID
+        }
+        return jsonify(res)
     
     
-#Todo: time conflict
-@app.route('/addTask',methods=['POST'])
+@app.route('/task/add',methods=['POST'])
 def addTask():
     if request.method == 'POST':
-        userID = request.form.get('userID',None)
-        groupID = request.form.get('groupID',None)
+        userID = int(request.form.get('userID',None))
+        groupID = int(request.form.get('groupID',None))
         startTime = request.form.get('startTime',None)
         endTime = request.form.get('endTime',None)
         taskName = request.form.get('taskName',None)
         taskContent = request.form.get('taskContent',None)
-        new_startTime = str2time(startTime)
-        new_endTime = str2time(endTime)
+        user = User.query.get(userID)
+        taskList = user.taskList
+        
         newTask = Task(
-            startTime = new_startTime,
-            endTime = new_endTime,
+            startTime = startTime,
+            endTime = endTime,
             content = taskContent,
             name = taskName,
             group_id = int(groupID),
             user_id = int(userID)
         )
+        for task in taskList:
+            if not compatible(task,newTask):
+                res={
+                    'retCode':400,
+                    'errMsg':'time conflict'
+                }
+                return jsonify(res)
         db.session.add(newTask)
         db.session.flush()
         task_id = newTask.id
+        user.taskList.append(newTask)
         db.session.commit()
         res = dict()
         res['retCode'] = 200
@@ -53,88 +131,88 @@ def addTask():
         res['taskContent'] = taskContent
         return jsonify(res)
 
-@app.route('/queryUserTasks',methods=['POST'])
+@app.route('/user/task',methods=['GET'])
 def queryUserTasks():
-    if request.method == 'POST':
-        userID = request.form.get('userID',None)
+    if request.method == 'GET':
+        userID = request.args.get('userID')
+        date = request.args.get('date')
         curUser = User.query.get(userID)
         taskList = curUser.taskList
         res = dict()
         res['retCode'] = 200
         tasks = []
         for task in taskList:
-            t = set()
+            if not sameDay(date,task):
+                continue
+            t = dict()
             t['groupID'] = task.group_id
             t['taskID'] = task.id
             t['taskName'] = task.name
-            t['startTime'] = time2str(task.startTime)
-            t['endTime'] = time2str(task.endTime)
+            t['startTime'] = task.startTime
+            t['endTime'] = task.endTime
             t['taskContent'] = task.content
             tasks.append(t)
         res['tasks'] = tasks
         return jsonify(res)
     
-@app.route('/queryAllGroupInvitation',methods=['POST'])
+@app.route('/user/groupInvitation',methods=['GET'])
 def queryAllGroupInvitation():
-    if request.method == 'POST':
-        userID = request.form.get('userID',None)
+    if request.method == 'GET':
+        userID = request.args.get('userID')
         curUser = User.query.get(userID)
         invitations = curUser.groupInvitationList
-        res = set()
+        res = dict()
         res['retCode'] = 200
         groups = []
         for invitation in invitations:
-            t = set()
+            t = dict()
             t['groupID'] = invitation.id
             t['groupName'] = invitation.name
             groups.append(t)
         res['groups'] = groups
         return jsonify(res)
     
-@app.route('/queryAllAssignmentInvitation',methods=['POST'])
+@app.route('/user/assignInvitation',methods=['GET'])
 def queryAllAssignmentInvitation():
-    if request.method == 'POST':
-        userID = request.form.get('userID',None)
+    if request.method == 'GET':
+        userID = request.args.get('userID')
         curUser = User.query.get(userID)
         invitations = curUser.assignInvitationList
-        res = set()
+        res = dict()
         res['retCode'] = 200
         assigns = []
         for invitation in invitations:
-            t = set()
+            t = dict()
             t['assignmentID'] = invitation.id
             t['assignmentName'] = invitation.name
             t['groupID'] = invitation.group_id
             t['category'] = invitation.category
-            t['startTime'] = time2str(invitation.startTime)
-            t['endTime'] = time2str(invitation.endTime)
+            t['startTime'] = invitation.startTime
+            t['endTime'] = invitation.endTime
             t['assignmentContent'] = invitation.content
             t['prior'] = invitation.prior
             assigns.append(t)
         res['assignments'] = assigns
         return jsonify(res)
     
-@app.route('/addPendingTask',methods=['POST'])
+@app.route('/pendingTask/add',methods=['POST'])
 def addPendingTask():
     if request.method == 'POST':
         userID = request.form.get('userID',None)
         groupID = request.form.get('groupID',None)
         startTime = request.form.get('startTime',None)
         endTime = request.form.get('endTime',None)
-        pendingTaskName = request.form.get('taskName',None)
-        pendingTaskContent = request.form.get('taskContent',None)
+        pendingTaskName = request.form.get('pendingTaskName',None)
+        pendingTaskContent = request.form.get('pendingTaskContent',None)
         pendingTask = PendingTask(
-            startTime = str2time(startTime),
-            endTime = str2time(endTime),
+            startTime = startTime,
+            endTime = endTime,
             content = pendingTaskContent,
             name = pendingTaskName,
             voteNum = 0,
             group_id = groupID,
             user_id = userID
         )
-        pendingTask.group = Group.query.get(groupID)
-        pendingTask.user = Group.query.get(userID)
-        pendinTask.voterList = []
         db.session.add(pendingTask)
         db.session.flush()
         pendingTaskID = pendingTask.id
@@ -151,8 +229,7 @@ def addPendingTask():
         res['userName'] = User.query.get(userID).name
         return jsonify(res)
 
-#Todo: repeated vote
-@app.route('/votePendingTask',methods=['POST'])
+@app.route('/pendingTask/vote',methods=['POST'])
 def votePendingTask():
     if request.method == 'POST':
         userID = request.form.get('userID',None)
@@ -162,7 +239,13 @@ def votePendingTask():
         pendingTask = PendingTask.query.get(pendingTaskID)
         user = User.query.get(userID)
         group = Group.query.get(groupID)
-        pendingTask.voteNum += vote
+        if user in pendingTask.voterList:
+            res = {
+                'retCode':400,
+                'errMsg':'already voted! can\'t vote again' 
+            }
+            return jsonify(res)
+        pendingTask.voteNum += int(vote)
         pendingTask.voterList.append(user)
         db.session.commit()
         res = dict()
@@ -177,24 +260,21 @@ def votePendingTask():
         res['userName'] = pendingTask.user.name
         return jsonify(res)
     
-@app.route('/buildGroup',methods=['POST'])
+@app.route('/group/build',methods=['POST'])
 def buildGroup():
     if request.method == 'POST':
-        userID = request.form.get('userID',None)
-        groupName = request.form.get('groupName',None)
+        userID = int(request.form.get('userID'))
+        groupName = request.form.get('groupName')
         user = User.query.get(userID)
         group = Group(
-            groupName = groupName,
+            name = groupName,
             owner_id = userID
         )
-        group.taskList = []
-        group.pendingTaskList = []
-        group.assignList = []
         db.session.add(group)
         db.session.flush()
         groupID = group.id
         user.adminGroupList.append(group)
-        user.groupList.appeng(group)
+        user.groupList.append(group)
         db.session.commit()
         res = dict()
         res['retCode'] = 200
@@ -202,8 +282,7 @@ def buildGroup():
         res['groupName'] = groupName
         return jsonify(res)
     
-#todo: check if these two users are in group or not
-@app.route('/inviteGroup',methods=['POST'])
+@app.route('/group/invite',methods=['POST'])
 def inviteGroup():
     if request.method == 'POST':
         userID = request.form.get('userID',None)
@@ -211,6 +290,12 @@ def inviteGroup():
         invitedUserID = request.form.get('invitedUserID',None)
         group = Group.query.get(groupID)
         user = User.query.get(invitedUserID)
+        if group in user.groupList:
+            res = {
+                'retCode':400,
+                'errMsg':'already in group! can\'t invite again'
+            }
+            return jsonify(res)
         if not group in user.groupInvitationList:
             user.groupInvitationList.append(group)
         db.session.commit()
@@ -220,8 +305,7 @@ def inviteGroup():
         res['invitedUserName'] = user.name
         return jsonify(res)
     
-#todo: check if the user is in group
-@app.route('/joinGroup',methods=['POST'])
+@app.route('/group/join',methods=['POST'])
 def joinGroup():
     if request.method == 'POST':
         userID = request.form.get('userID',None)
@@ -229,6 +313,12 @@ def joinGroup():
         operation = request.form.get('operation',None)
         user = User.query.get(userID)
         group = Group.query.get(groupID)
+        if group in user.groupList:
+            res = {
+                'retCode':400,
+                'errMsg':'already in group! can\'t join again'
+            }
+            return jsonify(res)
         user.groupInvitationList.remove(group)
         if int(operation) == 1:
             user.groupList.append(group)
@@ -255,16 +345,23 @@ def joinGroup():
         res['users'] = users
         return jsonify(res)
     
-#todo: check if the user is in group
-@app.route('/quitGroup',methods=['POST'])
+@app.route('/group/quit',methods=['POST'])
 def quitGroup():
     if request.method == 'POST':
         userID = request.form.get('userID',None)
         groupID = request.form.get('groupID',None)
         user = User.query.get(userID)
         group = Group.query.get(groupID)
-        group.userList.remove(user)
-        group.adminList.remove(user)
+        if not group in user.groupList:
+            res = {
+                'retCode':400,
+                'errMsg':'not in group! can\'t quit'
+            }
+            return jsonify(res)
+        if user in group.userList:
+            group.userList.remove(user)
+        if user in group.adminList:
+            group.adminList.remove(user)
         db.session.commit()
         res = dict()
         res['retCode'] = 200
@@ -288,8 +385,7 @@ def quitGroup():
         res['users'] = users
         return jsonify(res)
     
-#todo: check if the two users are admin or not 
-@app.route('/addManager',methods=['POST'])
+@app.route('/group/manager',methods=['POST'])
 def addManager():
     if request.method == 'POST':
         userID = request.form.get('userID',None)
@@ -299,9 +395,27 @@ def addManager():
         user = User.query.get(userID)
         group = Group.query.get(groupID)
         manager = User.query.get(managerID)
+        if not group in user.adminGroupList:
+            res = {
+                'retCode':400,
+                'errMsg':'you have no authority to do this'
+            }
+            return jsonify(res)
         if int(operation)==1:
+            if group in manager.adminGroupList:
+                res = {
+                    'retCode':400,
+                    'errMsg':'already a manager! can\'t set again'
+                }
+                return jsonify(res)
             group.adminList.append(manager)
         elif int(operation)==-1:
+            if not group in manager.adminGroupList:
+                res = {
+                    'retCode':400,
+                    'errMsg':'not a manager! can\'t cancel him'
+                }
+                return jsonify(res)
             group.adminList.remove(manager)
         db.session.commit()
         res = dict()
@@ -326,16 +440,19 @@ def addManager():
         res['users'] = users
         return jsonify(res)
 
-@app.route('/queryAllGroups',methods=['POST'])
+@app.route('/user/group',methods=['GET'])
 def queryAllGroups():
-    if request.method == 'POST':
-        userID = request.form.get('userID',None)
+    if request.method == 'GET':
+        userID = request.args.get('userID')
         user = User.query.get(userID)
         groupList = user.groupList
+        adminList = user.adminGroupList
         res = dict()
         res['retCode'] = 200
         groups = []
         for group in groupList:
+            if group in adminList:
+                continue
             g = dict()
             g['groupID'] = group.id
             g['groupName'] = group.name
@@ -343,10 +460,10 @@ def queryAllGroups():
         res['groups'] = groups
         return jsonify(res)
     
-@app.route('/queryAllAdminGroups',methods=['POST'])
+@app.route('/user/adminGroup',methods=['GET'])
 def queryAllAdminGroups():
-    if request.method == 'POST':
-        userID = request.form.get('userID',None)
+    if request.method == 'GET':
+        userID = request.args.get('userID')
         user = User.query.get(userID)
         groupList = user.adminGroupList
         res = dict()
@@ -356,14 +473,14 @@ def queryAllAdminGroups():
             g = dict()
             g['groupID'] = group.id
             g['groupName'] = group.name
-            groups.append(group)
+            groups.append(g)
         res['groups'] = groups
         return jsonify(res)
     
-@app.route('/queryAllUsers',methods=['POST'])
+@app.route('/group/user',methods=['GET'])
 def queryAllUsers():
-    if request.method == 'POST':
-        groupID = request.form.get('groupID',None)
+    if request.method == 'GET':
+        groupID = request.args.get('groupID')
         group = Group.query.get(groupID)
         res = dict()
         res['retCode'] = 200
@@ -385,19 +502,26 @@ def queryAllUsers():
         res['users'] = users
         return jsonify(res)
 
-#todo: check 1-type assign time conflict
-@app.route('/addAssignment',methods=['POST'])
+@app.route('/assign/add',methods=['POST'])
 def addAssignment():
     if request.method == 'POST':
         userID = request.form.get('userID',None)
         groupID = request.form.get('groupID',None)
-        assignmentName = request.form.get('AssignmentName',None)
+        assignmentName = request.form.get('assignmentName',None)
         category = request.form.get('category',None)
+        prior = request.form.get('prior',None)
+        content = request.form.get('assignmentContent',None)
+        startTime = request.form.get('startTime',None)
+        endTime = request.form.get('endTime',None)
         user = User.query.get(userID)
         group = Group.query.get(groupID)
         assign = Assignment(
             name = assignmentName,
-            category = category
+            category = category,
+            startTime = startTime,
+            endTime = endTime,
+            content = content,
+            prior = prior
         )
         assign.user = user
         assign.group = group
@@ -408,18 +532,29 @@ def addAssignment():
         res = dict()
         res['retCode'] = 200
         res['assignmentID'] = assignID
-        res['assignmentName'] = assignmentName
-        res['category'] = category
+        res['assignmentName'] = assign.name
+        res['category'] = assign.category
+        res['prior'] = assign.prior
+        res['startTime'] = assign.startTime
+        res['endTime'] = assign.endTime
+        res['assignmentContent'] = assign.content
         return jsonify(res)
     
-#todo: check user is admin
-@app.route('/setAssignmentPrior',methods=['POST'])
+@app.route('/assign/setPrior',methods=['POST'])
 def setAssignmentPrior():
     if request.method == 'POST':
         userID = request.form.get('userID',None)
         groupID = request.form.get('groupID',None)
         assignmentID = request.form.get('assignmentID',None)
         prior = request.form.get('prior',None)
+        group = Group.query.get(groupID)
+        user = User.query.get(userID)
+        if not group in user.adminGroupList:
+            res = {
+                'retCode':400,
+                'errMsg':'you have no authority to do this'
+            }
+            return jsonify(res)
         assign = Assignment.query.get(assignmentID)
         assign.prior = prior
         db.session.commit()
@@ -431,8 +566,8 @@ def setAssignmentPrior():
         res['prior'] = prior
         return jsonify(res)
     
-#todo: check user is admin
-@app.route('/setAssignmentExecutor',methods=['POST'])
+#todo: check if the user is available
+@app.route('/assign/invite',methods=['POST'])
 def setAssignmentExecutor():
     if request.method == 'POST':
         userID = request.form.get('userID',None)
@@ -442,7 +577,32 @@ def setAssignmentExecutor():
         operation = request.form.get('operation',None)
         assign = Assignment.query.get(assignmentID)
         executor = User.query.get(executorID)
+        group = Group.query.get(groupID)
+        user = User.query.get(userID)
+        if not group in user.adminGroupList:
+            res = {
+                'retCode':400,
+                'errMsg':'you have no authority to do this'
+            }
+            return jsonify(res)
         if int(operation)==1:
+            if assign.category == 1:
+                taskList = executor.taskList
+                for task in taskList:
+                    if not compatible(task,assign):
+                        res = {
+                            'retCode':400,
+                            'errMsg':'can\'t invite because time conflict'
+                        }
+                        return jsonify(res)
+                assignList = executor.assignList
+                for old_assign in assignList:
+                    if not compatible(old_assign,assign):
+                        res = {
+                            'retCode':400,
+                            'errMsg':'can\'t invite because time conflict'
+                        }
+                        return jsonify(res)
             executor.assignInvitationList.append(assign)
         elif int(operation)==-1:
             assign.executorList.remove(executor)
@@ -462,8 +622,7 @@ def setAssignmentExecutor():
         res['executors'] = executors
         return jsonify(res)
     
-#todo: check if in assign
-@app.route('/joinAssignment',methods=['POST'])
+@app.route('/assign/join',methods=['POST'])
 def joinAssignment():
     if request.method == 'POST':
         userID = request.form.get('userID',None)
@@ -472,9 +631,15 @@ def joinAssignment():
         operation = request.form.get('operation',None)
         user = User.query.get(userID)
         assign = Assignment.query.get(assignmentID)
+        if assign in user.assignList:
+            res = {
+                'retCode':400,
+                'errMsg':'already in task, can\'t join again'
+            }
+            return jsonify(res)
         user.assignInvitationList.remove(assign)
         if int(operation)==1:
-            user.assignmentList.append(assign)
+            user.assignList.append(assign)
         db.session.commit()
         res = dict()
         res['retCode'] = 200
@@ -491,8 +656,7 @@ def joinAssignment():
         res['executors'] = executors
         return jsonify(res)
     
-#todo: check user is admin
-@app.route('/setAssignmentTime',methods=['POST'])
+@app.route('/assign/setTime',methods=['POST'])
 def setAssignmentTime():
     if request.method == 'POST':
         userID = request.form.get('userID',None)
@@ -500,9 +664,17 @@ def setAssignmentTime():
         startTime = request.form.get('startTime',None)
         endTime = request.form.get('endTime',None)
         assignmentID = request.form.get('assignmentID',None)
+        group = Group.query.get(groupID)
+        user = User.query.get(userID)
+        if not group in user.adminGroupList:
+            res = {
+                'retCode':400,
+                'errMsg':'you have no authority to do this'
+            }
+            return jsonify(res)
         assign = Assignment.query.get(assignmentID)
-        assign.startTime = str2time(startTime)
-        assign.endTime = str2time(endTime)
+        assign.startTime = startTime
+        assign.endTime = endTime
         db.session.commit()
         res = dict()
         res['retCode'] = 200
@@ -513,29 +685,36 @@ def setAssignmentTime():
         res['endTime'] = endTime
         return jsonify(res)
     
-#todo: check user is admin
-@app.route('/setAssignmentContent',methods=['POST'])
+@app.route('/assign/setContent',methods=['POST'])
 def setAssignmentContent():
     if request.method == 'POST':
         userID = request.form.get('userID',None)
         groupID = request.form.get('groupID',None)
         assignmentContent = request.form.get('assignmentContent',None)
         assignmentID = request.form.get('assignmentID',None)
+        group = Group.query.get(groupID)
+        user = User.query.get(userID)
+        if not group in user.adminGroupList:
+            res = {
+                'retCode':400,
+                'errMsg':'you have no authority to do this'
+            }
+            return jsonify(res)
         assign = Assignment.query.get(assignmentID)
         assign.content = assignmentContent
         db.session.commit()
         res = dict()
         res['retCode'] = 200
-        res['assignmentID'] = assignID
+        res['assignmentID'] = assignmentID
         res['assignmentName'] = assign.name
         res['category'] = assign.category
         res['content'] = assignmentContent
         return jsonify(res)
     
-@app.route('/queryAllTasks',methods=['POST'])
+@app.route('/group/task',methods=['GET'])
 def queryAllTasks():
-    if request.method == 'POST':
-        groupID = request.form.get('groupID',None)
+    if request.method == 'GET':
+        groupID = request.args.get('groupID')
         group = Group.query.get(groupID)
         taskList = group.taskList
         res = dict()
@@ -547,17 +726,17 @@ def queryAllTasks():
             t['userName'] = task.user.name
             t['taskID'] = task.id
             t['taskName'] = task.name
-            t['startTime'] = time2str(task.startTime)
-            t['endTime'] = time2str(task.endTime)
+            t['startTime'] = task.startTime
+            t['endTime'] = task.endTime
             t['taskContent'] = task.content
             tasks.append(t)
         res['tasks'] = tasks
         return jsonify(res)
     
-@app.route('/queryAllPendingTasks',methods=['POST'])
+@app.route('/group/pendingTask',methods=['GET'])
 def queryAllPendingTasks():
-    if request.method == 'POST':
-        groupID = request.form.get('groupID',None)
+    if request.method == 'GET':
+        groupID = request.args.get('groupID')
         group = Group.query.get(groupID)
         pendingTaskList = group.pendingTaskList
         res = dict()
@@ -569,18 +748,18 @@ def queryAllPendingTasks():
             t['userName'] = task.user.name
             t['pendingTaskID'] = task.id
             t['pendingTaskName'] = task.name
-            t['startTime'] = time2str(task.startTime)
-            t['endTime'] = time2str(task.endTime)
+            t['startTime'] = task.startTime
+            t['endTime'] = task.endTime
             t['pendingTaskContent'] = task.content
             t['voteNum'] = task.voteNum
             tasks.append(t)
         res['pendingTasks'] = tasks
         return jsonify(res)
     
-@app.route('/queryAllAssignments',methods=['POST'])
+@app.route('/group/assign',methods=['GET'])
 def queryAllAssignments():
-    if request.method == 'POST':
-        groupID = request.form.get('groupID',None)
+    if request.method == 'GET':
+        groupID = request.args.get('groupID')
         group = Group.query.get(groupID)
         taskList = group.assignList
         res = dict()
@@ -591,8 +770,8 @@ def queryAllAssignments():
             t['assignmentID'] = task.id
             t['assignmentName'] = task.name
             t['category'] = task.category
-            t['startTime'] = time2str(task.startTime)
-            t['endTime'] = time2str(task.endTime)
+            t['startTime'] = task.startTime
+            t['endTime'] = task.endTime
             t['assignmentContent'] = task.content
             t['prior'] = task.prior
             executorList = task.executorList
@@ -608,11 +787,11 @@ def queryAllAssignments():
         return jsonify(res)
         return None
     
-@app.route('/queryTask',methods=['POST'])
+@app.route('/task/info',methods=['GET'])
 def queryTask():
-    if request.method == 'POST':
-        groupID = request.form.get('groupID',None)
-        taskID = request.form.get('taskID',None)
+    if request.method == 'GET':
+        groupID = request.args.get('groupID')
+        taskID = request.args.get('taskID')
         task = Task.query.get(taskID)
         res = dict()
         res['retCode'] = 200
@@ -622,16 +801,16 @@ def queryTask():
         res['groupName'] = task.group.name
         res['taskID'] = task.id
         res['taskName']= task.name
-        res['startTime'] = time2str(task.startTime)
-        res['endTime'] = time2str(task.endTime)
+        res['startTime'] = task.startTime
+        res['endTime'] = task.endTime
         res['taskContent'] = task.content
         return jsonify(res)
     
-@app.route('/queryPendingTask',methods=['POST'])
+@app.route('/pendingTask/info',methods=['GET'])
 def queryPendingTask():
-    if request.method == 'POST':
-        groupID = request.form.get('groupID',None)
-        pendingTaskID = request.form.get('pendingTaskID',None)
+    if request.method == 'GET':
+        groupID = request.args.get('groupID')
+        pendingTaskID = request.args.get('pendingTaskID')
         task = PendingTask.query.get(pendingTaskID)
         res = dict()
         res['retCode'] = 200
@@ -641,17 +820,17 @@ def queryPendingTask():
         res['groupName'] = task.group.name
         res['pendingTaskID'] = task.id
         res['pendingTaskName']= task.name
-        res['startTime'] = time2str(task.startTime)
-        res['endTime'] = time2str(task.endTime)
+        res['startTime'] = task.startTime
+        res['endTime'] = task.endTime
         res['pendingTaskContent'] = task.content
         res['voteNum'] = task.voteNum
         return jsonify(res)
     
-@app.route('/queryAssignment',methods=['POST'])
+@app.route('/assign/info',methods=['GET'])
 def queryAssignment():
-    if request.method == 'POST':
-        groupID = request.form.get('groupID',None)
-        assignmentID = request.form.get('assignmentID',None)
+    if request.method == 'GET':
+        groupID = request.args.get('groupID')
+        assignmentID = request.args.get('assignmentID')
         task = Assignment.query.get(assignmentID)
         res = dict()
         res['retCode'] = 20
@@ -659,8 +838,8 @@ def queryAssignment():
         res['groupName'] = task.group.name
         res['assignmentID'] = task.id
         res['assignmentName']= task.name
-        res['startTime'] = time2str(task.startTime)
-        res['endTime'] = time2str(task.endTime)
+        res['startTime'] = task.startTime
+        res['endTime'] = task.endTime
         res['assignmentContent'] = task.content
         res['category'] = task.category
         res['prior'] = task.prior
@@ -674,7 +853,7 @@ def queryAssignment():
         res['executors'] = executors
         return jsonify(res)
     
-@app.route('/deleteTask',methods=['POST'])
+@app.route('/task/delete',methods=['POST'])
 def deleteTask():
     if request.method == 'POST':
         userID = request.form.get('userID',None)
@@ -688,7 +867,7 @@ def deleteTask():
         }
         return jsonify(res)
     
-@app.route('/deletePendingTask',methods=['POST'])
+@app.route('/pendingTask/delete',methods=['POST'])
 def deletePendingTask():
     if request.method == 'POST':
         userID = request.form.get('userID',None)
@@ -702,7 +881,7 @@ def deletePendingTask():
         }
         return jsonify(res)
     
-@app.route('/deleteAssignment',methods=['POST'])
+@app.route('/assign/delete',methods=['POST'])
 def deleteAssignment():
     if request.method == 'POST':
         userID = request.form.get('userID',None)
@@ -716,7 +895,7 @@ def deleteAssignment():
         }
         return jsonify(res)
 
-@app.route('/deleteGroup',methods=['POST'])
+@app.route('/group/delete',methods=['POST'])
 def deleteGroup():
     if request.method == 'POST':
         userID = request.form.get('userID',None)
@@ -728,3 +907,119 @@ def deleteGroup():
             'retCode':200
         }
         return jsonify(res)
+
+@app.route('/task/changeInfo',methods=['POST'])
+def changeTaskInfo():
+    if request.method == 'POST':
+        userID = request.form.get('userID',None)
+        taskID = request.form.get('taskID',None)
+        taskName = request.form.get('taskName',None)
+        taskContent = request.form.get('taskContent',None)
+        startTime = request.form.get('startTime',None)
+        endTime = request.form.get('endTime',None)
+        task = Task.query.get(taskID)
+        task.name = taskName
+        task.content = taskContent
+        task.startTime = startTime
+        task.endTime = endTime
+        db.session.commit()
+        res = dict()
+        res['retCode'] = 200
+        res['taskID'] = taskID
+        res['startTime'] = startTime
+        res['endTime'] = endTime
+        res['taskName'] = taskName
+        res['taskContent'] = taskContent
+        return jsonify(res)
+
+@app.route('/group/changeName',methods=['POST'])
+def changeGroupName():
+    if request.method == 'POST':
+        userID = request.form.get('userID',None)
+        groupID = request.form.get('groupID',None)
+        groupName = request.form.get('groupName',None)
+        group = Group.query.get(groupID)
+        group.name = groupName
+        db.session.commit()
+        res = dict()
+        res['retCode'] = 200
+        res['groupID'] = groupID
+        res['groupName'] = groupName
+        return jsonify(res)
+
+@app.route('/group/deleteMember',methods=['POST'])
+def deleteMember():
+    if request.method == 'POST':
+        userID = request.form.get('userID',None)
+        groupID = request.form.get('groupID',None)
+        memberID = request.form.get('memberID',None)
+        return jsonify({'retCode':200})
+
+@app.route('/user/assign',methods=['GET'])
+def userAssign():
+    if request.method == 'GET':
+        userID = request.args.get('userID')
+        date = request.args.get('date')
+        curUser = User.query.get(userID)
+        assignList = curUser.assignList
+        res = dict()
+        res['retCode'] = 200
+        assigns = []
+        for assign in assignList:
+            t = dict()
+            t['category'] = assign.category
+            t['groupID'] = assign.group_id
+            t['assignmentID'] = assign.id
+            t['assignmentName'] = assign.name
+            t['startTime'] = assign.startTime
+            t['endTime'] = assign.endTime
+            t['assignmentContent'] = assign.content
+            t['prior'] = assign.prior
+            assigns.append(t)
+        res['assignments'] = assigns
+        return jsonify(res)
+
+@app.route('/user/ownAssign',methods=['GET'])
+def userOwnAssign():
+    if request.method == 'GET':
+        userID = request.args.get('userID')
+        user = User.query.get(userID)
+        assignList = user.ownAssignList
+        res = dict()
+        res['retCode'] = 200
+        assigns = []
+        for assign in assignList:
+            t = dict()
+            t['category'] = assign.category
+            t['groupID'] = assign.group_id
+            t['assignmentID'] = assign.id
+            t['assignmentName'] = assign.name
+            t['startTime'] = assign.startTime
+            t['endTime'] = assign.endTime
+            t['assignmentContent'] = assign.content
+            t['prior'] = assign.prior
+            assigns.append(t)
+        res['assignments'] = assigns
+        return jsonify(res)
+
+@app.route('/group/invitation',methods=['GET'])
+def groupInvitation():
+    if request.method == 'GET':
+        groupID = request.args.get('groupID')
+        group = Group.query.get(groupID)
+        invitingList = group.invitingList
+        users = []
+        for user in invitingList:
+            t = dict()
+            t['userID'] = user.id
+            t['userName'] = user.name
+            users.append(t)
+        res = dict()
+        res['users'] = users
+        res['retCode'] = 200
+        res['groupID'] = groupID
+        res['groupName'] = group.name
+        return jsonify(res)
+    
+if __name__ == '__main__':
+    app.run()
