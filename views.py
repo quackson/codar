@@ -60,19 +60,30 @@ def login():
         appSecret = 'ad87f8d64da7c5a2a363563f993b2129'
         url1 ="https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code" % (appid, appSecret, code)
         res = requests.get(url1)
+        if not res.ok:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'request weixin api error when getting openID'
+            })
         res_dict = json.loads(res.text)
         open_id = res_dict['openid']
         access_token = res_dict['access_token']
         user = User.query.filter_by(openID=open_id).first()
         if user:
             res = {
-            'retCode':200,
-            'userID':user.id
+                'retCode':200,
+                'userID':user.id,
+                'userName':user.name
             }
             return jsonify(res)
         
         url2 = "https://api.weixin.qq.com/sns/userinfo?access_token=%s&openid=%s&lang=zh_CN" % (access_token, open_id)
         res = requests.get(url2)
+        if not res.ok:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'request weixin api error when getting user\'s name'
+            })
         res_dict = json.loads(res.text)
         userName = res_dict['nickname']
         user = User(
@@ -85,7 +96,8 @@ def login():
         db.session.commit()
         res = {
             'retCode':200,
-            'userID':userID
+            'userID':userID,
+            'userName':userName
         }
         return jsonify(res)
     
@@ -100,8 +112,23 @@ def addTask():
         taskName = request.form.get('taskName',None)
         taskContent = request.form.get('taskContent',None)
         user = User.query.get(userID)
+        group = Group.query.get(groupID)
+        if not user:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not exist'
+            })
+        if not group:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'group not exist'
+            })
+        if not user in group.userList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not in this group'
+            })
         taskList = user.taskList
-        
         newTask = Task(
             startTime = startTime,
             endTime = endTime,
@@ -137,6 +164,11 @@ def queryUserTasks():
         userID = request.args.get('userID')
         date = request.args.get('date')
         curUser = User.query.get(userID)
+        if not curUser:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not exist'
+            })
         taskList = curUser.taskList
         res = dict()
         res['retCode'] = 200
@@ -160,6 +192,11 @@ def queryAllGroupInvitation():
     if request.method == 'GET':
         userID = request.args.get('userID')
         curUser = User.query.get(userID)
+        if not curUser:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not exist'
+            })
         invitations = curUser.groupInvitationList
         res = dict()
         res['retCode'] = 200
@@ -177,6 +214,11 @@ def queryAllAssignmentInvitation():
     if request.method == 'GET':
         userID = request.args.get('userID')
         curUser = User.query.get(userID)
+        if not curUser:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not exist'
+            })
         invitations = curUser.assignInvitationList
         res = dict()
         res['retCode'] = 200
@@ -204,6 +246,23 @@ def addPendingTask():
         endTime = request.form.get('endTime',None)
         pendingTaskName = request.form.get('pendingTaskName',None)
         pendingTaskContent = request.form.get('pendingTaskContent',None)
+        user = User.query.get(userID)
+        group = Group.query.get(groupID)
+        if not user:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not exist'
+            })
+        if not group:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'group not exist'
+            })
+        if not user in group.userList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not in this group'
+            })
         pendingTask = PendingTask(
             startTime = startTime,
             endTime = endTime,
@@ -239,6 +298,26 @@ def votePendingTask():
         pendingTask = PendingTask.query.get(pendingTaskID)
         user = User.query.get(userID)
         group = Group.query.get(groupID)
+        if not user:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not exist'
+            })
+        if not group:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'group not exist'
+            })
+        if not user in group.userList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not in this group'
+            })
+        if not pendingTask in group.pendingTaskList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'pendingTask not in this group'
+            })
         if user in pendingTask.voterList:
             res = {
                 'retCode':400,
@@ -266,6 +345,12 @@ def buildGroup():
         userID = int(request.form.get('userID'))
         groupName = request.form.get('groupName')
         user = User.query.get(userID)
+        user = User.query.get(userID)
+        if not user:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not exist'
+            })
         group = Group(
             name = groupName,
             owner_id = userID
@@ -290,10 +375,31 @@ def inviteGroup():
         invitedUserID = request.form.get('invitedUserID',None)
         group = Group.query.get(groupID)
         user = User.query.get(invitedUserID)
+        inviter = User.query.get(userID)
+        if not user:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'invited user not exist'
+            })
+        if not inviter:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'inviter not exist'
+            })
+        if not group:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'group not exist'
+            })
+        if not inviter in group.userList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'inviter not in this group'
+            })
         if group in user.groupList:
             res = {
                 'retCode':400,
-                'errMsg':'already in group! can\'t invite again'
+                'errMsg':'invited user already in group! can\'t invite again'
             }
             return jsonify(res)
         if not group in user.groupInvitationList:
@@ -313,13 +419,24 @@ def joinGroup():
         operation = request.form.get('operation',None)
         user = User.query.get(userID)
         group = Group.query.get(groupID)
+        if not user:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not exist'
+            })
+        if not group:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'group not exist'
+            })
         if group in user.groupList:
             res = {
                 'retCode':400,
                 'errMsg':'already in group! can\'t join again'
             }
             return jsonify(res)
-        user.groupInvitationList.remove(group)
+        if group in user.groupInvitationList:
+            user.groupInvitationList.remove(group)
         if int(operation) == 1:
             user.groupList.append(group)
         db.session.commit()
@@ -352,6 +469,16 @@ def quitGroup():
         groupID = request.form.get('groupID',None)
         user = User.query.get(userID)
         group = Group.query.get(groupID)
+        if not user:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not exist'
+            })
+        if not group:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'group not exist'
+            })
         if not group in user.groupList:
             res = {
                 'retCode':400,
@@ -395,10 +522,37 @@ def addManager():
         user = User.query.get(userID)
         group = Group.query.get(groupID)
         manager = User.query.get(managerID)
+        user = User.query.get(userID)
+        group = Group.query.get(groupID)
+        if not user:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not exist'
+            })
+        if not group:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'group not exist'
+            })
+        if not manager:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'set user not exist'
+            })
+        if not user in group.userList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not in this group'
+            })
+        if not manager in group.userList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'set user not in this group'
+            })
         if not group in user.adminGroupList:
             res = {
                 'retCode':400,
-                'errMsg':'you have no authority to do this'
+                'errMsg':'user is not admin, no authority to do this'
             }
             return jsonify(res)
         if int(operation)==1:
@@ -445,6 +599,11 @@ def queryAllGroups():
     if request.method == 'GET':
         userID = request.args.get('userID')
         user = User.query.get(userID)
+        if not user:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not exist'
+            })
         groupList = user.groupList
         adminList = user.adminGroupList
         res = dict()
@@ -465,6 +624,11 @@ def queryAllAdminGroups():
     if request.method == 'GET':
         userID = request.args.get('userID')
         user = User.query.get(userID)
+        if not user:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not exist'
+            })
         groupList = user.adminGroupList
         res = dict()
         res['retCode'] = 200
@@ -482,6 +646,11 @@ def queryAllUsers():
     if request.method == 'GET':
         groupID = request.args.get('groupID')
         group = Group.query.get(groupID)
+        if not group:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'group not exist'
+            })
         res = dict()
         res['retCode'] = 200
         userList = group.userList
@@ -515,6 +684,26 @@ def addAssignment():
         endTime = request.form.get('endTime',None)
         user = User.query.get(userID)
         group = Group.query.get(groupID)
+        if not user:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not exist'
+            })
+        if not group:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'group not exist'
+            })
+        if not user in group.userList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not in this group'
+            })
+        if not user in group.adminList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user is not admin, no authority to do this'
+            })
         assign = Assignment(
             name = assignmentName,
             category = category,
@@ -549,13 +738,38 @@ def setAssignmentPrior():
         prior = request.form.get('prior',None)
         group = Group.query.get(groupID)
         user = User.query.get(userID)
+        assign = Assignment.query.get(assignmentID)
+        if not user:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not exist'
+            })
+        if not assign:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'assignment not exist'
+            })
+        if not group:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'group not exist'
+            })
+        if not assign in group.assignList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'assignment not in this group'
+            })
+        if not user in group.userList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not in this group'
+            })
         if not group in user.adminGroupList:
             res = {
                 'retCode':400,
-                'errMsg':'you have no authority to do this'
+                'errMsg':'user is not admin, have no authority to do this'
             }
             return jsonify(res)
-        assign = Assignment.query.get(assignmentID)
         assign.prior = prior
         db.session.commit()
         res = dict()
@@ -566,7 +780,6 @@ def setAssignmentPrior():
         res['prior'] = prior
         return jsonify(res)
     
-#todo: check if the user is available
 @app.route('/assign/invite',methods=['POST'])
 def setAssignmentExecutor():
     if request.method == 'POST':
@@ -579,6 +792,43 @@ def setAssignmentExecutor():
         executor = User.query.get(executorID)
         group = Group.query.get(groupID)
         user = User.query.get(userID)
+        user = User.query.get(userID)
+        group = Group.query.get(groupID)
+        if not user:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not exist'
+            })
+        if not executor:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'invited user not exist'
+            })
+        if not assign:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'assignment not exist'
+            })
+        if not group:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'group not exist'
+            })
+        if not user in group.userList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not in this group'
+            })
+        if not executor in group.userList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'invited user not in this group'
+            })
+        if not assign in group.assignList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'assignment not in this group'
+            })
         if not group in user.adminGroupList:
             res = {
                 'retCode':400,
@@ -586,6 +836,11 @@ def setAssignmentExecutor():
             }
             return jsonify(res)
         if int(operation)==1:
+            if assign in executor.assignList:
+                return jsonify({
+                    'retCode':400,
+                    'errMsg':'invited user already taken this assign, can\'t invite again'
+                })
             if assign.category == 1:
                 taskList = executor.taskList
                 for task in taskList:
@@ -605,6 +860,11 @@ def setAssignmentExecutor():
                         return jsonify(res)
             executor.assignInvitationList.append(assign)
         elif int(operation)==-1:
+            if not executor in assign.executorList:
+                return jsonify({
+                    'retCode':200,
+                    'errMsg':'executor not taking this assign, can\'t cancel him'
+                })
             assign.executorList.remove(executor)
         db.session.commit()
         res = dict()
@@ -631,10 +891,36 @@ def joinAssignment():
         operation = request.form.get('operation',None)
         user = User.query.get(userID)
         assign = Assignment.query.get(assignmentID)
+        group = Group.query.get(groupID)
+        if not user:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not exist'
+            })
+        if not group:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'group not exist'
+            })
+        if not assign:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'assignment not exist'
+            })
+        if not user in group.userList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not in this group'
+            })
+        if not assign in group.assignList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'assignment not in this group'
+            })
         if assign in user.assignList:
             res = {
                 'retCode':400,
-                'errMsg':'already in task, can\'t join again'
+                'errMsg':'already in assignment, can\'t join again'
             }
             return jsonify(res)
         user.assignInvitationList.remove(assign)
@@ -666,13 +952,65 @@ def setAssignmentTime():
         assignmentID = request.form.get('assignmentID',None)
         group = Group.query.get(groupID)
         user = User.query.get(userID)
+        assign = Assignment.query.get(assignmentID)
+        if not user:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not exist'
+            })
+        if not assign:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'assignment not exist'
+            })
+        if not group:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'group not exist'
+            })
+        if not assign in group.assignList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'assignment not in this group'
+            })
+        if not user in group.userList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not in this group'
+            })
+        if not group in user.adminGroupList:
+            res = {
+                'retCode':400,
+                'errMsg':'user is not admin, have no authority to do this'
+            }
+            return jsonify(res)
         if not group in user.adminGroupList:
             res = {
                 'retCode':400,
                 'errMsg':'you have no authority to do this'
             }
             return jsonify(res)
-        assign = Assignment.query.get(assignmentID)
+        cur_assign = Assignment(
+            startTime = startTime,
+            endTime = endTime
+        )
+        if assign.category==1:
+            for executor in assign.executorList:
+                for task in executor.taskList:
+                    if not compatible(task,cur_assign):
+                        return jsonify({
+                            'retCode':400,
+                            'errMsg':'can\'t change because some executor has time conflict'
+                        })
+                executor.assignList.remove(assign)
+                for old_assign in executor.assignList:
+                    if not compatible(old_assign,cur_assign):
+                        executor.assignList.append(assign)
+                        return jsonify({
+                            'retCode':400,
+                            'errMsg':'can\'t change because some executor has time conflict'
+                        })
+                executor.assignList.append(assign)
         assign.startTime = startTime
         assign.endTime = endTime
         db.session.commit()
@@ -694,13 +1032,44 @@ def setAssignmentContent():
         assignmentID = request.form.get('assignmentID',None)
         group = Group.query.get(groupID)
         user = User.query.get(userID)
+        assign = Assignment.query.get(assignmentID)
+        if not user:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not exist'
+            })
+        if not assign:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'assignment not exist'
+            })
+        if not group:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'group not exist'
+            })
+        if not assign in group.assignList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'assignment not in this group'
+            })
+        if not user in group.userList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not in this group'
+            })
+        if not group in user.adminGroupList:
+            res = {
+                'retCode':400,
+                'errMsg':'user is not admin, have no authority to do this'
+            }
+            return jsonify(res)
         if not group in user.adminGroupList:
             res = {
                 'retCode':400,
                 'errMsg':'you have no authority to do this'
             }
             return jsonify(res)
-        assign = Assignment.query.get(assignmentID)
         assign.content = assignmentContent
         db.session.commit()
         res = dict()
@@ -716,6 +1085,11 @@ def queryAllTasks():
     if request.method == 'GET':
         groupID = request.args.get('groupID')
         group = Group.query.get(groupID)
+        if not group:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'group not exist'
+            })
         taskList = group.taskList
         res = dict()
         res['retCode'] = 200
@@ -738,6 +1112,11 @@ def queryAllPendingTasks():
     if request.method == 'GET':
         groupID = request.args.get('groupID')
         group = Group.query.get(groupID)
+        if not group:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'group not exist'
+            })
         pendingTaskList = group.pendingTaskList
         res = dict()
         res['retCode'] = 200
@@ -761,6 +1140,11 @@ def queryAllAssignments():
     if request.method == 'GET':
         groupID = request.args.get('groupID')
         group = Group.query.get(groupID)
+        if not group:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'group not exist'
+            })
         taskList = group.assignList
         res = dict()
         res['retCode'] = 200
@@ -793,6 +1177,11 @@ def queryTask():
         groupID = request.args.get('groupID')
         taskID = request.args.get('taskID')
         task = Task.query.get(taskID)
+        if not task:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'task not exist'
+            })
         res = dict()
         res['retCode'] = 200
         res['userID'] = task.user.id
@@ -812,6 +1201,11 @@ def queryPendingTask():
         groupID = request.args.get('groupID')
         pendingTaskID = request.args.get('pendingTaskID')
         task = PendingTask.query.get(pendingTaskID)
+        if not task:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'pendingtask not exist'
+            })
         res = dict()
         res['retCode'] = 200
         res['userID'] = task.user.id
@@ -832,6 +1226,11 @@ def queryAssignment():
         groupID = request.args.get('groupID')
         assignmentID = request.args.get('assignmentID')
         task = Assignment.query.get(assignmentID)
+        if not task:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'assignment not exist'
+            })
         res = dict()
         res['retCode'] = 20
         res['groupID'] = task.group.id
@@ -859,7 +1258,39 @@ def deleteTask():
         userID = request.form.get('userID',None)
         groupID = request.form.get('groupID',None)
         taskID = request.form.get('taskID',None)
+        user = User.query.get(userID)
+        group = Group.query.get(groupID)
         task = Task.query.get(taskID)
+        if not user:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not exist'
+            })
+        if not group:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'group not exist'
+            })
+        if not user in group.userList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not in this group'
+            })
+        if not task:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'task not exist'
+            })
+        if not task in group.taskList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'task not in this group'
+            })
+        if not task in user.taskList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'task not in user\'s taskList'
+            })
         db.session.delete(task)
         db.session.commit()
         res = {
@@ -873,7 +1304,39 @@ def deletePendingTask():
         userID = request.form.get('userID',None)
         groupID = request.form.get('groupID',None)
         pendingTaskID = request.form.get('pendingTaskID',None)
+        user = User.query.get(userID)
+        group = Group.query.get(groupID)
         task = PendingTask.query.get(pendingTaskID)
+        if not user:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not exist'
+            })
+        if not group:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'group not exist'
+            })
+        if not user in group.userList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not in this group'
+            })
+        if not task:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'pendingtask not exist'
+            })
+        if not task in group.pendingTaskList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'pendingtask not in this group'
+            })
+        if not task in user.pendingTaskList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'task not in user\'s pendingtaskList'
+            })
         db.session.delete(task)
         db.session.commit()
         res = {
@@ -887,7 +1350,39 @@ def deleteAssignment():
         userID = request.form.get('userID',None)
         groupID = request.form.get('groupID',None)
         assignmentID = request.form.get('assignmentID',None)
+        user = User.query.get(userID)
+        group = Group.query.get(groupID)
         task = Assignment.query.get(assignmentID)
+        if not user:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not exist'
+            })
+        if not group:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'group not exist'
+            })
+        if not user in group.userList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not in this group'
+            })
+        if not task:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'assignment not exist'
+            })
+        if not task in group.assignList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'assignment not in this group'
+            })
+        if not task in user.ownAssignList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user is not assignment owner, no authority to do this'
+            })
         db.session.delete(task)
         db.session.commit()
         res = {
@@ -900,7 +1395,28 @@ def deleteGroup():
     if request.method == 'POST':
         userID = request.form.get('userID',None)
         groupID = request.form.get('groupID',None)
+        user = User.query.get(userID)
         group = Group.query.get(groupID)
+        if not user:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not exist'
+            })
+        if not group:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'group not exist'
+            })
+        if not user in group.userList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not in this group'
+            })
+        if user.id != group.owner_id:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user is not group owner, no authority to do this'
+            })
         db.session.delete(group)
         db.session.commit()
         res = {
@@ -917,7 +1433,23 @@ def changeTaskInfo():
         taskContent = request.form.get('taskContent',None)
         startTime = request.form.get('startTime',None)
         endTime = request.form.get('endTime',None)
+        user = User.query.get(userID)
         task = Task.query.get(taskID)
+        if not user:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not exist'
+            })
+        if not task:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'task not exist'
+            })
+        if not task in user.taskList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'task not in user\'s taskList'
+            })
         task.name = taskName
         task.content = taskContent
         task.startTime = startTime
@@ -939,6 +1471,22 @@ def changeGroupName():
         groupID = request.form.get('groupID',None)
         groupName = request.form.get('groupName',None)
         group = Group.query.get(groupID)
+        user = User.query.get(userID)
+        if not user:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not exist'
+            })
+        if not group:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'group not exist'
+            })
+        if not user in group.adminList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not admin, no authority to do this'
+            })
         group.name = groupName
         db.session.commit()
         res = dict()
@@ -953,6 +1501,41 @@ def deleteMember():
         userID = request.form.get('userID',None)
         groupID = request.form.get('groupID',None)
         memberID = request.form.get('memberID',None)
+        user = User.query.get(userID)
+        group = Group.query.get(groupID)
+        member = User.query.get(memberID)
+        if not user:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not exist'
+            })
+        if not group:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'group not exist'
+            })
+        if not user in group.adminList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not admin, no authority to do this'
+            })
+        if not member:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'deleted user not exist'
+            })
+        if not member in group.userList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'deleted user not in this group'
+            })
+        if member in group.adminList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'you have no authority tp delete an admin'
+            })
+        group.userList.remove(member)
+        db.session.commit()
         return jsonify({'retCode':200})
 
 @app.route('/user/assign',methods=['GET'])
@@ -961,6 +1544,11 @@ def userAssign():
         userID = request.args.get('userID')
         date = request.args.get('date')
         curUser = User.query.get(userID)
+        if not curUser:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not exist'
+            })
         assignList = curUser.assignList
         res = dict()
         res['retCode'] = 200
@@ -984,6 +1572,11 @@ def userOwnAssign():
     if request.method == 'GET':
         userID = request.args.get('userID')
         user = User.query.get(userID)
+        if not user:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not exist'
+            })
         assignList = user.ownAssignList
         res = dict()
         res['retCode'] = 200
@@ -1007,6 +1600,11 @@ def groupInvitation():
     if request.method == 'GET':
         groupID = request.args.get('groupID')
         group = Group.query.get(groupID)
+        if not group:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'group not exist'
+            })
         invitingList = group.invitingList
         users = []
         for user in invitingList:
