@@ -10,7 +10,7 @@
     </view>
 </scroll-view>
   <view class="cu-list menu-avatar " wx:if="{{TabCur==0}}">
-        <view class="cu-item"  wx:for="{{invatation}}" wx:key="key" wx:for-index="key" id="{{key}}">
+        <view class="cu-item"  wx:for="{{invatation}}" wx:key="key" >
           <view class="cu-avatar bg-white round lg">
             <text class="cuIcon-message"></text>
           </view>
@@ -18,14 +18,34 @@
             <text class="text-grey text-lg">{{item.groupName}}</text>
           </view>
           <view class="action">
-            <button class="cu-btn round bg-red text-center light">
+            <button class="cu-btn round bg-red text-center light"            
+            bindtap="showModal" data-target="Modal" data-id="{{index}}" data-sub="1">
               <text class="cuIcon-close"></text></button>
           </view>
           <view class="action">
-            <button class="cu-btn round bg-olive text-center light">
+            <button class="cu-btn round bg-olive text-center light"            
+            bindtap="showModal" data-target="Modal" data-id="{{index}}" data-sub="2">
               <text class="cuIcon-check"></text></button>
           </view>
         </view>
+        <view class="cu-modal {{modalName=='Modal'?'show':''}}">
+            <view class="cu-dialog">
+              <view class="cu-bar bg-white justify-end">
+              <view class="content">{{'@group:'+checkbox.groupName}}</view>
+              <view class="action" bindtap="hideModal">
+                  <text class="cuIcon-close text-red"></text>
+                </view>
+              </view>
+              <view class="padding-xl" wx:if="{{sub=='1'}}">{{"请确认是否拒绝该邀请"}}</view>
+              <view class="padding-xl" wx:if="{{sub=='2'}}">{{"请确认是否接受该邀请"}}</view>
+              <button class="text-sm padding"
+            bindtap="rejectGroupInvatation" data-id="{{index}}" wx:if="{{sub==1}}">
+              <text class="text-red">{{'坚持拒绝'}}</text></button>
+              <button class="text-sm padding"
+            bindtap="acceptGroupInvatation" data-id="{{index}}" wx:if="{{sub==2}}">
+              <text class="text-olive">{{'确认接受'}}</text></button>
+            </view>
+          </view> 
   </view>
   <view class="cu-list menu-avatar " wx:if="{{TabCur==1}}">
         <view class="cu-item"  wx:for="{{newtask}}" wx:key="key" >
@@ -40,32 +60,42 @@
             </view>
           </view>     
           <view class="action">
-            <button class="cu-btn round bg-blue text-center light" bindtap="showModal" data-target="Modal" data-id="{{index}}">
+            <button class="cu-btn round bg-blue text-center light" bindtap="showModal" data-target="Modal" data-id="{{index}}" data-sub="1">
               <text class="cuIcon-form"></text></button>
           </view>    
           <view class="action">
-            <button class="cu-btn round bg-red text-center light">
+            <button class="cu-btn round bg-red text-center light"
+            bindtap="showModal" data-target="Modal" data-id="{{index}}" data-sub="2">
               <text class="cuIcon-close"></text></button>
           </view>
           <view class="action">
-            <button class="cu-btn round bg-olive text-center light">
+            <button class="cu-btn round bg-olive text-center light"
+            bindtap="showModal" data-target="Modal" data-id="{{index}}" data-sub="3">
               <text class="cuIcon-check"></text></button>
           </view>
         </view>
         <view class="cu-modal {{modalName=='Modal'?'show':''}}">
             <view class="cu-dialog">
               <view class="cu-bar bg-white justify-end">
-                <view class="content">{{'@group:'+checkbox.groupID}}</view>
-                <view class="action" bindtap="hideModal">
+              <view class="content">{{'@group:'+checkbox.groupName}}</view>
+              <view class="action" bindtap="hideModal">
                   <text class="cuIcon-close text-red"></text>
                 </view>
               </view>
-              <view class="padding-xl">
+              <view class="padding-xl" wx:if="{{sub=='1'}}">
                 {{checkbox.assignmentContent}}
               </view>
-              <view class="solid-bottom text-sm padding">
-                <text class="text-grey">{{checkbox.startTime+"~"+checkbox.endTime+' '+(checkbox.category==1?'独占时间':'非独占时间')}}</text>
+              <view class="padding-xl" wx:if="{{sub=='2'}}">{{"请确认是否拒绝该任务"}}</view>
+              <view class="padding-xl" wx:if="{{sub=='3'}}">{{"请确认是否接受该任务"}}</view>
+              <view class="solid-bottom text-sm padding" wx:if="{{sub==1}}">
+                <text class="text-grey" >{{checkbox.startTime+"~"+checkbox.endTime+' '+(checkbox.category==1?'独占时间':'非独占时间')}}</text>
               </view>
+              <button class="text-sm padding"
+            bindtap="rejectTask" data-id="{{index}}" wx:if="{{sub==2}}">
+              <text class="text-red">{{'坚持拒绝'}}</text></button>
+              <button class="text-sm padding"
+            bindtap="acceptTask" data-id="{{index}}" wx:if="{{sub==3}}">
+              <text class="text-olive">{{'确认接受'}}</text></button>
             </view>
           </view> 
   </view>
@@ -96,7 +126,7 @@
                 </view>
               </view>
               <view class="padding-xl">
-                {{checkbox.accepts}}
+                {{"waiting for: "+checkbox.accepts}}
               </view>
             </view>
           </view> 
@@ -107,7 +137,7 @@
             <text class="cuIcon-forward"></text>
           </view>
           <view class="content">
-            <text class="text-grey text-lg">{{item.groupID}}</text>
+            <text class="text-grey text-lg">{{item.groupName}}</text>
           </view>
           <view class="action">
             <button class="cu-btn round bg-blue text-center light"
