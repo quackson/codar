@@ -14,8 +14,8 @@ App({
         var code_ = res.code //返回code
         console.log(code_)
         //console.log(code);
-        var appid = "wxf3e65585a89d7dca"        //这里是我的appid，需要改成你自己的
-          var secret = "fb11d271f44fd5ac97eb031d492faed0"    //密钥也要改成你自己的
+        var appid = "wxf3e65585a89d7dca"        
+          var secret = "fb11d271f44fd5ac97eb031d492faed0"    
           var openid = ""
           var l = 'https://api.weixin.qq.com/sns/jscode2session?appid=' + appid + '&secret=' + secret + '&js_code=' + res.code + '&grant_type=authorization_code'
           wx.request({
@@ -42,7 +42,7 @@ App({
                       wx.request({
                         url: this_.globalData.server+'/user/login',
                         data:{      
-                          nickName:this_.globalData.userInfo.nickName,       
+                          userName:this_.globalData.userInfo.nickName,       
                           openID:this_.globalData.openID
                         },
                         method:"POST",
@@ -50,7 +50,8 @@ App({
                           'content-type': 'application/x-www-form-urlencoded'
                         },
                         success(res){
-                        //console.log(res)
+                          //this_.globalData.userID=res.data.userID
+                          this_.globalData.userID=1
                         }
                         })
                         if (this_.userInfoReadyCallback) {
@@ -89,6 +90,7 @@ App({
   globalData: {
     userInfo:'',
     openID:'',
+    userID:0,
     NavCur: "index", // current navigation tab
     server:'http://127.0.0.1:5000/'
   }

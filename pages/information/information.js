@@ -7,6 +7,8 @@ Page({
    * 页面的初始数据
    */
   data: {
+    openID:'',
+    userID:null,
     TabCur: 0,
     scrollLeft:0,
     listname:[
@@ -28,7 +30,7 @@ Page({
       },
     ],
     invatation:[
-      {
+      /*{
         groupID:1,
         groupName:"Group1"
       },
@@ -63,10 +65,10 @@ Page({
       {
         groupID:9,
         groupName:"Group7"
-      }
+      }*/
     ],
     myInvatation:[
-      {
+      /*{
         groupID:1,
         groupName:"Group1",
         acceptUsers:[
@@ -137,10 +139,10 @@ Page({
           'user1',
           'user2'
         ]
-      }
+      }*/
     ],
     newtask:[
-      {
+      /*{
         groupID:1,
      		assignmentID:2,
 			  startTime:"?",
@@ -157,10 +159,10 @@ Page({
 			  content:"test",
 			  prior:2,
         checked:false
-      }
+      }*/
     ],
     mydelivertask:[
-      {
+      /*{
         groupID:1,
      		assignmentID:2,
 			  startTime:"?",
@@ -187,7 +189,7 @@ Page({
           'mem2',
           'mem3'
         ]
-      }
+      }*/
     ],
     checkbox:{}
   },
@@ -210,12 +212,47 @@ Page({
         checkbox:this.data.myInvatation[e.currentTarget.dataset.id],
         modalName: e.currentTarget.dataset.target
       })
+      if (e.currentTarget.dataset.sub=="1")
+      {
+        let app_=app
+        var temp={
+          groupID:'',
+          groupName:'',
+          accepts:''
+        }
+        let this_=this
+        wx.request({
+          url: app.globalData.server+'/group/invitation',
+          data:{      
+            groupID:this_.data.checkbox['groupID']
+          },
+          method:"GET",
+          header: {
+            'content-type': 'application/x-www-form-urlencoded'
+          },
+          success(res){
+          for(var i=0;i<res.data.users.length;i++)
+          {
+            console.log(res.data.users[i]['userName'])
+            temp['accepts']+=res.data.users[i]['userName']
+            if(i!=res.data.users.length-1)
+              temp['accepts']+=';'
+          }
+          temp['groupID']=this_.data.checkbox['groupID']
+          temp['groupName']=this_.data.checkbox['groupName']
+          this_.setData({
+            checkbox:temp
+          })
+          }
+        })        
+      }
     }
     else if (this.data.TabCur==3){
       this.setData({
         checkbox:this.data.mydelivertask[e.currentTarget.dataset.id],
         modalName: e.currentTarget.dataset.target
       })
+      
     }
   },
   hideModal(e) {
@@ -257,22 +294,90 @@ Page({
    */
   onLoad: function (options) {
     this.setData({
-      NavCur: app.globalData.NavCur
+      NavCur: app.globalData.NavCur,
+      openID:app.globalData.openID,
+      userID:app.globalData.userID
     })
+    
   },
 
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function () {
-
+    
   },
 
   /**
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-
+    let app_=app
+    let this_=this
+    wx.request({
+      url: app.globalData.server+'/user/groupInvitation',
+      data:{      
+        userID:app.globalData.userID
+      },
+      method:"GET",
+      header: {
+        'content-type': 'application/x-www-form-urlencoded'
+      },
+      success(res){
+      //console.log(res)
+        this_.setData({
+          invatation:res.data.groups
+        })
+      }
+      })
+    wx.request({
+        url: app.globalData.server+'/user/assignInvitation',
+        data:{      
+          userID:app.globalData.userID
+        },
+        method:"GET",
+        header: {
+          'content-type': 'application/x-www-form-urlencoded'
+        },
+        success(res){
+        //console.log(res)
+        this_.setData({
+          newtask:res.data.assignments
+        })
+        }
+        })
+      wx.request({
+          url: app.globalData.server+'/user/adminGroup',
+          data:{      
+            userID:app.globalData.userID
+          },
+          method:"GET",
+          header: {
+            'content-type': 'application/x-www-form-urlencoded'
+          },
+          success(res){
+          //console.log(res)
+          this_.setData({
+            myInvatation:res.data.groups
+          })
+          }
+          })
+        wx.request({
+            url: app.globalData.server+'/user/ownAssign',
+            data:{      
+              userID:app.globalData.userID
+            },
+            method:"GET",
+            header: {
+              'content-type': 'application/x-www-form-urlencoded'
+            },
+            success(res){
+            //console.log(res)
+            this_.setData({
+              mydelivertask:res.data.assignments
+            })
+            }
+        })
   },
 
   /**
