@@ -39,7 +39,7 @@ class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, autoincrement = True,primary_key=True)
     name = db.Column(db.String(20))
-    openID = db.Column(db.String(20))
+    openID = db.Column(db.String(50))
     taskList = db.relationship('Task', backref = 'user')
     ownAssignList = db.relationship('Assignment', backref = 'publisher')
     pendingTaskList = db.relationship('PendingTask',backref = 'user')
