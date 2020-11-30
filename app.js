@@ -15,7 +15,7 @@ App({
         console.log(code_)
         //console.log(code);
         var appid = "wxf3e65585a89d7dca"        
-          var secret = "fb11d271f44fd5ac97eb031d492faed0"
+          var secret = "fb11d271f44fd5ac97eb031d492faed0"    
           var openid = ""
           var l = 'https://api.weixin.qq.com/sns/jscode2session?appid=' + appid + '&secret=' + secret + '&js_code=' + res.code + '&grant_type=authorization_code'
           wx.request({
@@ -50,8 +50,8 @@ App({
                           'content-type': 'application/x-www-form-urlencoded'
                         },
                         success(res){
-                        //this_.globalData.userID=res.data.userID
-                        this_.globalData.userID=1
+                          //this_.globalData.userID=res.data.userID
+                          this_.globalData.userID=1
                         }
                         })
                         if (this_.userInfoReadyCallback) {
