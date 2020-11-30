@@ -1063,6 +1063,7 @@ def setAssignmentContent():
 def queryAllTasks():
     if request.method == 'GET':
         groupID = request.args.get('groupID')
+        date = request.args.get('date')
         group = Group.query.get(groupID)
         if not group:
             return jsonify({
@@ -1074,6 +1075,8 @@ def queryAllTasks():
         res['retCode'] = 200
         tasks = []
         for task in taskList:
+            if not sameDay(date,task):
+                continue
             t = dict()
             t['userID'] = task.user.id
             t['userName'] = task.user.name
@@ -1118,6 +1121,7 @@ def queryAllPendingTasks():
 def queryAllAssignments():
     if request.method == 'GET':
         groupID = request.args.get('groupID')
+        date = request.args.get('date')
         group = Group.query.get(groupID)
         if not group:
             return jsonify({
@@ -1129,6 +1133,8 @@ def queryAllAssignments():
         res['retCode'] = 200
         tasks = []
         for task in taskList:
+            if not sameDay(date,task):
+                continue
             t = dict()
             t['assignmentID'] = task.id
             t['assignmentName'] = task.name
