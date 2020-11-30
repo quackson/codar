@@ -1539,6 +1539,8 @@ def userAssign():
         res['retCode'] = 200
         assigns = []
         for assign in assignList:
+            if not sameDay(date,task):
+                continue
             t = dict()
             t['category'] = assign.category
             t['groupID'] = assign.group_id
