@@ -130,6 +130,13 @@ Page({
     this.setData({
       NavCur: app.globalData.NavCur
     })
+
+    console.log('userid: ' + options.userid)
+    console.log('groupid: ' + options.groupid)
+    console.log('groupname: ' + options.groupname)
+    console.log('year: ' + options.year)
+    console.log('month: ' + options.month)
+    console.log('day: ' + options.day)
   },
 
   /**

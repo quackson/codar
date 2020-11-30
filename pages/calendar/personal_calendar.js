@@ -12,26 +12,47 @@ Page({
       defaultDay: true, // 默认选中指定某天；当为 boolean 值 true 时则默认选中当天，非真值则在初始化时不自动选中日期，
       highlightToday: true // 是否高亮显示当天，区别于选中样式（初始化时当天高亮并不代表已选中当天）
     },
+    third_session: 1,
     assignments:[
       {
-        groupName:"个人",
+        assignmentID: 1,
         assignmentName:"期中考试",
-        priority_icon:"cuIcon-form line-red",
+        groupID: 1,
+        prior: 0,
 			  startTime:"?",
 			  endTime:"?",
-			  content:"test",
-        prior:1,
-        checked:false
+        category: 1,
+        assignmentContent: "hey"
       },
       {
-        groupName:"实验室",
-        assignmentName:"pre",
-        priority_icon:"cuIcon-form line-blue",
+        assignmentID: 2,
+        assignmentName:"期末考试",
+        groupID: 3,
+        prior: 1,
 			  startTime:"?",
 			  endTime:"?",
-			  content:"test",
-			  prior:2,
-        checked:false
+        category: 1,
+        assignmentContent: "hey"
+      },
+      {
+        assignmentID: 3,
+        assignmentName:"期",
+        groupID: 1,
+        prior: 2,
+			  startTime:"?",
+			  endTime:"?",
+        category: 1,
+        assignmentContent: "hey"
+      },
+      {
+        assignmentID: 4,
+        assignmentName:"试",
+        groupID: 3,
+        prior: 3,
+			  startTime:"?",
+			  endTime:"?",
+        category: 1,
+        assignmentContent: "hey"
       }
     ],
     checkbox:{}
@@ -39,7 +60,7 @@ Page({
   showModal(e) {
     console.log(e);
     this.setData({
-      checkbox:this.data.assignments[e.currentTarget.dataset.id],
+      checkbox:this.data.tasks[e.currentTarget.dataset.id],
       modalName: e.currentTarget.dataset.target
     })
   },
@@ -81,6 +102,102 @@ Page({
     wx.navigateTo({
       url: '../create_activity/create_activity' // ?userid......
     })
+  },
+
+  formDate:function(year, month, day){
+    let m = month / 10 < 1 ? '0' + month : '' + month;
+    let d = day / 10 < 1 ? '0' + day : '' + day;
+    return year + ':' + m + ':' + d
+  },
+
+  getGroupDailyAssignments:function(date){
+    let self = this;
+
+    wx.request({
+      url: app.globalData.server + 'user/assign',
+      data: {
+          userID: self.data.third_session,
+          date: date
+      },
+      method: 'GET',
+      header: {
+        'content-type': 'application/x-www-form-urlencoded',
+        'chartset': 'utf-8'
+      },
+      
+      success:function(res){
+        console.log('request getGroupDailyAssignments returns: ', res.data)
+          
+        if (res.data.retCode == 200){
+          let list = self.data.assignments;
+          if (typeof res.data.assignments !== "undefined"){
+            list = res.data.assignments
+          }
+          
+          self.setData({
+              assignments: list
+          })
+        }
+        else{
+          console.log('获取失败！' + res.errMsg)
+        }
+      },
+      fail: function(res) {
+          console.log('获取失败！' + res.errMsg)
+      }
+    })
+  },
+
+  getGroupDailyTasks:function(date){
+    let self = this;
+
+    wx.request({
+      url: app.globalData.server + 'user/task',
+      data: {
+          userID: self.data.third_session,
+          date: date
+      },
+      method: 'GET',
+      header: {
+        'content-type': 'application/x-www-form-urlencoded',
+        'chartset': 'utf-8'
+      },
+      
+      success:function(res){
+        console.log('request getGroupDailyAssignments returns: ', res.data)
+          
+        if (res.data.retCode == 200){
+          let list = self.data.tasks;
+          if (typeof res.data.tasks !== "undefined"){
+            list = res.data.tasks
+          }
+          
+          self.setData({
+              tasks: list
+          })
+        }
+        else{
+          console.log('获取失败！' + res.errMsg)
+        }
+      },
+      fail: function(res) {
+          console.log('获取失败！' + res.errMsg)
+      }
+    })
+  },
+
+  afterTapDay:function(e){
+    console.log(e.detail.year)
+    console.log(e.detail.month)
+    console.log(e.detail.date)
+    this.getGroupDailyTasks(this.formDate(e.detail.year, e.detail.month, e.detail.date))
+  },
+
+  afterCalendarRender:function(e){
+    console.log(e.detail.__data__.calendar.selectedDay[0].year)
+    console.log(e.detail.__data__.calendar.selectedDay[0].month)
+    console.log(e.detail.__data__.calendar.selectedDay[0].day)
+    this.getGroupDailyTasks(this.formDate(e.detail.__data__.calendar.selectedDay[0].year, e.detail.__data__.calendar.selectedDay[0].month, e.detail.__data__.calendar.selectedDay[0].day))
   },
 
   /**

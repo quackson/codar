@@ -75,6 +75,11 @@ Page({
           url: '../information/information' //?userid=
         })
         break;
+      case 'groupList':
+        wx.redirectTo({
+          url: '../group_list/group_list' //?userid=
+        })
+        break;
       default:
         break;
     }
@@ -87,6 +92,8 @@ Page({
     this.setData({
       NavCur: app.globalData.NavCur
     })
+    console.log('userid: '+options.userid)
+    console.log('groupid: '+options.groupid)
   },
   /**
    * 生命周期函数--监听页面初次渲染完成

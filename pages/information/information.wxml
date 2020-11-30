@@ -4,7 +4,7 @@
 <view class="bg-white">
 <scroll-view scroll-x class="nav">
     <view class="flex bg-cyan light text-center">
-      <view class="cu-item flex-sub {{item.id==TabCur?'text-cyan cur':''}}" wx:for="{{listname}}" wx:key bindtap="tabSelect" data-id="{{item.id}}">
+      <view class="cu-item flex-sub {{item.id==TabCur?'text-cyan cur':''}}" wx:for="{{listname}}" wx:key="key" bindtap="tabSelect" data-id="{{item.id}}">
         {{item.title}}
       </view>
     </view>
@@ -33,10 +33,10 @@
             <text class="cuIcon-edit"></text>
           </view>
           <view class="content">
-            <view class="text-grey">{{item.groupID}}</view>
+            <view class="text-grey">{{item.assignmentName}}</view>
             <view class="text-gray text-sm flex">
               <text class="text-cut">
-                  <text class="cuIcon-calendar margin-right-xs"></text> {{item.startTime+"~"+item.endTime}}</text>
+                  <text class="cuIcon-calendar margin-right-xs"></text> {{'importance:'+item.prior}}</text>
             </view>
           </view>     
           <view class="action">
@@ -55,16 +55,16 @@
         <view class="cu-modal {{modalName=='Modal'?'show':''}}">
             <view class="cu-dialog">
               <view class="cu-bar bg-white justify-end">
-                <view class="content">{{checkbox.groupID}}</view>
+                <view class="content">{{'@group:'+checkbox.groupID}}</view>
                 <view class="action" bindtap="hideModal">
                   <text class="cuIcon-close text-red"></text>
                 </view>
               </view>
               <view class="padding-xl">
-                {{checkbox.content}}
+                {{checkbox.assignmentContent}}
               </view>
               <view class="solid-bottom text-sm padding">
-                <text class="text-grey">{{item.startTime+"~"+item.endTime}}</text>
+                <text class="text-grey">{{checkbox.startTime+"~"+checkbox.endTime+' '+(checkbox.category==1?'独占时间':'非独占时间')}}</text>
               </view>
             </view>
           </view> 
@@ -79,7 +79,7 @@
           </view>
           <view class="action">
             <button class="cu-btn round bg-blue text-center light"
-            bindtap="showModal" data-target="Modal" data-id="{{index}}">
+            bindtap="showModal" data-target="Modal" data-id="{{index}}" data-sub="1">
               <text class="cuIcon-form"></text></button>
           </view>
           <view class="action">
@@ -90,13 +90,13 @@
         <view class="cu-modal {{modalName=='Modal'?'show':''}}">
             <view class="cu-dialog">
               <view class="cu-bar bg-white justify-end">
-                <view class="content">{{checkbox.groupID}}</view>
+                <view class="content">{{checkbox.groupName}}</view>
                 <view class="action" bindtap="hideModal">
                   <text class="cuIcon-close text-red"></text>
                 </view>
               </view>
               <view class="padding-xl">
-                {{checkbox.acceptUsers}}
+                {{checkbox.accepts}}
               </view>
             </view>
           </view> 
@@ -111,7 +111,7 @@
           </view>
           <view class="action">
             <button class="cu-btn round bg-blue text-center light"
-            bindtap="showModal" data-target="Modal" data-id="{{index}}">
+            bindtap="showModal" data-target="1" data-id="{{index}}" >
               <text class="cuIcon-form"></text></button>
           </view>
           <view class="action">

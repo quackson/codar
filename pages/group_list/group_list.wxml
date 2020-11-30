@@ -11,7 +11,7 @@
       </view>
   </scroll-view>
   <view class="cu-list menu-avatar " wx:if="{{TabCur==0}}">
-    <view class="cu-item" wx:for="{{created_groups}}" wx:key="key" wx:for-index="key" id="{{key}}" bindtap="gotogroupcalendar">
+    <view class="cu-item" wx:for="{{created_groups}}" wx:key="key"  wx:if="{{index < created_groups.length-1}}" id="{{key}}" bindtap="gotogroupcalendar" data-isadmin="{{true}}" data-groupid="{{item.groupID}}" data-groupname="{{item.groupName}}">
       <view class="cu-avatar bg-white round lg">
         <text class="cuIcon-group"></text>
       </view>
@@ -19,7 +19,27 @@
         <text class="text-grey text-lg">{{item.groupName}}</text>
       </view>
       <view class="action">
-        <button class="cu-btn round bg-green text-center light" capture-catch:touchstart="gotodiscussboard">
+        <button class="cu-btn round bg-green text-center light" capture-catch:touchstart="gotodiscussboard" data-groupid="{{item.groupID}}">
+          <text class="cuIcon-message"></text>
+        </button>
+      </view>
+      <view class="action">
+        <button class="cu-btn round bg-red text-center light "capture-catch:touchstart="deletegroup">
+          <text class="cuIcon-delete"></text>
+        </button>
+      </view>
+    </view>
+  </view>
+  <view class="cu-list menu-avatar " wx:if="{{TabCur==0}}">
+    <view class="cu-item" wx:for="{{created_groups}}" wx:key="key" wx:if="{{index == created_groups.length-1}}" id="{{key}}" bindtap="gotogroupcalendar" data-isadmin="{{true}}" data-groupid="{{item.groupID}}" data-groupname="{{item.groupName}}" style="margin-bottom: 100rpx">
+      <view class="cu-avatar bg-white round lg">
+        <text class="cuIcon-group"></text>
+      </view>
+      <view class="content">
+        <text class="text-grey text-lg">{{item.groupName}}</text>
+      </view>
+      <view class="action">
+        <button class="cu-btn round bg-green text-center light" capture-catch:touchstart="gotodiscussboard" data-groupid="{{item.groupID}}">
           <text class="cuIcon-message"></text>
         </button>
       </view>
@@ -31,7 +51,7 @@
     </view>
   </view>
   <view class="cu-list menu-avatar " wx:if="{{TabCur==1}}">
-    <view class="cu-item"  wx:for="{{joined_groups}}" wx:key="key" wx:for-index="key" id="{{key}}" bindtap="gotogroupcalendar">
+    <view class="cu-item"  wx:for="{{joined_groups}}" wx:key="key" wx:if="{{index < joined_groups.length-1}}" id="{{key}}" bindtap="gotogroupcalendar" data-isadmin="{{false}}" data-groupid="{{item.groupID}}" data-groupname="{{item.groupName}}">
       <view class="cu-avatar bg-white round lg">
         <text class="cuIcon-group"></text>
       </view>
@@ -44,7 +64,32 @@
         </view>
       </view>
       <view class="action">
-        <button class="cu-btn round bg-green text-center light" capture-catch:touchstart="gotodiscussboard">
+        <button class="cu-btn round bg-green text-center light" capture-catch:touchstart="gotodiscussboard" data-groupid="{{item.groupID}}">
+          <text class="cuIcon-message"></text>
+        </button>
+      </view>
+      <view class="action">
+        <button class="cu-btn round bg-red text-center light" capture-catch:touchstart="exitgroup">
+          <text class="cuIcon-exit"></text>
+        </button>
+      </view>
+    </view>
+  </view>
+  <view class="cu-list menu-avatar " wx:if="{{TabCur==1}}">
+    <view class="cu-item"  wx:for="{{joined_groups}}" wx:key="key" wx:if="{{index == joined_groups.length-1}}" id="{{key}}" bindtap="gotogroupcalendar" data-isadmin="{{false}}" data-groupid="{{item.groupID}}" data-groupname="{{item.groupName}}" style="margin-bottom: 100rpx">
+      <view class="cu-avatar bg-white round lg">
+        <text class="cuIcon-group"></text>
+      </view>
+      <view class="content">
+        <view class="text-grey">{{item.groupName}}</view>
+        <view class="text-gray text-sm flex">
+          <text class="text-cut">
+            <text class="cuIcon-people margin-right-xs"></text>创建者：{{item.creatorName}}
+          </text>
+        </view>
+      </view>
+      <view class="action">
+        <button class="cu-btn round bg-green text-center light" capture-catch:touchstart="gotodiscussboard" data-groupid="{{item.groupID}}">
           <text class="cuIcon-message"></text>
         </button>
       </view>

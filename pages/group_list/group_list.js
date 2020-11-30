@@ -79,13 +79,93 @@ Page({
         creatorName:"a_老师"
       }
     ],
-    checkbox:{}
+    checkbox:{},
+    third_session: 1
+  },
+  getAdminGroup:function(){
+    let third_session = this.data.third_session;
+    let self = this;
+    wx.request({
+      url: app.globalData.server + 'user/adminGroup',
+      data: {
+          userID: third_session
+      },
+      method: 'GET',
+      header: {
+        'content-type': 'application/x-www-form-urlencoded',
+        'chartset': 'utf-8'
+      },
+      
+      success:function(res){
+          console.log('request getAdminGroup returns: ', res.data)
+          
+          if (res.data.retCode == 200){
+            let list = self.data.created_groups;
+            if (typeof res.data.groups !== "undefined"){
+              list = res.data.groups
+            }
+            
+            self.setData({
+                created_groups: list
+            })
+          }
+          else{
+            console.log('获取失败！' + res.errMsg)
+          }
+      },
+      fail: function(res) {
+          console.log('获取失败！' + res.errMsg)
+      }
+    })
+  },
+  getJoinedGroup:function(){
+    let third_session = this.data.third_session;
+    let self = this;
+    wx.request({
+      url: app.globalData.server + 'user/group',
+      data: {
+          userID: third_session
+      },
+      method: 'GET',
+      header: {
+        'content-type': 'application/x-www-form-urlencoded',
+        'chartset': 'utf-8'
+      },
+      
+      success:function(res){
+        console.log('request getJoinedGroup returns: ', res.data)
+          
+        if (res.data.retCode == 200){
+          let list = self.data.joined_groups;
+          if (typeof res.data.groups !== "undefined"){
+            list = res.data.groups
+          }
+          
+          self.setData({
+              joined_groups: list
+          })
+        }
+        else{
+          console.log('获取失败！' + res.errMsg)
+        }
+      },
+      fail: function(res) {
+          console.log('获取失败！' + res.errMsg)
+      }
+    })
   },
   tabSelect(e) {
     this.setData({
       TabCur: e.currentTarget.dataset.id,
       scrollLeft: (e.currentTarget.dataset.id-1)*60
     })
+    let self = this;
+    if(this.data.TabCur == 0){
+      self.getAdminGroup()
+    }
+    else{
+      self.getJoinedGroup()
+    }
   },
   showModal(e) {
     console.log(e);
@@ -99,16 +179,20 @@ Page({
       modalName: null
     })
   },
-  gotogroupcalendar:function(){
+  gotogroupcalendar:function(e){
+    let self = this;
+    console.log(e.currentTarget.dataset.groupname)
+
     wx.navigateTo({
-      url: '../calendar/group_calendar' //?userid= &groupid=
+      url: '../calendar/group_calendar?userid=' + self.data.third_session + '&groupid=' + e.currentTarget.dataset.groupid + '&groupname=' + e.currentTarget.dataset.groupname + '&isadmin=' + e.currentTarget.dataset.isadmin
     })
   },
-  gotodiscussboard:function(){
+  gotodiscussboard:function(e){
     console.log('goto group discussion board!')
-    //TODO
+    let self = this;
+
     wx.navigateTo({
-      url: '../discussion/discussion' //?userid= &groupid=
+      url: '../discussion/discussion?userid=' + self.data.third_session + '&groupid=' + e.currentTarget.dataset.groupid
     })
   },
   exitgroup:function(){
@@ -155,6 +239,8 @@ Page({
     this.setData({
       NavCur: app.globalData.NavCur
     })
+    let self = this;
+    self.getAdminGroup()
   },
 
   /**
@@ -168,7 +254,13 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-
+    let self = this;
+    if(this.data.TabCur == 0){
+      self.getAdminGroup()
+    }
+    else{
+      self.getJoinedGroup()
+    }
   },
 
   /**
