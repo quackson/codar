@@ -207,6 +207,7 @@ def queryAllAssignmentInvitation():
             t['assignmentID'] = invitation.id
             t['assignmentName'] = invitation.name
             t['groupID'] = invitation.group_id
+            t['groupName'] = invitation.group.name
             t['category'] = invitation.category
             t['startTime'] = invitation.startTime
             t['endTime'] = invitation.endTime
@@ -1539,11 +1540,12 @@ def userAssign():
         res['retCode'] = 200
         assigns = []
         for assign in assignList:
-            if not sameDay(date,task):
+            if not sameDay(date,assign):
                 continue
             t = dict()
             t['category'] = assign.category
             t['groupID'] = assign.group_id
+            t['groupName'] = assign.group.name
             t['assignmentID'] = assign.id
             t['assignmentName'] = assign.name
             t['startTime'] = assign.startTime
@@ -1572,6 +1574,7 @@ def userOwnAssign():
             t = dict()
             t['category'] = assign.category
             t['groupID'] = assign.group_id
+            t['groupName'] = assign.group.name
             t['assignmentID'] = assign.id
             t['assignmentName'] = assign.name
             t['startTime'] = assign.startTime
