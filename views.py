@@ -594,7 +594,7 @@ def queryAllGroups():
             g = dict()
             g['groupID'] = group.id
             g['groupName'] = group.name
-            groups.append(group)
+            groups.append(g)
         res['groups'] = groups
         return jsonify(res)
     
