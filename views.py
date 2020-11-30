@@ -55,19 +55,8 @@ def test():
 @app.route('/user/login',methods=['POST'])
 def login():
     if request.method == 'POST':
-        code = request.form.get('code',None)
-        appid = 'wxf3e65585a89d7dca'
-        appSecret = 'ad87f8d64da7c5a2a363563f993b2129'
-        url1 ="https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code" % (appid, appSecret, code)
-        res = requests.get(url1)
-        if not res.ok:
-            return jsonify({
-                'retCode':400,
-                'errMsg':'request weixin api error when getting openID'
-            })
-        res_dict = json.loads(res.text)
-        open_id = res_dict['openid']
-        access_token = res_dict['access_token']
+        open_id = request.form.get('openID',None)
+        userName = request.form.get('userName',None)
         user = User.query.filter_by(openID=open_id).first()
         if user:
             res = {
@@ -76,16 +65,6 @@ def login():
                 'userName':user.name
             }
             return jsonify(res)
-        
-        url2 = "https://api.weixin.qq.com/sns/userinfo?access_token=%s&openid=%s&lang=zh_CN" % (access_token, open_id)
-        res = requests.get(url2)
-        if not res.ok:
-            return jsonify({
-                'retCode':400,
-                'errMsg':'request weixin api error when getting user\'s name'
-            })
-        res_dict = json.loads(res.text)
-        userName = res_dict['nickname']
         user = User(
             openID = open_id,
             name = userName
