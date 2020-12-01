@@ -41,7 +41,7 @@ class User(db.Model):
     name = db.Column(db.String(20))
     openID = db.Column(db.String(50))
     taskList = db.relationship('Task', backref = 'user')
-    ownAssignList = db.relationship('Assignment', backref = 'publisher')
+    ownAssignList = db.relationship('Assignment', backref = 'user')
     pendingTaskList = db.relationship('PendingTask',backref = 'user')
     
     groupList = db.relationship('Group',secondary= user_in_group,backref = db.backref('userList'))
