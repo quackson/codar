@@ -8,14 +8,15 @@ Page({
   data: {
     NavCur:'',
     groupName:"",
-    members:[
-      'leader',
+    members:[      
+      'ME<leader>',
       'mem2',
       'mem2',
       'mem3',
       'mem4',
       'mem5',
       'mem6'
+      
     ],
     newMember:''
   },
