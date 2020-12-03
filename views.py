@@ -32,7 +32,7 @@ def compatible(task1,task2):
 
 @app.route('/hello',methods=['GET'])
 def index():
-    return "Hello World"
+    return jsonify("Hello World")
 
 @app.route('/test',methods=['POST'])
 def test():
@@ -1609,5 +1609,70 @@ def groupInvitation():
         res['groupName'] = group.name
         return jsonify(res)
     
+@app.route('/user/info',methods = ['GET'])
+def getUserInfo():
+    if request.method == 'GET':
+        userID = request.args.get('userID')
+        user = User.query.get(userID)
+        if not user:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not exist'
+            })
+        res = dict()
+        res['retCode'] = 200
+        res['userID'] = user.id
+        res['userName'] = user.name
+        return jsonify(res)
+    
+@app.route('/group/multiInvite', methods = ['POST'])
+def multiInvite():
+    if request.method == 'POST':
+        userID = request.form.get('userID',None)
+        groupID = request.form.get('groupID',None)
+        invitedUserIDs = request.form.get('invitedUserIDs',None)
+        invitedIDs = invitedUserIDs.split('#')
+        group = Group.query.get(groupID)
+        inviter = User.query.get(userID)
+        if not inviter:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'inviter not exist'
+            })
+        if not group:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'group not exist'
+            })
+        if not inviter in group.userList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'inviter not in this group'
+            })
+        invitedNames = ''
+        for invitedID in invitedIDs:
+            user = User.query.get(invitedID)
+            if not user:
+                return jsonify({
+                    'retCode':400,
+                    'errMsg':'invited user not exist'
+                })
+            if group in user.groupList:
+                res = {
+                    'retCode':400,
+                    'errMsg':'invited user already in group! can\'t invite again'
+                }
+                return jsonify(res)
+            if not group in user.groupInvitationList:
+                user.groupInvitationList.append(group)
+            invitedNames = invitedNames + '#' + user.name
+        db.session.commit()
+        res = dict()
+        res['retCode'] = 200
+        res['invitedUserIDs'] = invitedUserIDs
+        res['invitedUserNames'] = invitedNames[1:]
+        return jsonify(res)
+    
+
 if __name__ == '__main__':
     app.run()
