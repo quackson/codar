@@ -8,17 +8,35 @@
 <form >
 	<view class="cu-form-group">
 		<view class="title">团队名称</view>
-		<input name="title" bindinput="groupNameInput" placeholder="输入名称"></input>
+		<input name="title" bindinput="groupNameInput" placeholder="输入名称" value="{{groupName}}"></input>
 	</view>
 	<view class="cu-form-group">
 		<view class="title">邀请成员</view>
-    <input name="title" bindinput="memNameInput" placeholder="输入ID"></input>
+    <input name="title" bindinput="memNameInput" placeholder="输入用户ID" value="{{newMemberid}}"></input>
     <view class="action">
-            <button class="cu-btn round bg-cyan text-center light" bindtap="sendInvitation">
+            <button class="cu-btn round bg-cyan text-center light"         
+            bindtap="searchUser" data-target="Modal">
               <text class="cuIcon-search"></text></button>
     </view>
-	</view>
-  
+  </view>   
+  <view class="cu-modal {{modalName=='Modal'?'show':''}}">
+            <view class="cu-dialog">
+              <view class="cu-bar bg-white justify-end">
+              <view class="content">{{'搜索结果'}}</view>
+              <view class="action" bindtap="hideModal">
+                  <text class="cuIcon-close text-red"></text>
+                </view>
+              </view>
+              <view class="padding-xl" wx:if="{{searchresult=='1'}}">{{"请确认是否邀请:"+newMemberName}}</view>
+              <view class="padding-xl" wx:if="{{searchresult=='0'}}">{{"搜索失败，请重新输入"}}
+              </view>
+              <view class="padding-xl" wx:if="{{searchresult=='2'}}">{{"请勿重复添加"}}
+              </view>
+              <button class="text-sm padding"
+            bindtap="addMember" wx:if="{{searchresult==1}}">
+              <text class="text-olive">{{'确 认 邀 请'}}</text></button>              
+            </view>
+          </view>  
   <view class="cu-list menu-avatar " >
         <view class="cu-item" wx:for="{{members}}" wx:key="key">
           <view class="cu-avatar bg-white round lg">
@@ -34,6 +52,7 @@
         </view>
   </view>
 </form>
+
 </scroll-view>
 </view>
 <view class="cu-bar tabbar bg-white shadow foot">

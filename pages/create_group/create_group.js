@@ -8,17 +8,21 @@ Page({
   data: {
     NavCur:'',
     groupName:"",
+    searchresult:'0',
     members:[      
-      'ME<leader>',
+      'ME<leader>'
+      /*
       'mem2',
       'mem2',
       'mem3',
       'mem4',
       'mem5',
       'mem6'
-      
+      */
     ],
-    newMember:''
+    newMemberid:'',
+    newMemberName:'',
+    interactionMems:''
   },
   groupNameInput(e){
     this.setData({
@@ -27,20 +31,119 @@ Page({
   },
   memNameInput(e){
     this.setData({
-      newMember: e.detail.value     
+      newMemberid: e.detail.value     
     });
-    console.log(this.data.newMember)
+    //console.log(this.data.newMember)
   },
-  sendInvitation(e){
-    var temp=this.data.members;
-    temp.push(this.data.newMember);
+  searchUser(e){
+    let app_=app
+    let this_=this
+    if(this_.data.newMemberid==app.globalData.userID)
+    {
+      this_.setData({
+        newMemberName:'',
+        searchresult:2,
+        modalName: e.currentTarget.dataset.target
+      })
+    }
+    else{
+      wx.request({
+        url: app.globalData.server+'/user/info',
+        data:{      
+          userID:this_.data.newMemberid
+        },
+        method:"GET",
+        header: {
+          'content-type': 'application/x-www-form-urlencoded'
+        },
+        success(res){
+          //this_.globalData.userID=res.data.userID
+          if (res.data.retCode==200){
+            this_.setData({
+              newMemberName:res.data.userName,
+              searchresult:1,
+              modalName: e.currentTarget.dataset.target
+            })
+          }
+          else{
+            this_.setData({
+              newMemberName:'',
+              searchresult:0,
+              modalName: e.currentTarget.dataset.target
+            })
+          }
+        }
+      })
+    }
+    
+  },
+  hideModal(e) {
     this.setData({
-      members: temp  
+      modalName: null
+    })
+  },
+  addMember(e){
+    var temp=this.data.members;
+    temp.push(this.data.newMemberName);
+    var premem=this.data.interactionMems
+    this.data.interactionMems=(premem=='')?premem+this.data.newMemberid:premem+'#'+this.data.newMemberid
+    this.setData({
+      members: temp,
+      searchresult:0,
+      modalName:null,
+      newMemberName:'',
+      newMemberid:''
     });
     console.log(this.data.members);
   },
+  deleteMember(e){
+
+  },
   createGroup(e){
-    console.log("创建团队");
+    let app_=app
+    let this_=this
+    wx.request({
+      url: app.globalData.server+'/group/build',
+      data:{      
+        userID:app.globalData.userID,
+        groupName:this_.data.groupName
+      },
+      method:"POST",
+      header: {
+        'content-type': 'application/x-www-form-urlencoded'
+      },
+      success(res){
+        //this_.globalData.userID=res.data.userID
+        if (res.data.retCode==200){
+          var groupid=res.data.groupID
+          console.log(groupid)
+          wx.request({
+            url: app.globalData.server+'/group/multiInvite',
+            data:{      
+              userID:app.globalData.userID,
+              groupID:groupid,
+              invitedUserIDs:this_.data.interactionMems
+            },
+            method:"POST",
+            header: {
+              'content-type': 'application/x-www-form-urlencoded'
+            },
+            success(res){
+              //this_.globalData.userID=res.data.userID
+              if (res.data.retCode==200){
+                this_.setData({
+                  members:['ME<leader>'],
+                  newMemberid:'',
+                  newMemberName:''
+                })               
+                console.log("创建团队");
+              }
+            }
+          })
+        }
+        
+      }
+    })
   },
   NavChange:function(e){
     app.globalData.NavCur = e.currentTarget.dataset.cur

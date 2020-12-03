@@ -1,5 +1,6 @@
 <!--pages/discussion/discussion.wxml-->
-<cu-custom bgColor="bg-cyan light">
+<cu-custom bgColor="bg-cyan light"  isBack="{{true}}">
+  <view slot="backText">返回</view>
   <view slot="content">讨论版@{{groupName}}</view>
 </cu-custom>
 

@@ -15,10 +15,7 @@
   </view>
 </view>
 
-<button bindtap="gotocreateactivity">gotocreateactivity</button>
-<view class="text-center margin-top">
-  <text class="text-grey text-xl">{{motto}}</text>
-</view>
+
 
 <view class="cu-bar tabbar bg-white shadow foot">
   <view class="action" bindtap="NavChange" data-cur="groupList">
