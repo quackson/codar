@@ -10,6 +10,7 @@ Page({
     openID:'',
     userID:null,
     TabCur: 0,
+    sub:0,
     scrollLeft:0,
     listname:[
       {
@@ -191,7 +192,8 @@ Page({
         ]
       }*/
     ],
-    checkbox:{}
+    checkbox:{},
+    checkID:-1
   },
   tabSelect(e) {
     this.setData({
@@ -199,18 +201,230 @@ Page({
       scrollLeft: (e.currentTarget.dataset.id-1)*60
     })
   },
+  rejectTask(e){
+    //console.log(this.data.checkID)
+    let this_=this
+    var newTasktemp=[]
+    wx.request({
+      url: app.globalData.server+'/assign/join',
+      data:{      
+        groupID:this_.data.newtask[this_.data.checkID]['groupID'],
+        userID:this_.data.userID,
+        assignmentID:this_.data.newtask[this_.data.checkID]['assignmentID'],
+        operation:-1
+      },
+      method:"POST",
+      header: {
+        'content-type': 'application/x-www-form-urlencoded'
+      },
+      success(res){
+        //console.log(e)
+        for(var i=0;i<this_.data.newtask.length;i++)
+        {
+          if(i!=this_.data.checkID)
+          {
+            newTasktemp.push(this_.data.newtask[i])
+          }
+        }
+        //console.log(newTasktemp)
+        this_.setData({
+          newtask:newTasktemp,
+          modalName:null
+        })
+        //console.log(this_.data.newtask)
+      }
+    })
+  },
+  acceptTask(e){
+    //console.log(this.data.checkID)
+    let this_=this
+    var newTasktemp=[]
+    wx.request({
+      url: app.globalData.server+'/assign/join',
+      data:{      
+        groupID:this_.data.newtask[this_.data.checkID]['groupID'],
+        userID:this_.data.userID,
+        assignmentID:this_.data.newtask[this_.data.checkID]['assignmentID'],
+        operation:1
+      },
+      method:"POST",
+      header: {
+        'content-type': 'application/x-www-form-urlencoded'
+      },
+      success(res){
+        //console.log(e)
+        for(var i=0;i<this_.data.newtask.length;i++)
+        {
+          if(i!=this_.data.checkID)
+          {
+            newTasktemp.push(this_.data.newtask[i])
+          }
+        }
+        //console.log(newTasktemp)
+        this_.setData({
+          newtask:newTasktemp,
+          modalName:null
+        })
+        //console.log(this_.data.newtask)
+      }
+    })
+  },
+  rejectGroupInvatation(e){
+    //console.log(this.data.checkID)
+    let this_=this
+    var invatationtemp=[]
+    wx.request({
+      url: app.globalData.server+'/group/join',
+      data:{      
+        groupID:this_.data.invatation[this_.data.checkID]['groupID'],
+        userID:this_.data.userID,
+        operation:-1
+      },
+      method:"POST",
+      header: {
+        'content-type': 'application/x-www-form-urlencoded'
+      },
+      success(res){
+        //console.log(e)
+        for(var i=0;i<this_.data.invatation.length;i++)
+        {
+          if(i!=this_.data.checkID)
+          {
+            invatationtemp.push(this_.data.invatation[i])
+          }
+        }
+        //console.log(newTasktemp)
+        this_.setData({
+          invatation:invatationtemp,
+          modalName:null
+        })
+        //console.log(this_.data.newtask)
+      }
+    })
+  },
+  acceptGroupInvatation(e){
+    //console.log(this.data.checkID)
+    let this_=this
+    var invatationtemp=[]
+    wx.request({
+      url: app.globalData.server+'/group/join',
+      data:{      
+        groupID:this_.data.invatation[this_.data.checkID]['groupID'],
+        userID:this_.data.userID,
+        operation:1
+      },
+      method:"POST",
+      header: {
+        'content-type': 'application/x-www-form-urlencoded'
+      },
+      success(res){
+        //console.log(e)
+        for(var i=0;i<this_.data.invatation.length;i++)
+        {
+          if(i!=this_.data.checkID)
+          {
+            invatationtemp.push(this_.data.invatation[i])
+          }
+        }
+        //console.log(newTasktemp)
+        this_.setData({
+          invatation:invatationtemp,
+          modalName:null
+        })
+        //console.log(this_.data.newtask)
+      }
+    })
+  },
+  truncateGroup(e){
+    //console.log(this.data.checkID)
+    let this_=this
+    var myInvatationtemp=[]
+    wx.request({
+      url: app.globalData.server+'/group/delete',
+      data:{      
+        groupID:this_.data.myInvatation[this_.data.checkID]['groupID'],
+        userID:this_.data.userID
+      },
+      method:"POST",
+      header: {
+        'content-type': 'application/x-www-form-urlencoded'
+      },
+      success(res){
+        //console.log(e)
+        for(var i=0;i<this_.data.myInvatation.length;i++)
+        {
+          if(i!=this_.data.checkID)
+          {
+            myInvatationtemp.push(this_.data.myInvatation[i])
+          }
+        }
+        //console.log(newTasktemp)
+        this_.setData({
+          myInvatation:myInvatationtemp,
+          modalName:null
+        })
+        //console.log(this_.data.newtask)
+      }
+    })
+  },
+  truncateTask(e){
+    //console.log(this.data.checkID)
+    let this_=this
+    var mydelivertasktemp=[]
+    wx.request({
+      url: app.globalData.server+'/assign/delete',
+      data:{      
+        groupID:this_.data.mydelivertask[this_.data.checkID]['groupID'],
+        userID:this_.data.userID,
+        taskID:this_.data.mydelivertask[this_.data.checkID]['assignmentID']
+      },
+      method:"POST",
+      header: {
+        'content-type': 'application/x-www-form-urlencoded'
+      },
+      success(res){
+        //console.log(e)
+        for(var i=0;i<this_.data.mydelivertask.length;i++)
+        {
+          if(i!=this_.data.checkID)
+          {
+            mydelivertasktemp.push(this_.data.mydelivertask[i])
+          }
+        }
+        //console.log(newTasktemp)
+        this_.setData({
+          mydelivertask:mydelivertasktemp,
+          modalName:null
+        })
+        //console.log(this_.data.newtask)
+      }
+    })
+  },
   showModal(e) {
     console.log(e);
-    if (this.data.TabCur==1){
+    if(this.data.TabCur==0)
+    {
+      this.setData({
+      checkbox:this.data.invatation[e.currentTarget.dataset.id],
+      modalName: e.currentTarget.dataset.target,
+      sub:e.currentTarget.dataset.sub,
+      checkID:e.currentTarget.dataset.id
+      })
+    }
+    else if (this.data.TabCur==1){
       this.setData({
       checkbox:this.data.newtask[e.currentTarget.dataset.id],
-      modalName: e.currentTarget.dataset.target
+      modalName: e.currentTarget.dataset.target,
+      sub:e.currentTarget.dataset.sub,
+      checkID:e.currentTarget.dataset.id
     })
     }
     else if (this.data.TabCur==2){
       this.setData({
         checkbox:this.data.myInvatation[e.currentTarget.dataset.id],
-        modalName: e.currentTarget.dataset.target
+        modalName: e.currentTarget.dataset.target,
+        sub:e.currentTarget.dataset.sub,
+        checkID:e.currentTarget.dataset.id
       })
       if (e.currentTarget.dataset.sub=="1")
       {
@@ -250,9 +464,50 @@ Page({
     else if (this.data.TabCur==3){
       this.setData({
         checkbox:this.data.mydelivertask[e.currentTarget.dataset.id],
-        modalName: e.currentTarget.dataset.target
+        modalName: e.currentTarget.dataset.target,        
+        sub:e.currentTarget.dataset.sub,
+        checkID:e.currentTarget.dataset.id
       })
-      
+      //console.log(this.data.checkbox)
+      if (e.currentTarget.dataset.sub=="1")
+      {
+        let app_=app
+        var temp={
+          assignmentName:'',
+          groupName:'',
+          accepts:'已接受组员：',
+          startTime:'',
+          endTime:''
+        }
+        let this_=this
+        wx.request({
+          url: app.globalData.server+'/assign/info',
+          data:{      
+            groupID:this_.data.checkbox['groupID'],
+            assignmentID:this_.data.checkbox['assignmentID']
+          },
+          method:"GET",
+          header: {
+            'content-type': 'application/x-www-form-urlencoded'
+          },
+          success(res){
+            for(var i=0;i<res.data.executors.length;i++)
+            {
+              temp['accepts']+=res.data.executors[i]['userName']
+              if(i!=res.data.users.length-1)
+                temp['accepts']+=';'
+            }
+            temp['assignmentName']=res.data.assignmentName
+            temp['groupName']=res.data.groupName
+            temp['startTime']=res.data.startTime
+            temp['endTime']=res.data.endTime
+            this_.setData({
+              checkbox:temp
+            })
+            console.log(this_.data.checkbox)
+          }
+        })        
+      }
     }
   },
   hideModal(e) {
@@ -376,6 +631,7 @@ Page({
             this_.setData({
               mydelivertask:res.data.assignments
             })
+            console.log(this_.data.mydelivertask)
             }
         })
   },
