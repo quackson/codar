@@ -29,7 +29,7 @@
       <text class="cuIcon-form line-blue" wx:else></text>
     </view>
     <view class="content">
-      <text class="text-grey text-lg">{{item.taskName}} ({{item.groupID}})</text>
+      <text class="text-grey text-lg">{{item.taskName}} ({{item.groupName}})</text>
       <view class="text-gray text-sm flex">
         <text class="text-cut">
           <text class="cuIcon-calendar margin-right-xs"></text>{{item.startTime+"~"+item.endTime}}
@@ -37,9 +37,7 @@
       </view>
     </view>
     <view class="action">
-      <button class="cu-btn round bg-green text-center light" bindtap="showModal" data-target="Modal" data-id="{{index}}">
-        <text class="cuIcon-form"></text>
-      </button>
+      <button class="cu-btn round bg-green text-center light" bindtap="showModal" data-target="Modal" data-id="{{index}}">查看</button>
     </view>
   </view>
   <view class="cu-item" wx:for="{{tasks}}" wx:if="{{index == tasks.length-1}}" wx:key="key" style="margin-bottom: 100rpx">
@@ -51,7 +49,7 @@
       <text class="cuIcon-form line-blue" wx:else></text>
     </view>
     <view class="content">
-      <text class="text-grey text-lg">{{item.taskName}} ({{item.groupID}})</text>
+      <text class="text-grey text-lg">{{item.taskName}} ({{item.groupName}})</text>
       <view class="text-gray text-sm flex">
         <text class="text-cut">
           <text class="cuIcon-calendar margin-right-xs"></text>{{item.startTime+"~"+item.endTime}}
@@ -59,15 +57,13 @@
       </view>
     </view>
     <view class="action">
-      <button class="cu-btn round bg-green text-center light" bindtap="showModal" data-target="Modal" data-id="{{index}}">
-        <text class="cuIcon-form"></text>
-      </button>
+      <button class="cu-btn round bg-green text-center light" bindtap="showModal" data-target="Modal" data-id="{{index}}">查看</button>
     </view>
   </view>
   <view class="cu-modal {{modalName=='Modal'?'show':''}}">
     <view class="cu-dialog">
       <view class="cu-bar bg-white justify-end">
-        <view class="content">{{checkbox.groupID}} - {{checkbox.taskName}}</view>
+        <view class="content">{{checkbox.groupName}} - {{checkbox.taskName}}</view>
         <view class="action" bindtap="hideModal">
           <text class="cuIcon-close text-red"></text>
         </view>

@@ -19,9 +19,7 @@
         <text class="text-grey text-lg">{{item.groupName}}</text>
       </view>
       <view class="action">
-        <button class="cu-btn round bg-green text-center light" capture-catch:touchstart="gotodiscussboard" data-groupid="{{item.groupID}}">
-          <text class="cuIcon-message"></text>
-        </button>
+        <button class="cu-btn round bg-green text-center light" capture-catch:touchstart="gotodiscussboard" data-groupid="{{item.groupID}}">讨论</button>
       </view>
       <view class="action">
         <button class="cu-btn round bg-red text-center light "capture-catch:touchstart="deletegroup">
@@ -39,9 +37,7 @@
         <text class="text-grey text-lg">{{item.groupName}}</text>
       </view>
       <view class="action">
-        <button class="cu-btn round bg-green text-center light" capture-catch:touchstart="gotodiscussboard" data-groupid="{{item.groupID}}">
-          <text class="cuIcon-message"></text>
-        </button>
+        <button class="cu-btn round bg-green text-center light" capture-catch:touchstart="gotodiscussboard" data-groupid="{{item.groupID}}">讨论</button>
       </view>
       <view class="action">
         <button class="cu-btn round bg-red text-center light "capture-catch:touchstart="deletegroup">
@@ -57,16 +53,9 @@
       </view>
       <view class="content">
         <view class="text-grey">{{item.groupName}}</view>
-        <view class="text-gray text-sm flex">
-          <text class="text-cut">
-            <text class="cuIcon-people margin-right-xs"></text>创建者：{{item.creatorName}}
-          </text>
-        </view>
       </view>
       <view class="action">
-        <button class="cu-btn round bg-green text-center light" capture-catch:touchstart="gotodiscussboard" data-groupid="{{item.groupID}}">
-          <text class="cuIcon-message"></text>
-        </button>
+        <button class="cu-btn round bg-green text-center light" capture-catch:touchstart="gotodiscussboard" data-groupid="{{item.groupID}}">讨论</button>
       </view>
       <view class="action">
         <button class="cu-btn round bg-red text-center light" capture-catch:touchstart="exitgroup">
@@ -82,16 +71,9 @@
       </view>
       <view class="content">
         <view class="text-grey">{{item.groupName}}</view>
-        <view class="text-gray text-sm flex">
-          <text class="text-cut">
-            <text class="cuIcon-people margin-right-xs"></text>创建者：{{item.creatorName}}
-          </text>
-        </view>
       </view>
       <view class="action">
-        <button class="cu-btn round bg-green text-center light" capture-catch:touchstart="gotodiscussboard" data-groupid="{{item.groupID}}">
-          <text class="cuIcon-message"></text>
-        </button>
+        <button class="cu-btn round bg-green text-center light" capture-catch:touchstart="gotodiscussboard" data-groupid="{{item.groupID}}">讨论</button>
       </view>
       <view class="action">
         <button class="cu-btn round bg-red text-center light" capture-catch:touchstart="exitgroup">
