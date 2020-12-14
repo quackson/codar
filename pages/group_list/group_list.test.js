@@ -56,18 +56,15 @@ describe('grouplist团队列表页面测试', () => {
       joined_groups:[
         {
           groupID:1,
-          groupName:"Group1",
-          creatorName:"abc"
+          groupName:"Group1"
         },
         {
           groupID:2,
-          groupName:"Group2",
-          creatorName:"小明"
+          groupName:"Group2"
         },      
         {
           groupID:3,
-          groupName:"Group3",
-          creatorName:"a_老师"
+          groupName:"Group3"
         }
       ]
     })
@@ -81,7 +78,7 @@ describe('grouplist团队列表页面测试', () => {
   // 测试内容
   it("列表是否正常显示", async () => {
     const list = await page.$$('.cu-item');
-    expect(list.length > 0).toBe(true);
+    expect(list.length == 10).toBe(true);
   })
 
   it("点击团队是否可以跳转到团队日历页面", async () => {

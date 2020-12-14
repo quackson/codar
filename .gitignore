@@ -1,0 +1,5 @@
+# test files
+pages/group_list/group_list.test.js
+pages/group_list/package.json
+pages/index/index.test.js
+pages/index/package.json
