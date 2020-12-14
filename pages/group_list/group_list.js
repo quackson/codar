@@ -83,6 +83,9 @@ Page({
     third_session: 1
   },
   getAdminGroup:function(){
+    this.setData({
+      created_groups: []
+    })
     let third_session = this.data.third_session;
     let self = this;
     wx.request({
@@ -100,14 +103,11 @@ Page({
           console.log('request getAdminGroup returns: ', res.data)
           
           if (res.data.retCode == 200){
-            let list = self.data.created_groups;
             if (typeof res.data.groups !== "undefined"){
-              list = res.data.groups
+              self.setData({
+                created_groups: res.data.groups
+              })
             }
-            
-            self.setData({
-                created_groups: list
-            })
           }
           else{
             console.log('获取失败！' + res.errMsg)
@@ -119,6 +119,9 @@ Page({
     })
   },
   getJoinedGroup:function(){
+    this.setData({
+      joined_groups: []
+    })
     let third_session = this.data.third_session;
     let self = this;
     wx.request({
@@ -136,14 +139,11 @@ Page({
         console.log('request getJoinedGroup returns: ', res.data)
           
         if (res.data.retCode == 200){
-          let list = self.data.joined_groups;
           if (typeof res.data.groups !== "undefined"){
-            list = res.data.groups
+            self.setData({
+              joined_groups: res.data.groups
+            })
           }
-          
-          self.setData({
-              joined_groups: list
-          })
         }
         else{
           console.log('获取失败！' + res.errMsg)
@@ -169,10 +169,21 @@ Page({
   },
   showModal(e) {
     console.log(e);
-    this.setData({
-      checkbox:this.data.newtask[e.currentTarget.dataset.id],
-      modalName: e.currentTarget.dataset.target
-    })
+    if(this.data.TabCur==0)
+    {
+      this.setData({
+        groupIndex: e.currentTarget.dataset.id,
+        checkbox:this.data.created_groups[e.currentTarget.dataset.id],
+        modalName: e.currentTarget.dataset.target
+      })
+    }
+    else if (this.data.TabCur==1){
+      this.setData({
+        groupIndex: e.currentTarget.dataset.id,
+        checkbox:this.data.joined_groups[e.currentTarget.dataset.id],
+        modalName: e.currentTarget.dataset.target
+      })
+    }
   },
   hideModal(e) {
     this.setData({
@@ -195,13 +206,83 @@ Page({
       url: '../discussion/discussion?userid=' + self.data.third_session + '&groupid=' + e.currentTarget.dataset.groupid
     })
   },
-  exitgroup:function(){
-    console.log('exit group!')
-    //TODO
+  exitgroup:function(e){
+    console.log('exit group ' + e.currentTarget.dataset.id)
+    let third_session = this.data.third_session;
+    let self = this;
+    let groupId = this.data.joined_groups[e.currentTarget.dataset.id].groupID;
+    self.hideModal()
+    wx.request({
+      url: app.globalData.server + 'group/quit',
+      data: {
+          userID: third_session,
+          groupID: groupId
+      },
+      method: 'POST',
+      header: {
+        'content-type': 'application/x-www-form-urlencoded',
+        'chartset': 'utf-8'
+      },
+      
+      success:function(res){
+        console.log('request exitgroup returns: ', res.data)
+          
+        if (res.data.retCode == 200){
+          console.log('Exit group success!')
+          wx.showToast({
+            title: '退出成功',
+            icon: 'none',
+            duration: 4000
+          })
+          self.getJoinedGroup()
+        }
+        else{
+          console.log('Exit group fail: ' + res.data.errMsg)
+        }
+      },
+      fail: function(res) {
+          console.log('请求失败！' + res.data.errMsg)
+      }
+    })
   },
-  deletegroup:function(){
-    console.log('delete group!')
-    //TODO
+  deletegroup:function(e){
+    console.log('delete group ' + e.currentTarget.dataset.id)
+    let third_session = this.data.third_session;
+    let self = this;
+    let groupId = this.data.created_groups[e.currentTarget.dataset.id].groupID;
+    self.hideModal()
+    wx.request({
+      url: app.globalData.server + 'group/delete',
+      data: {
+          userID: third_session,
+          groupID: groupId
+      },
+      method: 'POST',
+      header: {
+        'content-type': 'application/x-www-form-urlencoded',
+        'chartset': 'utf-8'
+      },
+      
+      success:function(res){
+        console.log('request deletegroup returns: ', res.data)
+          
+        if (res.data.retCode == 200){
+          console.log('Delete group success!')
+          wx.showToast({
+            title: '删除成功',
+            icon: 'none',
+            duration: 4000
+          })
+          self.getAdminGroup()
+        }
+        else{
+          console.log('Delete group fail: ' + res.data.errMsg)
+        }
+      },
+      fail: function(res) {
+          console.log('请求失败！' + res.data.errMsg)
+      }
+    })
   },
   NavChange:function(e){
     app.globalData.NavCur = e.currentTarget.dataset.cur

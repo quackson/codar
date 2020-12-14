@@ -10,7 +10,7 @@
     "postcss": true,
     "preloadBackgroundData": false,
     "minified": true,
-    "newFeature": true,
+    "newFeature": false,
     "coverView": true,
     "nodeModules": false,
     "autoAudits": false,
@@ -28,16 +28,18 @@
       "disablePlugins": [],
       "outputPath": ""
     },
+    "bundle": false,
     "useIsolateContext": true,
     "useCompilerModule": true,
     "userConfirmedUseCompilerModuleSwitch": false,
+    "userConfirmedBundleSwitch": false,
     "packNpmManually": false,
     "packNpmRelationList": [],
     "enableEngineNative": false,
     "minifyWXSS": true
   },
   "compileType": "miniprogram",
-  "libVersion": "2.4.2",
+  "libVersion": "2.14.1",
   "appid": "wxf3e65585a89d7dca",
   "projectname": "ColorUI-template",
   "debugOptions": {

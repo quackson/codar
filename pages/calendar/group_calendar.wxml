@@ -46,9 +46,7 @@
       </view>
     </view>
     <view class="action">
-      <button class="cu-btn round bg-green text-center light" bindtap="showModal" data-target="Modal" data-id="{{index}}">
-        <text class="cuIcon-form"></text>
-      </button>
+      <button class="cu-btn round bg-green text-center light" bindtap="showModal" data-target="Modal" data-id="{{index}}">查看</button>
     </view>
   </view>
   <view class="cu-item bg-grey" wx:for="{{assignments}}" wx:if="{{index == assignments.length-1}}" wx:key="key" style="margin-bottom: 100rpx">
@@ -68,9 +66,7 @@
       </view>
     </view>
     <view class="action">
-      <button class="cu-btn round bg-green text-center light" bindtap="showModal" data-target="Modal" data-id="{{index}}">
-        <text class="cuIcon-form"></text>
-      </button>
+      <button class="cu-btn round bg-green text-center light" bindtap="showModal" data-target="Modal" data-id="{{index}}">查看</button>
     </view>
   </view>
   <view class="cu-modal {{modalName=='Modal'?'show':''}}">

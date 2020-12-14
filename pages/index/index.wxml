@@ -16,7 +16,6 @@
 </view>
 
 
-
 <view class="cu-bar tabbar bg-white shadow foot">
   <view class="action" bindtap="NavChange" data-cur="groupList">
     <view class="cuIcon-group {{NavCur=='groupList'?'line-orange':'line-gray'}}"></view>
