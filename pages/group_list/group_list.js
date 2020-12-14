@@ -203,7 +203,7 @@ Page({
     let self = this;
 
     wx.navigateTo({
-      url: '../discussion/discussion?userid=' + self.data.third_session + '&groupid=' + e.currentTarget.dataset.groupid
+      url: '../discussion/discussion?userid=' + self.data.third_session + '&groupid=' + e.currentTarget.dataset.groupid+'&groupname='
     })
   },
   exitgroup:function(e){

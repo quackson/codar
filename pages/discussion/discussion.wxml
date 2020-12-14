@@ -41,7 +41,7 @@
                 <text class="cuIcon-people"></text>
             </view>
             <view class="content flex-sub">
-              <view>User</view>
+              <view>{{userName}}</view>
             </view>
             <view class="action" bindtap="createPropsal">
                   <text class="cuIcon-upload text-cyan light"></text>

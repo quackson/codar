@@ -1,4 +1,8 @@
 /* pages/create_activity/create_activity.wxss */
+.pageContainer{
+  min-height: 100vh;
+  background-color: rgb(255, 255, 255);
+}
 .createtask{
   position: fixed;
   left: 0;

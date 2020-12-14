@@ -1,4 +1,5 @@
 <!--pages/create_group/create_group.wxml-->
+<view class="pagecontainer">
 <cu-custom bgColor="bg-cyan light" isBack="{{true}}">
   <view slot="backText">返回</view>
   <view slot="content">创建团队</view>
@@ -76,4 +77,5 @@
     <view class="cuIcon-message {{NavCur=='messages'?'line-orange':'line-gray'}}"></view>
     <view class="{{NavCur=='messages'?'text-orange':'text-gray'}}">消息</view>
   </view>
+</view>
 </view>

@@ -1,3 +1,4 @@
+<view class="pageContainer">
 <cu-custom bgColor="bg-cyan light" isBack="{{true}}">
   <view slot="backText">返回</view>
   <view slot="content">新建任务@{{groupName}}</view>
@@ -50,7 +51,7 @@
 		<view class="title">结束时间选择</view>
 		<picker mode="time" value="{{endTime}}" start="00:00" end="23:59" bindchange="endTimeChange">
 			<view class="picker">
-				{{startTime}}
+				{{endTime}}
 			</view>
 		</picker>
 	</view>
@@ -69,7 +70,7 @@
             <text class="cuIcon-friendadd"></text>
           </view>
           <view class="content">
-            <view class="text-grey">{{item.userID}}</view>
+            <view class="text-grey">{{item.userName}}</view>
           </view> 
           <view class="cu-form-group">
             <checkbox-group  bindchange="checkboxChange" data-index="{{index}}">
@@ -78,7 +79,7 @@
           </view>
 				</view>
 				<view class="createTask padding-xl bg-white">
-				<button class="cu-btn block bg-cyan light lg">
+				<button class="cu-btn block bg-cyan light lg" bindtap="createactivity">
 						<text class="cuIcon-upload"></text>提交</button>
 				</view>
 		</view>
@@ -106,4 +107,5 @@
     <view class="cuIcon-message {{NavCur=='messages'?'line-orange':'line-gray'}}"></view>
     <view class="{{NavCur=='messages'?'text-orange':'text-gray'}}">消息</view>
   </view>
+</view>
 </view>

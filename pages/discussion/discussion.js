@@ -7,8 +7,11 @@ Page({
    * 页面的初始数据
    */
   data: {
-    groupName:'testGroup',
+    userName:-1,
+    groupID:-1,
+    groupName:'',
     pendingTasks:[
+      /*
       {
         userID:0,
         userName:'User1',
@@ -42,6 +45,7 @@ Page({
         voteNum:5,
         myvote:2
       }
+      */
     ],
 
   },
@@ -90,7 +94,26 @@ Page({
    */
   onLoad: function (options) {
     this.setData({
-      NavCur: app.globalData.NavCur
+      NavCur: app.globalData.NavCur,
+      groupID:options.groupid,
+      groupName:options.groupname      
+    })
+    let app_=app
+    let this_=this
+    wx.request({
+      url: app.globalData.server+'/user/info',
+      data:{      
+        userID:app.globalData.userID
+      },
+      method:"GET",
+      header: {
+        'content-type': 'application/x-www-form-urlencoded'
+      },
+      success(res){
+        this_.setData({
+          userName:res.data.userName
+        })
+      }
     })
     console.log('userid: '+options.userid)
     console.log('groupid: '+options.groupid)
