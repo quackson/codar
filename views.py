@@ -1673,6 +1673,87 @@ def multiInvite():
         res['invitedUserNames'] = invitedNames[1:]
         return jsonify(res)
     
+@app.route('/assign/multiInvite', methods = ['POST'])
+def multiInviteAssign():
+    if request.method == 'POST':
+        userID = request.form.get('userID',None)
+        groupID = request.form.get('groupID',None)
+        assignID = request.form.get('assignmentID',None)
+        invitedUserIDs = request.form.get('invitedUserIDs',None)
+        invitedIDs = invitedUserIDs.split('#')
+        group = Group.query.get(groupID)
+        inviter = User.query.get(userID)
+        assign = Assignment.query.get(assignID)
+        if not inviter:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'inviter not exist'
+            })
+        if not group:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'group not exist'
+            })
+        if not assign:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'assign not exist'
+            })
+        if not inviter in group.userList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'inviter not in this group'
+            })
+        if not assign in group.assignList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'assignment not in this group'
+            })
+        if not group in inviter.adminGroupList:
+            res = {
+                'retCode':400,
+                'errMsg':'you have no authority to do this'
+            }
+            return jsonify(res)
+        invitedNames = ''
+        for invitedID in invitedIDs:
+            user = User.query.get(invitedID)
+            if not user:
+                return jsonify({
+                    'retCode':400,
+                    'errMsg':'invited user not exist'
+                })
+            if not group in user.groupList:
+                res = {
+                    'retCode':400,
+                    'errMsg':'invited user not in group'
+                }
+                return jsonify(res)
+            if assign.category == 1:
+                taskList = user.taskList
+                for task in taskList:
+                    if not compatible(task,assign):
+                        res = {
+                            'retCode':400,
+                            'errMsg':'can\'t invite because time conflict'
+                        }
+                        return jsonify(res)
+                assignList = user.assignList
+                for old_assign in assignList:
+                    if not compatible(old_assign,assign):
+                        res = {
+                            'retCode':400,
+                            'errMsg':'can\'t invite because time conflict'
+                        }
+                        return jsonify(res)
+            user.assignInvitationList.append(assign)
+            invitedNames = invitedNames + '#' + user.name
+        db.session.commit()
+        res = dict()
+        res['retCode'] = 200
+        res['invitedUserIDs'] = invitedUserIDs
+        res['invitedUserNames'] = invitedNames[1:]
+        return jsonify(res)
 
 if __name__ == '__main__':
     app.run()
