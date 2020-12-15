@@ -19,6 +19,9 @@
         <text class="text-grey text-lg">{{item.groupName}}</text>
       </view>
       <view class="action">
+        <button class="cu-btn round bg-blue text-center light" capture-catch:touchstart="gotogroupinfo" data-groupid="{{item.groupID}}" data-groupname="{{item.groupName}}" data-isadmin="{{true}}">详情</button>
+      </view>
+      <view class="action">
         <button class="cu-btn round bg-green text-center light" capture-catch:touchstart="gotodiscussboard" data-groupid="{{item.groupID}}">讨论</button>
       </view>
       <view class="action">
@@ -33,6 +36,9 @@
       </view>
       <view class="content">
         <text class="text-grey text-lg">{{item.groupName}}</text>
+      </view>
+      <view class="action">
+        <button class="cu-btn round bg-blue text-center light" capture-catch:touchstart="gotogroupinfo" data-groupid="{{item.groupID}}" data-groupname="{{item.groupName}}" data-isadmin="{{true}}">详情</button>
       </view>
       <view class="action">
         <button class="cu-btn round bg-green text-center light" capture-catch:touchstart="gotodiscussboard" data-groupid="{{item.groupID}}">讨论</button>
@@ -68,6 +74,9 @@
         <text class="text-grey text-lg">{{item.groupName}}</text>
       </view>
       <view class="action">
+        <button class="cu-btn round bg-blue text-center light" capture-catch:touchstart="gotogroupinfo" data-groupid="{{item.groupID}}" data-groupname="{{item.groupName}}" data-isadmin="{{false}}">详情</button>
+      </view>
+      <view class="action">
         <button class="cu-btn round bg-green text-center light" capture-catch:touchstart="gotodiscussboard" data-groupid="{{item.groupID}}">讨论</button>
       </view>
       <view class="action">
@@ -82,6 +91,9 @@
       </view>
       <view class="content">
         <text class="text-grey text-lg">{{item.groupName}}</text>
+      </view>
+      <view class="action">
+        <button class="cu-btn round bg-blue text-center light" capture-catch:touchstart="gotogroupinfo" data-groupid="{{item.groupID}}" data-groupname="{{item.groupName}}" data-isadmin="{{false}}">详情</button>
       </view>
       <view class="action">
         <button class="cu-btn round bg-green text-center light" capture-catch:touchstart="gotodiscussboard" data-groupid="{{item.groupID}}">讨论</button>
