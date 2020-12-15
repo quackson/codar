@@ -1,7 +1,8 @@
 <view class="pageContainer">
 <cu-custom bgColor="bg-cyan light" isBack="{{true}}">
   <view slot="backText">返回</view>
-  <view slot="content">新建任务@{{groupName}}</view>
+	<view slot="content" wx:if="{{personal=='0'}}">新建任务@{{groupName}}</view>
+	<view slot="content" wx:if="{{personal=='1'}}">新建任务@个人</view>
 </cu-custom>
 
 <view class="createtask">
@@ -15,7 +16,7 @@
 		<view class="title">任务内容</view>
 		<input name="content" bindinput="contentInput" placeholder="输入详细描述"></input>
 	</view>	
-	<view class="cu-form-group flex">
+	<view class="cu-form-group flex" wx:if="{{personal=='0'}}">
 		<view class="title">紧迫级别</view>
 		<picker bindchange="PickerChange" value="{{prior_index}}" range="{{prior_}}">
 			<view class="picker">
@@ -23,7 +24,7 @@
 			</view>
 		</picker>
 	</view>
-	<view class="cu-form-group flex">
+	<view class="cu-form-group flex" wx:if="{{personal=='0'}}">
 		<view class="title">任务类型</view>
 		<picker bindchange="taskTypeChange" value="{{taskType_index}}" range="{{type_}}">
 			<view class="picker">
@@ -63,9 +64,19 @@
 			</view>
 		</picker>
   </view>
-  
-  <view class="cu-list menu-avatar " >
-        <view class="cu-item" wx:for="{{users}}" wx:key="key">
+  <view class="cu-modal {{modalName=='Modal'?'show':''}}">
+            <view class="cu-dialog">
+              <view class="cu-bar bg-white justify-end">
+              <view class="content text-olive" wx:if="{{result=='1'}}">{{'SUCCESS'}}</view>
+              <view class="content text-red" wx:if="{{result=='0'}}">{{'FAIL'}}</view>
+              <view class="action" bindtap="hideModal">
+                  <text class="cuIcon-close text-red"></text>
+                </view>
+              </view>                          
+            </view>
+</view> 
+  <view class="cu-list menu-avatar ">
+        <view class="cu-item" wx:for="{{users}}" wx:key="key" wx:if="{{personal=='0'}}">
           <view class="cu-avatar bg-white round lg">
             <text class="cuIcon-friendadd"></text>
           </view>

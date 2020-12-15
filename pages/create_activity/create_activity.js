@@ -6,6 +6,8 @@ Page({
    * 页面的初始数据
    */
   data: {
+    personal:-1,
+    result:-1,
     NavCur:'',
     groupName:"",
     groupID:"",
@@ -100,61 +102,121 @@ Page({
   createactivity(e){
     let this_=this
     let app_=app
-    var startT=this_.data.startDate.replace('-',':')+':'+this_.data.startTime.replace('-',':')
-    var endT=this_.data.endDate.replace('-',':')+':'+this_.data.endTime.replace('-',':')
+    var temp=this_.data.startDate.replace('-',':')
+    var startT=temp.replace('-',':')+':'+this_.data.startTime.replace('-',':')
+    temp=this_.data.endDate.replace('-',':')
+    var endT=temp.replace('-',':')+':'+this_.data.endTime.replace('-',':')
     console.log(startT)
     console.log(endT)
-    wx.request({
-      url: app.globalData.server+'/assign/add',
-      data:{      
-        userID:app_.globalData.userID,
-	      groupID:this_.data.groupID,
-	      assignmentName:this_.data.title,
-	      category:this_.data.taskType_index+1,
-        prior:this_.data.prior_index,
-        startTime:startT,
-        endTime:endT
-      },
-      method:"POST",
-      header: {
-        'content-type': 'application/x-www-form-urlencoded'
-      },
-      success(res){  
-        var taskid=res.data.assignmentID
-        var userinvite=''
-        for(var i=0;i<this_.data.users.length;i++){
-          if(this_.data.users[i]['checked']){
-            if(userinvite==''){
-              userinvite+=this_.data.users[i]['userID']
-            }
-            else{
-              userinvite+=('#'+this_.data.users[i]['userID'])
-            }
-          }
-        }
-        console.log(userinvite)
-        if(res.data.retCode=='200'){
-          wx.request({
-            url: app.globalData.server+'/assign/multiInvite',
-            data:{
-              userID:app.globalData.userID,
-              groupID:this_.data.groupID, 
-              assignmentID:taskid,
-              invitedUserIDs:userinvite
-            },
-            method:"POST",
-            header: {
-              'content-type': 'application/x-www-form-urlencoded'
-            },
-            success(res){  
-              if(res.data.retCode=='200'){
-                console.log("create activity success!")
+    if(this_.data.personal=='0'){
+      wx.request({
+        url: app.globalData.server+'/assign/add',
+        data:{      
+          userID:app_.globalData.userID,
+          groupID:this_.data.groupID,
+          assignmentName:this_.data.title,
+          assignmentContent:this_.data.content,
+          category:this_.data.taskType_index+1,
+          prior:this_.data.prior_index,
+          startTime:startT,
+          endTime:endT
+        },
+        method:"POST",
+        header: {
+          'content-type': 'application/x-www-form-urlencoded'
+        },
+        success(res){  
+          var taskid=res.data.assignmentID
+          var userinvite=''
+          for(var i=0;i<this_.data.users.length;i++){
+            if(this_.data.users[i]['checked']){
+              if(userinvite==''){
+                userinvite+=this_.data.users[i]['userID']
+              }
+              else{
+                userinvite+=('#'+this_.data.users[i]['userID'])
               }
             }
+          }
+          console.log(userinvite)
+          if(res.data.retCode=='200'){
+            wx.request({
+              url: app.globalData.server+'/assign/multiInvite',
+              data:{
+                userID:app.globalData.userID,
+                groupID:this_.data.groupID, 
+                assignmentID:taskid,
+                invitedUserIDs:userinvite
+              },
+              method:"POST",
+              header: {
+                'content-type': 'application/x-www-form-urlencoded'
+              },
+              success(res){  
+                if(res.data.retCode=='200'){
+                  this_.setData({
+                    result:1,
+                    modalName:'Modal'
+                  })
+                  console.log("create activity success!")
+                }
+                else{
+                  this_.setData({
+                    result:0,
+                    modalName:'Modal'
+                  })
+                }
+              },
+              fail(res){
+                this_.setData({
+                  result:0,
+                  modalName:'Modal'
+                })
+              }
+            })
+          }
+        }
+      })
+    }
+    else if(this_.data.personal=='1'){
+      console.log(startT)
+      console.log(endT)
+      wx.request({
+        url: app.globalData.server+'/task/add',
+        data:{      
+          userID:app_.globalData.userID,
+          groupID:this_.data.groupID,
+          startTime:startT,
+          endTime:endT,          
+          taskName:this_.data.title,
+          taskContent:this_.data.content,
+        },
+        method:"POST",
+        header: {
+          'content-type': 'application/x-www-form-urlencoded'
+        },
+        success(res){  
+          if(res.data.retCode=='200'){
+            this_.setData({
+              modalName:'Modal',
+              result:1
+            })
+          }
+          else{
+            this_.setData({
+              modalName:'Modal',
+              result:0
+            })
+          }
+        },
+        fail(res){
+          this_.setData({
+            modalName:'Modal',
+            result:0
           })
         }
-      }
-    })
+      })
+    }
   },
   NavChange:function(e){
     app.globalData.NavCur = e.currentTarget.dataset.cur
@@ -184,6 +246,11 @@ Page({
         break;
     }
   },
+  hideModal(e) {
+    this.setData({
+      modalName: null
+    })
+  },
 
   /**
    * 生命周期函数--监听页面加载
@@ -193,8 +260,7 @@ Page({
       NavCur: app.globalData.NavCur,
       groupID:options.groupid,
       groupName:options.groupname,
-      //personal:options.personal
-      personal:0,
+      personal:options.personal,
       startDate:options.year+'-'+options.month+'-'+options.day,
       endDate:options.year+'-'+options.month+'-'+options.day
     })
@@ -239,6 +305,7 @@ Page({
     console.log('year: ' + options.year)
     console.log('month: ' + options.month)
     console.log('day: ' + options.day)
+    console.log('personal: ' + options.personal)
   },
   /**
    * 生命周期函数--监听页面初次渲染完成

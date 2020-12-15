@@ -6,6 +6,7 @@ Page({
    * 页面的初始数据
    */
   data: {
+    result:-1,
     NavCur:'',
     groupName:"",
     searchresult:'0',
@@ -137,7 +138,23 @@ Page({
                   newMemberName:''
                 })               
                 console.log("创建团队");
+                this_.setData({
+                  modalName: 'created',
+                  result:1
+                })
               }
+              else{
+                this_.setData({
+                  modalName: 'created',
+                  result:0
+                })
+              }
+            },
+            fail(res){
+              this.setData({
+                modalName: 'created',
+                result:0
+              })
             }
           })
         }

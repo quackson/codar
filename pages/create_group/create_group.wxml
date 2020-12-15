@@ -48,9 +48,20 @@
           </view> 
         </view>
         <view class="createGroup padding-xl bg-white">
-          <button class="cu-btn block bg-cyan light lg" bindtap="createGroup">
+          <button class="cu-btn block bg-cyan light lg" bindtap="createGroup" data-target="Modal">
             <text class="cuIcon-upload"></text> 提交</button>
         </view>
+        <view class="cu-modal {{modalName=='created'?'show':''}}">
+            <view class="cu-dialog">
+              <view class="cu-bar bg-white justify-end">
+              <view class="content text-olive" wx:if="{{result=='1'}}">{{'SUCCESS'}}</view>
+              <view class="content text-red" wx:if="{{result=='0'}}">{{'FAIL'}}</view>
+              <view class="action" bindtap="hideModal">
+                  <text class="cuIcon-close text-red"></text>
+                </view>
+              </view>                          
+            </view>
+        </view> 
   </view>
 </form>
 
