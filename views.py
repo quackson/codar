@@ -157,6 +157,7 @@ def queryUserTasks():
                 continue
             t = dict()
             t['groupID'] = task.group_id
+            t['groupName'] = task.group.name
             t['taskID'] = task.id
             t['taskName'] = task.name
             t['startTime'] = task.startTime
@@ -832,6 +833,8 @@ def setAssignmentExecutor():
                         return jsonify(res)
                 assignList = executor.assignList
                 for old_assign in assignList:
+                    if old_assign.category==2:
+                        continue
                     if not compatible(old_assign,assign):
                         res = {
                             'retCode':400,
@@ -984,6 +987,8 @@ def setAssignmentTime():
                         })
                 executor.assignList.remove(assign)
                 for old_assign in executor.assignList:
+                    if old_assign.category==2:
+                        continue
                     if not compatible(old_assign,cur_assign):
                         executor.assignList.append(assign)
                         return jsonify({
@@ -1162,7 +1167,7 @@ def queryAllAssignments():
             t['prior'] = task.prior
             executorList = task.executorList
             executors = []
-            for exe in executors:
+            for exe in executorList:
                 e = dict()
                 e['userID'] = exe.id
                 e['userName'] = exe.name
