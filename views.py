@@ -1094,11 +1094,23 @@ def queryAllTasks():
 def queryAllPendingTasks():
     if request.method == 'GET':
         groupID = request.args.get('groupID')
+        userID = request.args.get('userID')
         group = Group.query.get(groupID)
+        user = User.query.get(userID)
+        if not user:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not exist'
+            })
         if not group:
             return jsonify({
                 'retCode':400,
                 'errMsg':'group not exist'
+            })
+        if not user in group.userList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not in group'
             })
         pendingTaskList = group.pendingTaskList
         res = dict()
@@ -1114,6 +1126,10 @@ def queryAllPendingTasks():
             t['endTime'] = task.endTime
             t['pendingTaskContent'] = task.content
             t['voteNum'] = task.voteNum
+            if user in task.voterList:
+                t['voted'] = 1
+            else:
+                t['voted'] = 0
             tasks.append(t)
         res['pendingTasks'] = tasks
         return jsonify(res)
