@@ -47,13 +47,151 @@ Page({
       }
       */
     ],
-
+    content:''
+  },
+  textareaBInput(e){
+    this.setData({
+      content: e.detail.value
+    });
+  },
+  createProposal(e){
+    let this_=this
+    let app_=app
+    wx.request({
+      url: app.globalData.server+'/pendingTask/add',
+      data:{      
+        userID:app.globalData.userID,
+        groupID:this_.data.groupID,
+        pendingTaskContent:this_.data.content
+      },
+      method:"POST",
+      header: {
+        'content-type': 'application/x-www-form-urlencoded'
+      },
+      success(res){
+        if(res.data.retCode==200){
+          this_.setData({
+            content:''
+          })
+          console.log("create proposal success")
+          wx.request({
+            url: app.globalData.server+'/group/pendingTask',
+            data:{      
+              userID:app.globalData.userID,
+              groupID:this_.data.groupID
+            },
+            method:"GET",
+            header: {
+              'content-type': 'application/x-www-form-urlencoded'
+            },
+            success(res){
+              if(res.data.retCode==200){
+                var tasks=[]
+                for(var i=0;i<res.data.pendingTasks.length;i++){
+                  var temp={
+                    userID:'',
+                    userName:'',
+                    pendingTaskID:'',
+                    pendingTaskName:'',
+                    startTime:'',
+                    endTime:'',
+                    pendingTaskContent:'',
+                    voteNum:'',
+                    voted:0,
+                    myvote:0,
+                  }
+                  temp['userID']=res.data.pendingTasks[i]['userID']
+                  temp['userName']=res.data.pendingTasks[i]['userName']
+                  temp['pendingTaskName']=res.data.pendingTasks[i]['pendingTaskName']
+                  temp['pendingTaskID']=res.data.pendingTasks[i]['pendingTaskID']
+                  temp['startTime']=res.data.pendingTasks[i]['startTime']
+                  temp['endTime']=res.data.pendingTasks[i]['endTime']
+                  temp['pendingTaskContent']=res.data.pendingTasks[i]['pendingTaskContent']
+                  temp['voteNum']=res.data.pendingTasks[i]['voteNum']
+                  if(res.data.pendingTasks[i]['voted']=='1'){
+                    temp['myvote']=1
+                  }
+                  tasks.push(temp)
+                }
+                this_.setData({
+                  pendingTasks:tasks
+                })
+                console.log(this_.data.pendingTasks)
+      
+              }
+            }
+          })
+        }
+      }
+    })
   },
   voteYes(e){
-
+    let app_=app
+    let this_=this
+    var index=e.currentTarget.dataset.id  
+    console.log(e)  
+    console.log(this_.data.pendingTasks[index])
+    if(this_.data.pendingTasks[index]['myvote']=='1')
+    {
+      return
+    }
+    wx.request({
+      url: app.globalData.server+'/pendingTask/vote',
+      data:{      
+        userID:app.globalData.userID,
+        groupID:this_.data.groupID,
+    	  pendingTaskID:this_.data.pendingTasks[index]['pendingTaskID'],
+	      vote:1
+      },
+      method:"POST",
+      header: {
+        'content-type': 'application/x-www-form-urlencoded'
+      },
+      success(res){
+        if(res.data.retCode==200){
+          var temp=this_.data.pendingTasks
+          temp[index]['myvote']=1
+          this_.setData({
+            pendingTasks:temp
+          })
+        }
+      }
+    })
+    
   },
   voteNo(e){
-
+    console.log("No")
+    let app_=app
+    let this_=this
+    var index=e.currentTarget.dataset.id  
+    console.log(e)  
+    console.log(this_.data.pendingTasks[index])
+    if(this_.data.pendingTasks[index]['myvote']=='2')
+    {
+      return
+    }
+    wx.request({
+      url: app.globalData.server+'/pendingTask/vote',
+      data:{      
+        userID:app.globalData.userID,
+        groupID:this_.data.groupID,
+    	  pendingTaskID:this_.data.pendingTasks[index]['pendingTaskID'],
+	      vote:-1
+      },
+      method:"POST",
+      header: {
+        'content-type': 'application/x-www-form-urlencoded'
+      },
+      success(res){
+        if(res.data.retCode==200){
+          var temp=this_.data.pendingTasks
+          temp[index]['myvote']=2
+          this_.setData({
+            pendingTasks:temp
+          })
+        }
+      }
+    })
   },
   NavChange:function(e){
     app.globalData.NavCur = e.currentTarget.dataset.cur
@@ -95,8 +233,7 @@ Page({
   onLoad: function (options) {
     this.setData({
       NavCur: app.globalData.NavCur,
-      groupID:options.groupid,
-      groupName:options.groupname      
+      groupID:options.groupid    
     })
     let app_=app
     let this_=this
@@ -113,6 +250,53 @@ Page({
         this_.setData({
           userName:res.data.userName
         })
+      }
+    })
+    wx.request({
+      url: app.globalData.server+'/group/pendingTask',
+      data:{      
+        userID:app.globalData.userID,
+        groupID:options.groupid
+      },
+      method:"GET",
+      header: {
+        'content-type': 'application/x-www-form-urlencoded'
+      },
+      success(res){
+        if(res.data.retCode==200){
+          var tasks=[]
+          for(var i=0;i<res.data.pendingTasks.length;i++){
+            var temp={
+              userID:'',
+              userName:'',
+              pendingTaskID:'',
+              pendingTaskName:'',
+              startTime:'',
+              endTime:'',
+              pendingTaskContent:'',
+              voteNum:'',
+              voted:0,
+              myvote:0,
+            }
+            temp['userID']=res.data.pendingTasks[i]['userID']
+            temp['userName']=res.data.pendingTasks[i]['userName']
+            temp['pendingTaskName']=res.data.pendingTasks[i]['pendingTaskName']
+            temp['pendingTaskID']=res.data.pendingTasks[i]['pendingTaskID']
+            temp['startTime']=res.data.pendingTasks[i]['startTime']
+            temp['endTime']=res.data.pendingTasks[i]['endTime']
+            temp['pendingTaskContent']=res.data.pendingTasks[i]['pendingTaskContent']
+            temp['voteNum']=res.data.pendingTasks[i]['voteNum']
+            if(res.data.pendingTasks[i]['voted']=='1'){
+              temp['myvote']=1
+            }
+            tasks.push(temp)
+          }
+          this_.setData({
+            pendingTasks:tasks
+          })
+          console.log(this_.data.pendingTasks)
+
+        }
       }
     })
     console.log('userid: '+options.userid)
