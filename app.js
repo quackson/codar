@@ -90,7 +90,7 @@ App({
   globalData: {
     userInfo:'',
     openID:'',
-    userID:0,
+    userID:1,
     NavCur: "index", // current navigation tab
     server:'http://127.0.0.1:5000/'
   }

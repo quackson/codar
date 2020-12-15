@@ -80,7 +80,7 @@ Page({
       }
     ],
     checkbox:{},
-    third_session: 1
+    third_session: app.globalData.userID,
   },
   getAdminGroup:function(){
     this.setData({
@@ -190,6 +190,16 @@ Page({
       modalName: null
     })
   },
+
+  
+  gotogroupinfo:function(e){
+    console.log('group info')
+    let self = this;
+    wx.navigateTo({
+      url: '../group_info/group_info?userid=' + self.data.third_session + '&groupid=' + e.currentTarget.dataset.groupid + '&groupname=' + e.currentTarget.dataset.groupname + '&isadmin=' + e.currentTarget.dataset.isadmin
+    })
+  },
+
   gotogroupcalendar:function(e){
     let self = this;
     console.log(e.currentTarget.dataset.groupname)
@@ -284,6 +294,7 @@ Page({
       }
     })
   },
+
   NavChange:function(e){
     app.globalData.NavCur = e.currentTarget.dataset.cur
     
