@@ -423,7 +423,13 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-
+    let selectedDay = this.calendar.getSelectedDay();
+    if(this.data.TabCur==0){
+      this.getGroupDailyAssignments(this.formDate(selectedDay[0].year, selectedDay[0].month, selectedDay[0].day))
+    }
+    else{
+      this.getGroupDailyTasks(this.formDate(selectedDay[0].year, selectedDay[0].month, selectedDay[0].day))
+    }
   },
 
   /**
