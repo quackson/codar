@@ -20,12 +20,22 @@ user_with_group_invitation = db.Table('user_with_group_invitation',
     db.Column('group_id',db.Integer,db.ForeignKey('group.id'),primary_key=True) 
 )
 
+user_quit_group = db.Table('user_quit_group',
+    db.Column('user_id',db.Integer,db.ForeignKey('user.id'),primary_key=True),
+    db.Column('group_id',db.Integer,db.ForeignKey('group.id'),primary_key=True) 
+)
+
 user_with_assign_invitation = db.Table('user_with_assign_invitation',
     db.Column('user_id',db.Integer,db.ForeignKey('user.id')),
     db.Column('assign_id',db.Integer,db.ForeignKey('assignment.id')) 
 )
 
-user_vote_pendingTask = db.Table('user_vote_pendingTask',
+user_agree_pendingTask = db.Table('user_agree_pendingTask',
+    db.Column('user_id',db.Integer,db.ForeignKey('user.id'),primary_key=True),
+    db.Column('pending_id',db.Integer,db.ForeignKey('pendingtask.id'),primary_key=True) 
+)
+
+user_disagree_pendingTask = db.Table('user_disagree_pendingTask',
     db.Column('user_id',db.Integer,db.ForeignKey('user.id'),primary_key=True),
     db.Column('pending_id',db.Integer,db.ForeignKey('pendingtask.id'),primary_key=True) 
 )
@@ -48,6 +58,7 @@ class User(db.Model):
     adminGroupList = db.relationship('Group',secondary= user_admin_group,backref = db.backref('adminList'))
     assignList = db.relationship('Assignment',secondary= user_take_assign,backref = db.backref('executorList'))
     groupInvitationList = db.relationship('Group',secondary= user_with_group_invitation,backref = db.backref('invitingList'))
+    noticeList = db.relationship('Group',secondary= user_quit_group,backref = db.backref('quiterList'))
     assignInvitationList = db.relationship('Assignment',secondary= user_with_assign_invitation,backref = db.backref('invitingList'))
 
 class Group(db.Model):
@@ -76,11 +87,13 @@ class PendingTask(db.Model):
     endTime = db.Column(db.String(20))
     content = db.Column(db.Text)
     name = db.Column(db.String(20))
-    voteNum = db.Column(db.Integer)
+    agreeNum = db.Column(db.Integer)
+    disagreeNum = db.Column(db.Integer)
     group_id = db.Column(db.Integer,db.ForeignKey('group.id'))
     user_id = db.Column(db.Integer,db.ForeignKey('user.id'))
     
-    voterList = db.relationship('User',secondary= user_vote_pendingTask,backref = db.backref('voteList'))
+    agreeList = db.relationship('User',secondary= user_agree_pendingTask,backref = db.backref('agreeList'))
+    disagreeList = db.relationship('User',secondary= user_disagree_pendingTask,backref = db.backref('disagreeList'))
     
 class Assignment(db.Model):
     __tablename__ = 'assignment'

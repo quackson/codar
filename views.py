@@ -5,15 +5,30 @@ import datetime
 import requests
 import json
 
+def delete_member_from_group(group,user):
+    for task in group.taskList:
+        if task.user_id == user.id:
+            db.session.delete(task)
+    for pt in group.pendingTaskList:
+        if pt.user_id == user.id:
+            db.session.delete(pt)
+    for assign in group.assignList:
+        if assign.publisher_id == user.id:
+            db.session.delete(assign)
+        if user in assign.executorList:
+            assign.executorList.remove(user)
+        if user in assign.invitingList:
+            assign.invitingList.remove(user)
+
 def sameDay(day,task):
     days = day.split(':')
     startTimes = task.startTime.split(':')
     endTimes = task.endTime.split(':')
-    if days[0] == startTimes[0] and days[1]== startTimes[1] and days[2]==startTimes[2]:
-        return True
-    if days[0] == endTimes[0] and days[1]== endTimes[1] and days[2]==endTimes[2]:
-        return True
-    return False
+    if days[0] < startTimes[0] or days[1]< startTimes[1] or days[2]<startTimes[2]:
+        return False
+    if days[0] > endTimes[0] or days[1]> endTimes[1] or days[2]>endTimes[2]:
+        return False
+    return True
     
 def earlierThan(x,y):
     xs = x.split(':')
@@ -249,7 +264,8 @@ def addPendingTask():
             endTime = endTime,
             content = pendingTaskContent,
             name = pendingTaskName,
-            voteNum = 0,
+            agreeNum = 0,
+            disagreeNum = 0,
             group_id = groupID,
             user_id = userID
         )
@@ -264,7 +280,8 @@ def addPendingTask():
         res['endTime'] = endTime
         res['pendingTaskName'] = pendingTaskName
         res['pendingTaskContent'] = pendingTaskContent
-        res['voteNum'] = 0
+        res['agreeNum'] = 0
+        res['disagreeNum'] = 0
         res['userID'] = userID
         res['userName'] = User.query.get(userID).name
         return jsonify(res)
@@ -299,15 +316,38 @@ def votePendingTask():
                 'retCode':400,
                 'errMsg':'pendingTask not in this group'
             })
-        if user in pendingTask.voterList:
-            res = {
-                'retCode':400,
-                'errMsg':'already voted! can\'t vote again' 
-            }
-            return jsonify(res)
-        pendingTask.voteNum += int(vote)
-        pendingTask.voterList.append(user)
-        db.session.commit()
+        if int(vote)==1:
+            if user in pendingTask.agreeList:
+                return jsonify({
+                    'retCode':400,
+                    'errMsg':'already agreed, can\'t agree again'
+                })
+            elif user in pendingTask.disagreeList:
+                pendingTask.disagreeList.remove(user)
+                pendingTask.agreeList.append(user)
+                pendingTask.disagreeNum-=1
+                pendingTask.agreeNum+=1
+                db.session.commit()
+            else:
+                pendingTask.agreeList.append(user)
+                pendingTask.agreeNum+=1
+                db.session.commit()
+        if int(vote)==-1:
+            if user in pendingTask.disagreeList:
+                return jsonify({
+                    'retCode':400,
+                    'errMsg':'already disagreed, can\'t disagree again'
+                })
+            elif user in pendingTask.agreeList:
+                pendingTask.agreeList.remove(user)
+                pendingTask.disagreeList.append(user)
+                pendingTask.agreeNum-=1
+                pendingTask.disagreeNum+=1
+                db.session.commit()
+            else:
+                pendingTask.disagreeList.append(user)
+                pendingTask.agreeNum-=1
+                db.session.commit()
         res = dict()
         res['retCode'] = 200
         res['pendingTaskID'] = pendingTaskID
@@ -315,7 +355,8 @@ def votePendingTask():
         res['endTime'] = pendingTask.endTime
         res['pendingTaskName'] = pendingTask.name
         res['pendingTaskContent'] = pendingTask.content
-        res['voteNum'] = pendingTask.voteNum
+        res['agreeNum'] = pendingTask.agreeNum
+        res['disagreeNum'] = pendingTask.disagreeNum
         res['userID'] = pendingTask.user.id
         res['userName'] = pendingTask.user.name
         return jsonify(res)
@@ -470,6 +511,7 @@ def quitGroup():
             group.userList.remove(user)
         if user in group.adminList:
             group.adminList.remove(user)
+        delete_member_from_group(group,user)
         db.session.commit()
         res = dict()
         res['retCode'] = 200
@@ -618,6 +660,7 @@ def queryAllAdminGroups():
             g = dict()
             g['groupID'] = group.id
             g['groupName'] = group.name
+            g['role'] = 2 if group.owner_id==int(userID) else 1
             groups.append(g)
         res['groups'] = groups
         return jsonify(res)
@@ -1130,9 +1173,12 @@ def queryAllPendingTasks():
             t['startTime'] = task.startTime
             t['endTime'] = task.endTime
             t['pendingTaskContent'] = task.content
-            t['voteNum'] = task.voteNum
-            if user in task.voterList:
+            t['agreeNum'] = task.agreeNum
+            t['disagreeNum'] = task.disagreeNum
+            if user in task.agreeList:
                 t['voted'] = 1
+            elif user in  task.disagreeList:
+                t['voted'] = -1
             else:
                 t['voted'] = 0
             tasks.append(t)
@@ -1224,7 +1270,8 @@ def queryPendingTask():
         res['startTime'] = task.startTime
         res['endTime'] = task.endTime
         res['pendingTaskContent'] = task.content
-        res['voteNum'] = task.voteNum
+        res['agreeNum'] = task.agreeNum
+        res['disagreeNum'] = task.disagreeNum
         return jsonify(res)
     
 @app.route('/assign/info',methods=['GET'])
@@ -1424,7 +1471,15 @@ def deleteGroup():
                 'retCode':400,
                 'errMsg':'user is not group owner, no authority to do this'
             })
-        db.session.delete(group)
+        for member in group.userList:
+            member.noticeList.append(group)
+            group.userList.remove(member)
+            delete_member_from_group(group,member)
+        for member in group.adminList:
+            if member.id!=userID:
+                member.noticeList.append(group)
+            group.adminList.remove(member)
+            delete_member_from_group(group,member)
         db.session.commit()
         res = {
             'retCode':200
@@ -1542,6 +1597,8 @@ def deleteMember():
                 'errMsg':'you have no authority tp delete an admin'
             })
         group.userList.remove(member)
+        delete_member_from_group(group,member)
+        member.noticeList.append(group)
         db.session.commit()
         return jsonify({'retCode':200})
 
@@ -1774,6 +1831,64 @@ def multiInviteAssign():
         res['retCode'] = 200
         res['invitedUserIDs'] = invitedUserIDs
         res['invitedUserNames'] = invitedNames[1:]
+        return jsonify(res)
+    
+@app.route('/user/notice',methods=['GET'])
+def queryNotice():
+    if request.method == 'GET':
+        userID = request.args.get('userID')
+        user = User.query.get(userID)
+        if not user:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not exist'
+            })
+        notices = user.noticeList
+        res = dict()
+        res['retCode'] = 200
+        groups = []
+        for notice in notices:
+            t = dict()
+            t['groupID'] = notice.id
+            t['groupName'] = notice.name
+            groups.append(t)
+        res['groups'] = groups
+        return jsonify(res)
+    
+@app.route('/user/checkNotice',methods=['POST'])
+def checkNotice():
+    if request.method == 'POST':
+        userID = request.form.get('userID')
+        groupID = request.form.get('groupID')
+        user = User.query.get(userID)
+        group = Group.query.get(groupID)
+        if not user:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'user not exist'
+            })
+        if not group:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'group not exist'
+            })
+        notices = user.noticeList
+        if not group in user.noticeList:
+            return jsonify({
+                'retCode':400,
+                'errMsg':'group not in user\'s noticeList'
+            })
+        user.noticeList.remove(group)
+        db.session.commit()
+        res = dict()
+        res['retCode'] = 200
+        groups = []
+        for notice in user.noticeList:
+            t = dict()
+            t['groupID'] = notice.id
+            t['groupName'] = notice.name
+            groups.append(t)
+        res['groups'] = groups
         return jsonify(res)
 
 if __name__ == '__main__':
