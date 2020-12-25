@@ -14,13 +14,38 @@
       <view class="cu-avatar bg-white round lg">
         <text class="cuIcon-group"></text>
       </view>
-      <view class="content">
+      <input wx:if="{{inputChangeName}}" name="title" bindinput="groupNameInput" placeholder="输入名称" value="{{groupName}}"></input>
+      <view class="content" wx:else>
         <text class="text-grey text-lg">{{groupName}}</text>
+      </view>
+      <view class="action" wx:if="{{inputChangeName}}">
+        <button class="cu-btn round bg-green text-center light" bindtap="changename">
+          <text class="cuIcon-check"></text>
+        </button>
+      </view>
+      <view class="action" wx:if="{{inputChangeName}}">
+        <button class="cu-btn round bg-red text-center light" bindtap="inputchangename">
+          <text class="cuIcon-close"></text>
+        </button>
+      </view>
+      <view class="action" wx:if="{{role != 0 && !inputChangeName}}">
+        <button class="cu-btn round bg-green text-center light" bindtap="inputchangename">更改</button>
       </view>
     </view>
     <view class="cu-bar bg-white margin-top">
       <view class="action">
         <text class="cuIcon-title text-pink"></text> 团队成员
+      </view>
+      <checkbox bindtap="gotosetmanager" wx:if="{{role == 2}}">
+        <text class="text-green">管理员设置</text>
+      </checkbox>
+    </view>
+    <view class="cu-item" bindtap="gotoaddmember" wx:if="{{role != 0}}">
+      <view class="cu-avatar bg-white round lg">
+        <text class="cuIcon-add line-green"></text>
+      </view>
+      <view class="content">
+        <text class="text-grey text-lg">添加团队成员</text>
       </view>
     </view>
     <view class="cu-item" wx:for="{{members}}" wx:if="{{index < members.length-1 || index < 5}}" wx:key="key">
@@ -34,6 +59,15 @@
         <text class="text-grey text-lg" wx:elif="{{item.role == 1}}">{{item.userName}} (管理员)</text>
         <text class="text-grey text-lg" wx:else>{{item.userName}}</text>
       </view>
+      <view class="action" wx:if="{{setManager == 1 && item.role == 1 && role == 2}}">
+        <button class="cu-btn round bg-blue text-center light" bindtap="setmanager" data-managerid="{{item.userID}}" data-operation="-1" >撤销</button>
+      </view>
+      <view class="action" wx:if="{{setManager == 1 && item.role == 0 && role == 2}}">
+        <button class="cu-btn round bg-green text-center light" bindtap="setmanager" data-managerid="{{item.userID}}" data-operation="1" >添加</button>
+      </view>
+      <view class="action" wx:if="{{setManager == 0 && item.role == 0 && role != 0}}">
+        <button class="cu-btn round bg-red text-center light" bindtap="showModal" data-target="Modal" data-id="{{index}}">删除</button>
+      </view>
     </view>
     <view class="cu-item" wx:for="{{members}}" wx:if="{{index == members.length-1 && index >= 5}}" wx:key="key">
       <view class="cu-avatar bg-white round lg">
@@ -45,6 +79,30 @@
         <text class="text-grey text-lg" wx:if="{{item.role == 2}}">{{item.userName}} (创建者)</text>
         <text class="text-grey text-lg" wx:elif="{{item.role == 1}}">{{item.userName}} (管理员)</text>
         <text class="text-grey text-lg" wx:else>{{item.userName}}</text>
+      </view>
+      <view class="action" wx:if="{{setManager == 1 && item.role == 1 && role == 2}}">
+        <button class="cu-btn round bg-blue text-center light" bindtap="setmanager" data-managerid="{{item.userID}}" data-operation="-1" >撤销</button>
+      </view>
+      <view class="action" wx:if="{{setManager == 1 && item.role == 0 && role == 2}}">
+        <button class="cu-btn round bg-green text-center light" bindtap="setmanager" data-managerid="{{item.userID}}" data-operation="1" >添加</button>
+      </view>
+      <view class="action" wx:if="{{setManager == 0 && item.role == 0 && role != 0}}">
+        <button class="cu-btn round bg-red text-center light" bindtap="showModal" data-target="Modal" data-id="{{index}}" >删除</button>
+      </view>
+    </view>
+    <view class="cu-modal {{modalName=='Modal'?'show':''}}">
+      <view class="cu-dialog">
+        <view class="cu-bar bg-white justify-end">
+          <view class="content">{{'成员：'+checkbox.userName}}</view>
+          <view class="action" bindtap="hideModal">
+            <text class="cuIcon-close text-red"></text>
+          </view>
+        </view>
+        <view class="padding-xl">{{"请确认是否删除该成员"}}</view>              
+        <button class="text-sm padding"
+          bindtap="deletemember" data-id="{{checkbox.userID}}">
+          <text class="text-red">{{'确认删除'}}</text>
+        </button>
       </view>
     </view>
   </view>

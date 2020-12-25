@@ -8,7 +8,8 @@
     "pages/calendar/personal_calendar",
     "pages/calendar/group_calendar",
     "pages/discussion/discussion",
-    "pages/group_info/group_info"
+    "pages/group_info/group_info",
+    "pages/group_info/add_member"
   ],
   "window": {
     "backgroundTextStyle": "light",
