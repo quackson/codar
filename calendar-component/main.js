@@ -411,6 +411,11 @@ const conf = {
         .catch(() => {
           reject('jump failed')
         })
+      Component.triggerEvent('afterTapDay', {
+        year: year,
+        month: month,
+        date: date
+      })
     })
   }
 }
