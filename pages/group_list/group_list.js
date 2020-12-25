@@ -21,7 +21,7 @@ Page({
       }
     ],
     created_groups:[
-      {
+      /*{
         groupID:1,
         groupName:"Group1"
       },
@@ -60,10 +60,10 @@ Page({
       {
         groupID:10,
         groupName:"Group10"
-      }
+      }*/
     ],
     joined_groups:[
-      {
+      /*{
         groupID:1,
         groupName:"Group1",
         creatorName:"abc"
@@ -77,7 +77,7 @@ Page({
         groupID:3,
         groupName:"Group3",
         creatorName:"a_老师"
-      }
+      }*/
     ],
     checkbox:{},
     third_session: app.globalData.userID,

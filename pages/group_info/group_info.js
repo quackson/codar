@@ -46,6 +46,10 @@ Page({
     let third_session = this.data.third_session;
     let groupId = this.data.groupID;
     let groupName = this.data.newGroupName;
+    if(groupName == undefined || groupName == this.data.groupName){
+      this.inputchangename();
+      return;
+    }
     let self = this;
 
     wx.request({

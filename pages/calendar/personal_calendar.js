@@ -25,7 +25,7 @@ Page({
       }
     ],
     assignments:[
-      {
+      /*{
         assignmentID: 1,
         assignmentName:"期中考试",
         groupID: 1,
@@ -64,7 +64,7 @@ Page({
 			  endTime:"?",
         category: 1,
         assignmentContent: "hey"
-      }
+      }*/
     ],
     checkbox:{},
     curDate:""
@@ -261,6 +261,7 @@ Page({
   },
 
   afterTapDay:function(e){
+    console.log(e)
     console.log(e.detail.year)
     console.log(e.detail.month)
     console.log(e.detail.date)

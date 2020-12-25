@@ -30,10 +30,10 @@
   </view>
   <view class="cu-item bg-grey" wx:for="{{assignments}}" wx:if="{{index < assignments.length-1 || index < 1}}" wx:key="key">
     <view class="cu-avatar bg-white round lg">
-      <text class="cuIcon-form line-red" wx:if="{{item.prior == 0}}"></text>
-      <text class="cuIcon-form line-orange" wx:elif="{{item.prior == 1}}"></text>
+      <text class="cuIcon-form line-red" wx:if="{{item.prior == 4}}"></text>
+      <text class="cuIcon-form line-orange" wx:elif="{{item.prior == 3}}"></text>
       <text class="cuIcon-form line-yellow" wx:elif="{{item.prior == 2}}"></text>
-      <text class="cuIcon-form line-green" wx:elif="{{item.prior == 3}}"></text>
+      <text class="cuIcon-form line-green" wx:elif="{{item.prior == 1}}"></text>
       <text class="cuIcon-form line-blue" wx:else></text>
     </view>
     <view class="content">
@@ -51,10 +51,10 @@
   </view>
   <view class="cu-item bg-grey" wx:for="{{assignments}}" wx:if="{{index == assignments.length-1 && index >= 1}}" wx:key="key" style="margin-bottom: 100rpx">
     <view class="cu-avatar bg-white round lg">
-      <text class="cuIcon-form line-red" wx:if="{{item.prior == 0}}"></text>
-      <text class="cuIcon-form line-orange" wx:elif="{{item.prior == 1}}"></text>
+      <text class="cuIcon-form line-red" wx:if="{{item.prior == 4}}"></text>
+      <text class="cuIcon-form line-orange" wx:elif="{{item.prior == 3}}"></text>
       <text class="cuIcon-form line-yellow" wx:elif="{{item.prior == 2}}"></text>
-      <text class="cuIcon-form line-green" wx:elif="{{item.prior == 3}}"></text>
+      <text class="cuIcon-form line-green" wx:elif="{{item.prior == 1}}"></text>
       <text class="cuIcon-form line-blue" wx:else></text>
     </view>
     <view class="content">
@@ -78,11 +78,37 @@
           <text class="cuIcon-close text-red"></text>
         </view>
       </view>
-      <view class="padding-xl">
-        详细内容: {{checkbox.assignmentContent}}
+      <view class="cu-list menu-avatar ">
+        <view class="cu-item">
+          <view class="cu-avatar bg-white round lg">
+            <text class="cuIcon-tag"></text>
+          </view>
+          <view class="content">
+            <text class="text-grey text-lg">{{checkbox.prior}}</text>
+          </view>
+        </view>
+        <view class="cu-bar bg-white margin-top">
+          <view class="action">
+            <text class="cuIcon-title text-pink"></text> 任务内容
+          </view>
+        </view>
+        <view class="cu-text bg-white">
+          <text class="text-grey text-lg">{{checkbox.assignmentContent}}</text>
+        </view>
+        <view class="cu-bar bg-white margin-top">
+          <view class="action">
+            <text class="cuIcon-title text-pink"></text> 执行者
+          </view>
+        </view>
+        <view class="cu-item" wx:for="{{checkbox.executors}}" wx:key="key">
+          <view class="cu-avatar bg-white round lg">
+            <text class="cuIcon-people"></text>
+          </view>
+          <view class="content">
+            <text class="text-grey text-lg">{{item.userName}}</text>
+          </view>
+        </view>
       </view>
-      参与者: 
-      <view class="padding-xl" wx:for="{{checkbox.executors}}">{{item.userName}}</view>
       <view class="solid-bottom text-sm padding">
         <text class="text-grey">{{checkbox.startTime+"~"+checkbox.endTime}}</text>
       </view>
@@ -112,10 +138,10 @@
   </view>
   <view class="cu-item bg-grey" wx:for="{{tasks}}" wx:if="{{index < tasks.length-1 || index < 1}}" wx:key="key">
     <view class="cu-avatar bg-white round lg">
-      <text class="cuIcon-form line-red" wx:if="{{item.prior == 0}}"></text>
-      <text class="cuIcon-form line-orange" wx:elif="{{item.prior == 1}}"></text>
+      <text class="cuIcon-form line-red" wx:if="{{item.prior == 4}}"></text>
+      <text class="cuIcon-form line-orange" wx:elif="{{item.prior == 3}}"></text>
       <text class="cuIcon-form line-yellow" wx:elif="{{item.prior == 2}}"></text>
-      <text class="cuIcon-form line-green" wx:elif="{{item.prior == 3}}"></text>
+      <text class="cuIcon-form line-green" wx:elif="{{item.prior == 1}}"></text>
       <text class="cuIcon-form line-blue" wx:else></text>
     </view>
     <view class="content">
@@ -133,10 +159,10 @@
   </view>
   <view class="cu-item bg-grey" wx:for="{{tasks}}" wx:if="{{index == tasks.length-1 && index >= 1}}" wx:key="key" style="margin-bottom: 100rpx">
     <view class="cu-avatar bg-white round lg">
-      <text class="cuIcon-form line-red" wx:if="{{item.prior == 0}}"></text>
-      <text class="cuIcon-form line-orange" wx:elif="{{item.prior == 1}}"></text>
+      <text class="cuIcon-form line-red" wx:if="{{item.prior == 4}}"></text>
+      <text class="cuIcon-form line-orange" wx:elif="{{item.prior == 3}}"></text>
       <text class="cuIcon-form line-yellow" wx:elif="{{item.prior == 2}}"></text>
-      <text class="cuIcon-form line-green" wx:elif="{{item.prior == 3}}"></text>
+      <text class="cuIcon-form line-green" wx:elif="{{item.prior == 1}}"></text>
       <text class="cuIcon-form line-blue" wx:else></text>
     </view>
     <view class="content">
@@ -160,10 +186,24 @@
           <text class="cuIcon-close text-red"></text>
         </view>
       </view>
-      <view class="padding-xl">
-        详细内容: {{checkbox.taskContent}}
+      <view class="cu-list menu-avatar ">
+        <view class="cu-item">
+          <view class="cu-avatar bg-white round lg">
+            <text class="cuIcon-people"></text>
+          </view>
+          <view class="content">
+            <text class="text-grey text-lg">{{checkbox.userName}}</text>
+          </view>
+        </view>
+        <view class="cu-bar bg-white margin-top">
+          <view class="action">
+            <text class="cuIcon-title text-pink"></text> 事项内容
+          </view>
+        </view>
+        <view class="cu-text bg-white">
+          <text class="text-grey text-lg">{{checkbox.taskContent}}</text>
+        </view>
       </view>
-      执行者: {{checkbox.userName}}
       <view class="solid-bottom text-sm padding">
         <text class="text-grey">{{checkbox.startTime+"~"+checkbox.endTime}}</text>
       </view>

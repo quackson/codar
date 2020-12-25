@@ -1,9 +1,4 @@
 // pages/calendar/group_calendar.js
-//添加/撤销管理员
-//查看群组内所有用户
-//更改事务信息
-//群组改名
-//群组移除用户
 const app = getApp()
 
 Page({
@@ -32,7 +27,7 @@ Page({
     groupName: "某团队",
     isAdmin: false,
     assignments:[
-      {
+      /*{
         assignmentID: 1,
         assignmentName:"期中考试",
         prior: 0,
@@ -111,7 +106,7 @@ Page({
             userName: "user2"
           }
         ]
-      }
+      }*/
     ],
     checkbox:{}
   },
