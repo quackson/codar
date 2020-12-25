@@ -3,3 +3,5 @@ pages/group_list/group_list.test.js
 pages/group_list/package.json
 pages/index/index.test.js
 pages/index/package.json
+pages/create_activity/create_activity.test.js
+pages/create_activity/package.json

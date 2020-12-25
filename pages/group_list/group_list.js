@@ -12,7 +12,7 @@ Page({
     NavCur: app.globalData.NavCur,
     listname:[
       {
-        title:"我创建的",
+        title:"我管理的",
         id:0
       },
       {
@@ -196,16 +196,17 @@ Page({
     console.log('group info')
     let self = this;
     wx.navigateTo({
-      url: '../group_info/group_info?userid=' + self.data.third_session + '&groupid=' + e.currentTarget.dataset.groupid + '&groupname=' + e.currentTarget.dataset.groupname + '&isadmin=' + e.currentTarget.dataset.isadmin
+      url: '../group_info/group_info?userid=' + self.data.third_session + '&groupid=' + e.currentTarget.dataset.groupid + '&groupname=' + e.currentTarget.dataset.groupname + '&role=' + e.currentTarget.dataset.role
     })
   },
 
   gotogroupcalendar:function(e){
+    let isadmin = e.currentTarget.dataset.role == 1 || e.currentTarget.dataset.role == 2;
     let self = this;
     console.log(e.currentTarget.dataset.groupname)
 
     wx.navigateTo({
-      url: '../calendar/group_calendar?userid=' + self.data.third_session + '&groupid=' + e.currentTarget.dataset.groupid + '&groupname=' + e.currentTarget.dataset.groupname + '&isadmin=' + e.currentTarget.dataset.isadmin
+      url: '../calendar/group_calendar?userid=' + self.data.third_session + '&groupid=' + e.currentTarget.dataset.groupid + '&groupname=' + e.currentTarget.dataset.groupname + '&isadmin=' + isadmin
     })
   },
   gotodiscussboard:function(e){
