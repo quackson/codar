@@ -20,7 +20,7 @@
               <text class="cuIcon-search"></text></button>
     </view>
   </view>   
-  <view class="cu-modal {{modalName=='Modal'?'show':''}}">
+  <view class="cu-modal {{modalName=='Modal'?'show':''}}" wx:if="{{searchresult!='-1'}}">
             <view class="cu-dialog">
               <view class="cu-bar bg-white justify-end">
               <view class="content">{{'搜索结果'}}</view>

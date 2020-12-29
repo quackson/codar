@@ -14,7 +14,7 @@
                 <text class="cuIcon-people"></text>
             </view>
             <view class="content flex-sub">
-              <view>{{item.userName+'('+item.voteNum+'人赞同)'}}</view>
+              <view>{{item.userName}}</view>
             </view>
           </view>
         </view>
@@ -23,12 +23,12 @@
         </view>
         <view class="text-gray text-right padding" style="flex-direction:row;display:flex;float: right;">          
             <button class="cu-btn round bg-white text-olive text-xl text-center light " style="border: none;" bindtap="voteYes" data-id="{{index}}">
-              <text class="cuIcon-roundcheck" wx:if="{{item.myvote!='1'}}"></text>
-              <text class="cuIcon-roundcheckfill"  wx:if="{{item.myvote=='1'}}"></text>
+              <text class="cuIcon-roundcheck" wx:if="{{item.voted!='1'}}">{{item.agreeNum}}</text>
+              <text class="cuIcon-roundcheckfill"  wx:if="{{item.voted=='1'}}">{{item.agreeNum}}</text>
             </button>
             <button class="cu-btn round bg-white text-red text-xl text-center light " style="border: none;" bindtap="voteNo" data-id="{{index}}">
-              <text class="cuIcon-roundclose"  wx:if="{{item.myvote!='2'}}"></text>
-              <text class="cuIcon-roundclosefill" wx:if="{{item.myvote=='2'}}"></text>
+              <text class="cuIcon-roundclose"  wx:if="{{item.voted!='-1'}}">{{item.disagreeNum}}</text>
+              <text class="cuIcon-roundclosefill" wx:if="{{item.voted=='-1'}}">{{item.disagreeNum}}</text>
             </button>
         </view>    
       </view>

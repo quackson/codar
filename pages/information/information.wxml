@@ -4,8 +4,12 @@
 <view class="bg-white">
 <scroll-view scroll-x class="nav">
     <view class="flex bg-cyan light text-center">
-      <view class="cu-item flex-sub {{item.id==TabCur?'text-cyan cur':''}}" wx:for="{{listname}}" wx:key="key" bindtap="tabSelect" data-id="{{item.id}}">
-        {{item.title}}
+      <view class="cu-item flex-sub {{item.id==TabCur?'text-cyan cur':''}}" wx:for="{{listname}}" wx:key="key" bindtap="tabSelect" data-id="{{item.id}}">   
+    <view wx:if="{{item.id=='0'}}" class="cuIcon-refresharrow {{TabCur=='0'?'line-cyan':'line-gray'}}">{{item.title}}</view>     
+    <view wx:if="{{item.id==1}}" class="cuIcon-refresharrow {{TabCur=='1'?'line-cyan':'line-gray'}}">{{item.title}}</view>
+    <view wx:if="{{item.id==2}}"  class="{{TabCur=='2'?'line-cyan':'line-gray'}}">{{item.title}}</view>
+    <view wx:if="{{item.id==3}}" class="cuIcon-forward {{TabCur=='3'?'line-cyan':'line-gray'}}">{{item.title}}</view>
+    <view wx:if="{{item.id==4}}" class="cuIcon-forward {{TabCur=='4'?'line-cyan':'line-gray'}}">{{item.title}}</view>
       </view>
     </view>
 </scroll-view>
@@ -100,6 +104,22 @@
         </view> 
   </view>
   <view class="cu-list menu-avatar " wx:if="{{TabCur==2}}">
+        <view class="cu-item"  wx:for="{{myquitinformation}}" wx:key="key" >
+          <view class="cu-avatar bg-white round lg">
+            <text class="cuIcon-exit"></text>
+          </view>
+          <view class="content">
+            <text class="text-grey text-lg">{{item.groupName+"：您已被迫退出"}}</text>
+          </view>
+          <view class="action">
+            <button class="cu-btn round bg-blue text-center light"            
+            bindtap="refineQuitInformation" data-id="{{index}}">
+              <text>{{"确认"}}</text></button>
+          </view>
+        </view>
+        
+  </view>
+  <view class="cu-list menu-avatar " wx:if="{{TabCur==3}}">
         <view class="cu-item"  wx:for="{{myInvatation}}" wx:key="key" >
           <view class="cu-avatar bg-white round lg">
             <text class="cuIcon-forward"></text>
@@ -138,7 +158,7 @@
             </view>
           </view> 
   </view>
-  <view class="cu-list menu-avatar " wx:if="{{TabCur==3}}">
+  <view class="cu-list menu-avatar " wx:if="{{TabCur==4}}">
         <view class="cu-item"  wx:for="{{mydelivertask}}" wx:key="key" >
           <view class="cu-avatar bg-white round lg">
             <text class="cuIcon-forward"></text>

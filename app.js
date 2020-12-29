@@ -24,7 +24,7 @@ App({
             method: 'GET', 
             success: function (res) {
               this_.globalData.openID=res.data.openid
-              console.log("取得的openid==" + res.data.openid)
+              //console.log("取得的openid==" + res.data.openid)
               // 获取用户信息
               wx.getSetting({
                 success: res => {

@@ -9,7 +9,7 @@ Page({
     result:-1,
     NavCur:'',
     groupName:"",
-    searchresult:'0',
+    searchresult:'-1',
     members:[      
       'ME<leader>'
       /*
@@ -90,7 +90,7 @@ Page({
     this.data.interactionMems=(premem=='')?premem+this.data.newMemberid:premem+'#'+this.data.newMemberid
     this.setData({
       members: temp,
-      searchresult:0,
+      searchresult:-1,
       modalName:null,
       newMemberName:'',
       newMemberid:''

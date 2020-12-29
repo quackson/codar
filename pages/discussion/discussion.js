@@ -96,9 +96,9 @@ Page({
                     startTime:'',
                     endTime:'',
                     pendingTaskContent:'',
-                    voteNum:'',
                     voted:0,
-                    myvote:0,
+                    agreeNum:0,
+			              disagreeNum:0,
                   }
                   temp['userID']=res.data.pendingTasks[i]['userID']
                   temp['userName']=res.data.pendingTasks[i]['userName']
@@ -107,10 +107,9 @@ Page({
                   temp['startTime']=res.data.pendingTasks[i]['startTime']
                   temp['endTime']=res.data.pendingTasks[i]['endTime']
                   temp['pendingTaskContent']=res.data.pendingTasks[i]['pendingTaskContent']
-                  temp['voteNum']=res.data.pendingTasks[i]['voteNum']
-                  if(res.data.pendingTasks[i]['voted']=='1'){
-                    temp['myvote']=1
-                  }
+                  temp['voted']=res.data.pendingTasks[i]['voted']
+                  temp['agreeNum']=res.data.pendingTasks[i]['agreeNum']
+                  temp['disagreeNum']=res.data.pendingTasks[i]['disagreeNum']
                   tasks.push(temp)
                 }
                 this_.setData({
@@ -131,7 +130,7 @@ Page({
     var index=e.currentTarget.dataset.id  
     console.log(e)  
     console.log(this_.data.pendingTasks[index])
-    if(this_.data.pendingTasks[index]['myvote']=='1')
+    if(this_.data.pendingTasks[index]['voted']=='1')
     {
       return
     }
@@ -150,7 +149,11 @@ Page({
       success(res){
         if(res.data.retCode==200){
           var temp=this_.data.pendingTasks
-          temp[index]['myvote']=1
+          if(temp[index]['voted']=='-1'){
+            temp[index]['disagreeNum']-=1
+          }
+          temp[index]['voted']=1
+          temp[index]['agreeNum']+=1
           this_.setData({
             pendingTasks:temp
           })
@@ -166,7 +169,7 @@ Page({
     var index=e.currentTarget.dataset.id  
     console.log(e)  
     console.log(this_.data.pendingTasks[index])
-    if(this_.data.pendingTasks[index]['myvote']=='2')
+    if(this_.data.pendingTasks[index]['voted']=='-1')
     {
       return
     }
@@ -185,7 +188,11 @@ Page({
       success(res){
         if(res.data.retCode==200){
           var temp=this_.data.pendingTasks
-          temp[index]['myvote']=2
+          if(temp[index]['voted']==1){
+            temp[index]['agreeNum']-=1
+          }
+          temp[index]['voted']=-1
+          temp[index]['disagreeNum']+=1
           this_.setData({
             pendingTasks:temp
           })
@@ -274,9 +281,9 @@ Page({
               startTime:'',
               endTime:'',
               pendingTaskContent:'',
-              voteNum:'',
               voted:0,
-              myvote:0,
+              agreeNum:0,
+			        disagreeNum:0,
             }
             temp['userID']=res.data.pendingTasks[i]['userID']
             temp['userName']=res.data.pendingTasks[i]['userName']
@@ -285,10 +292,9 @@ Page({
             temp['startTime']=res.data.pendingTasks[i]['startTime']
             temp['endTime']=res.data.pendingTasks[i]['endTime']
             temp['pendingTaskContent']=res.data.pendingTasks[i]['pendingTaskContent']
-            temp['voteNum']=res.data.pendingTasks[i]['voteNum']
-            if(res.data.pendingTasks[i]['voted']=='1'){
-              temp['myvote']=1
-            }
+            temp['voted']=res.data.pendingTasks[i]['voted']
+            temp['agreeNum']=res.data.pendingTasks[i]['agreeNum']
+            temp['disagreeNum']=res.data.pendingTasks[i]['disagreeNum']
             tasks.push(temp)
           }
           this_.setData({

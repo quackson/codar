@@ -14,20 +14,24 @@ Page({
     scrollLeft:0,
     listname:[
       {
-        title:"待接收邀请",
+        title:"群邀请",
         id:0
       },
       {
-        title:"待接收任务",
+        title:"新任务",
         id:1
       },
       {
-        title:"已发出邀请",
+        title:"退群",
         id:2
       },
       {
-        title:"已分配任务",
+        title:"群邀请",
         id:3
+      },
+      {
+        title:"新任务",
+        id:4
       },
     ],
     invatation:[
@@ -199,6 +203,36 @@ Page({
     this.setData({
       TabCur: e.currentTarget.dataset.id,
       scrollLeft: (e.currentTarget.dataset.id-1)*60
+    })
+  },
+  refineQuitInformation(e){
+    let this_=this
+    var quittemp=[]
+    wx.request({
+      url: app.globalData.server+'/user/checkNotice',
+      data:{      
+        groupID:this_.data.myquitinformation[e.currentTarget.dataset.id]['groupID'],
+        userID:this_.data.userID
+      },
+      method:"POST",
+      header: {
+        'content-type': 'application/x-www-form-urlencoded'
+      },
+      success(res){
+        //console.log(e)
+        for(var i=0;i<this_.data.myquitinformation.length;i++)
+        {
+          if(i!=e.currentTarget.dataset.id)
+          {
+            quittemp.push(this_.data.myquitinformation[i])
+          }
+        }
+        //console.log(newTasktemp)
+        this_.setData({
+          myquitinformation:quittemp
+        })
+        //console.log(this_.data.newtask)
+      }
     })
   },
   rejectTask(e){
@@ -419,7 +453,7 @@ Page({
       checkID:e.currentTarget.dataset.id
     })
     }
-    else if (this.data.TabCur==2){
+    else if (this.data.TabCur==3){
       this.setData({
         checkbox:this.data.myInvatation[e.currentTarget.dataset.id],
         modalName: e.currentTarget.dataset.target,
@@ -461,7 +495,7 @@ Page({
         })        
       }
     }
-    else if (this.data.TabCur==3){
+    else if (this.data.TabCur==4){
       this.setData({
         checkbox:this.data.mydelivertask[e.currentTarget.dataset.id],
         modalName: e.currentTarget.dataset.target,        
@@ -634,6 +668,23 @@ Page({
             console.log(this_.data.mydelivertask)
             }
         })
+        wx.request({
+          url: app.globalData.server+'/user/notice',
+          data:{      
+            userID:app.globalData.userID
+          },
+          method:"GET",
+          header: {
+            'content-type': 'application/x-www-form-urlencoded'
+          },
+          success(res){
+          //console.log(res)
+          this_.setData({
+            myquitinformation:res.data.groups
+          })
+          console.log(this_.data.myquitinformation)
+          }
+      })
   },
 
   /**
