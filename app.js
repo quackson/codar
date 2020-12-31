@@ -50,8 +50,8 @@ App({
                           'content-type': 'application/x-www-form-urlencoded'
                         },
                         success(res){
-                          //this_.globalData.userID=res.data.userID
-                          this_.globalData.userID=1
+                          this_.globalData.userID=res.data.userID
+                          //this_.globalData.userID=1
                         }
                         })
                         if (this_.userInfoReadyCallback) {
@@ -92,6 +92,6 @@ App({
     openID:'',
     userID:1,
     NavCur: "index", // current navigation tab
-    server:'http://127.0.0.1:5000/'
+    server:'http://39.98.75.232:5000/'
   }
 })
