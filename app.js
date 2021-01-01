@@ -49,8 +49,8 @@ App({
                           'content-type': 'application/x-www-form-urlencoded'
                         },
                         success(res){
-                          //this_.globalData.userID=res.data.userID
-                          this_.globalData.userID=1
+                          this_.globalData.userID=res.data.userID
+                          //this_.globalData.userID=1
                         }
                         })
                         if (this_.userInfoReadyCallback) {

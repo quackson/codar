@@ -79,8 +79,7 @@ Page({
         creatorName:"a_老师"
       }*/
     ],
-    checkbox:{},
-    third_session: app.globalData.userID,
+    checkbox:{}
   },
   getAdminGroup:function(){
     this.setData({
@@ -330,6 +329,7 @@ Page({
    */
   onLoad: function (options) {
     this.setData({
+      third_session: app.globalData.userID,
       NavCur: app.globalData.NavCur
     })
     let self = this;
