@@ -95,7 +95,7 @@ Page({
       newMemberName:'',
       newMemberid:''
     });
-    console.log(this.data.members);
+    ///console.log(this.data.members);
   },
   deleteMember(e){
 
@@ -117,7 +117,7 @@ Page({
         //this_.globalData.userID=res.data.userID
         if (res.data.retCode==200){
           var groupid=res.data.groupID
-          console.log(groupid)
+          //console.log(groupid)
           wx.request({
             url: app.globalData.server+'/group/multiInvite',
             data:{      
@@ -137,7 +137,7 @@ Page({
                   newMemberid:'',
                   newMemberName:''
                 })               
-                console.log("创建团队");
+                //console.log("创建团队");
                 this_.setData({
                   modalName: 'created',
                   result:1

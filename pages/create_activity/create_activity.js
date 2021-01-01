@@ -106,8 +106,8 @@ Page({
     var startT=temp.replace('-',':')+':'+this_.data.startTime.replace('-',':')
     temp=this_.data.endDate.replace('-',':')
     var endT=temp.replace('-',':')+':'+this_.data.endTime.replace('-',':')
-    console.log(startT)
-    console.log(endT)
+    //console.log(startT)
+    //console.log(endT)
     if(this_.data.personal=='0'){
       wx.request({
         url: app.globalData.server+'/assign/add',
@@ -138,7 +138,7 @@ Page({
               }
             }
           }
-          console.log(userinvite)
+          //console.log(userinvite)
           if(res.data.retCode=='200'){
             wx.request({
               url: app.globalData.server+'/assign/multiInvite',
@@ -158,7 +158,7 @@ Page({
                     result:1,
                     modalName:'Modal'
                   })
-                  console.log("create activity success!")
+                  //console.log("create activity success!")
                 }
                 else{
                   this_.setData({
@@ -179,8 +179,8 @@ Page({
       })
     }
     else if(this_.data.personal=='1'){
-      console.log(startT)
-      console.log(endT)
+      //console.log(startT)
+      //console.log(endT)
       wx.request({
         url: app.globalData.server+'/task/add',
         data:{      
@@ -276,7 +276,7 @@ Page({
         'content-type': 'application/x-www-form-urlencoded'
       },
       success(res){  
-        console.log(res) 
+        //console.log(res) 
         
         let tempusers=[]
         for(var i=0;i<res.data.users.length;i++){
@@ -289,23 +289,23 @@ Page({
           tempuser['userID']=res.data.users[i]['userID']
           tempuser['userName']=res.data.users[i]['userName']
           tempuser['role']=res.data.users[i]['role']
-          console.log(tempuser)
+          //console.log(tempuser)
           tempusers.push(tempuser)
         }
         this_.setData({
           users:tempusers
         })
-        console.log(this_.data.users)
+        //console.log(this_.data.users)
       }
     })
 
-    console.log('userid: ' + options.userid)
-    console.log('groupid: ' + options.groupid)
-    console.log('groupname: ' + options.groupname)
-    console.log('year: ' + options.year)
-    console.log('month: ' + options.month)
-    console.log('day: ' + options.day)
-    console.log('personal: ' + options.personal)
+    //console.log('userid: ' + options.userid)
+    //console.log('groupid: ' + options.groupid)
+    //console.log('groupname: ' + options.groupname)
+    //console.log('year: ' + options.year)
+    //console.log('month: ' + options.month)
+    //console.log('day: ' + options.day)
+    //console.log('personal: ' + options.personal)
   },
   /**
    * 生命周期函数--监听页面初次渲染完成

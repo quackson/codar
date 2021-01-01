@@ -73,7 +73,7 @@ Page({
           this_.setData({
             content:''
           })
-          console.log("create proposal success")
+          //console.log("create proposal success")
           wx.request({
             url: app.globalData.server+'/group/pendingTask',
             data:{      
@@ -115,7 +115,7 @@ Page({
                 this_.setData({
                   pendingTasks:tasks
                 })
-                console.log(this_.data.pendingTasks)
+                //console.log(this_.data.pendingTasks)
       
               }
             }
@@ -128,8 +128,8 @@ Page({
     let app_=app
     let this_=this
     var index=e.currentTarget.dataset.id  
-    console.log(e)  
-    console.log(this_.data.pendingTasks[index])
+    //console.log(e)  
+    //console.log(this_.data.pendingTasks[index])
     if(this_.data.pendingTasks[index]['voted']=='1')
     {
       return
@@ -163,12 +163,12 @@ Page({
     
   },
   voteNo(e){
-    console.log("No")
+    //console.log("No")
     let app_=app
     let this_=this
     var index=e.currentTarget.dataset.id  
-    console.log(e)  
-    console.log(this_.data.pendingTasks[index])
+    //console.log(e)  
+    //console.log(this_.data.pendingTasks[index])
     if(this_.data.pendingTasks[index]['voted']=='-1')
     {
       return
@@ -300,13 +300,13 @@ Page({
           this_.setData({
             pendingTasks:tasks
           })
-          console.log(this_.data.pendingTasks)
+          //console.log(this_.data.pendingTasks)
 
         }
       }
     })
-    console.log('userid: '+options.userid)
-    console.log('groupid: '+options.groupid)
+    //console.log('userid: '+options.userid)
+    //console.log('groupid: '+options.groupid)
   },
   /**
    * 生命周期函数--监听页面初次渲染完成

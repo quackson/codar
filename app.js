@@ -12,7 +12,7 @@ App({
       success: res => {
         // 发送 res.code 到后台换取 openId, sessionKey, unionId
         var code_ = res.code //返回code
-        console.log(code_)
+        //console.log(code_)
         //console.log(code);
         var appid = "wxf3e65585a89d7dca"        
           var secret = "fb11d271f44fd5ac97eb031d492faed0"    
@@ -37,8 +37,7 @@ App({
                       //console.log(res)
                       // 由于 getUserInfo 是网络请求，可能会在 Page.onLoad 之后才返回
                       // 所以此处加入 callback 以防止这种情况
-                      console.log(this_.globalData.userInfo.nickName)
-                      console.log(this_.globalData.openID)
+                      //console.log(this_.globalData.userInfo.nickName)
                       wx.request({
                         url: this_.globalData.server+'/user/login',
                         data:{      
@@ -92,6 +91,6 @@ App({
     openID:'',
     userID:1,
     NavCur: "index", // current navigation tab
-    server:'http://127.0.0.1:5000/'
+    server:'http://39.98.75.232:5000/'
   }
 })
