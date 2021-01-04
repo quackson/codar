@@ -1,8 +1,10 @@
 <cu-custom bgColor="bg-gradual-pink">
   <view slot="content">Codar</view>
 </cu-custom>
-
-<view class="margin-xl padding-xl bg-white radius shadow shadow-lg">
+<loading hidden="{{hidden}}">
+  加载中...
+</loading>
+<view class="margin-xl padding-xl bg-white radius shadow shadow-lg" wx:if = "{{hidden}}">
   <view class="flex justify-center">
     <button wx:if="{{!hasUserInfo && canIUse}}" open-type="getUserInfo" bindgetuserinfo="getUserInfo" class='cu-btn round bg-green shadow'> 获取头像昵称 </button>
     <block wx:else>
@@ -14,6 +16,7 @@
     
   </view>
 </view>
+
 
 
 <view class="cu-bar tabbar bg-white shadow foot">

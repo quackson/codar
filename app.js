@@ -55,6 +55,7 @@ App({
                                 'content-type': 'application/x-www-form-urlencoded'
                               },
                               success(res){
+                                console.log(res.data.userID)
                                 this_.globalData.userID=res.data.userID
                                 //this_.globalData.userID=1
                               }
@@ -69,17 +70,46 @@ App({
                       }
                     })
                   }
-                  
+                  else{
+                    wx.getUserInfo({
+                            success: res => {
+                            // 可以将 res 发送给后台解码出 unionId
+                            this_.globalData.userInfo = res.userInfo
+                            //console.log(res)
+                            // 由于 getUserInfo 是网络请求，可能会在 Page.onLoad 之后才返回
+                            // 所以此处加入 callback 以防止这种情况
+                            //console.log(this_.globalData.userInfo.nickName)
+                            wx.request({
+                              url: this_.globalData.server+'/user/login',
+                              data:{      
+                                userName:this_.globalData.userInfo.nickName,       
+                                openID:this_.globalData.openID
+                              },
+                              method:"POST",
+                              header: {
+                                'content-type': 'application/x-www-form-urlencoded'
+                              },
+                              success(res){
+                                //console.log(res.data.userID)
+                                this_.globalData.userID=res.data.userID
+                              }
+                              })
+                              if (this_.userInfoReadyCallback) {
+                                this_.userInfoReadyCallback(res)
+                              }
+                              }
+                          })
+                  }
                 }
               })
               
             }
           });
+          
       },
       fail: function (res) {
     
       }
-      
     })
     
     // 获取系统状态栏信息
@@ -100,7 +130,7 @@ App({
   globalData: {
     userInfo:'',
     openID:'',
-    userID:1,
+    userID:'',
     NavCur: "index", // current navigation tab
     server:'http://39.98.75.232:5000/'
   }

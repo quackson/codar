@@ -11,7 +11,7 @@ Page({
     groupName:"",
     searchresult:'-1',
     members:[      
-      'ME<leader>'
+      'ME<userID:'
       /*
       'mem2',
       'mem2',
@@ -21,6 +21,7 @@ Page({
       'mem6'
       */
     ],
+    memidlist:[],
     newMemberid:'',
     newMemberName:'',
     interactionMems:''
@@ -39,7 +40,16 @@ Page({
   searchUser(e){
     let app_=app
     let this_=this
-    if(this_.data.newMemberid==app.globalData.userID)
+    var ifcon=false
+    for(var i=0;i<this_.data.memidlist.length;i++)
+    {
+      if(this_.data.memidlist[i]==this_.data.newMemberid)
+      {
+        ifcon=true
+        break
+      }
+    }
+    if(this_.data.newMemberid==app.globalData.userID || ifcon)
     {
       this_.setData({
         newMemberName:'',
@@ -87,7 +97,8 @@ Page({
     var temp=this.data.members;
     temp.push(this.data.newMemberName);
     var premem=this.data.interactionMems
-    this.data.interactionMems=(premem=='')?premem+this.data.newMemberid:premem+'#'+this.data.newMemberid
+    this.data.interactionMems=(premem=='')?premem+this.data.newMemberid:premem+'#'+this.data.newMemberid    
+    this.data.memidlist.push(this.data.newMemberid)
     this.setData({
       members: temp,
       searchresult:-1,
@@ -101,6 +112,13 @@ Page({
 
   },
   createGroup(e){
+    if(this.data.groupName=='' || this.data.memidlist.length==0){
+      this.setData({
+        modalName: 'created',
+        result:0
+      })
+      return
+    }
     let app_=app
     let this_=this
     wx.request({
@@ -195,8 +213,11 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    this.data.members[0]+=app.globalData.userID+'>'
+    var temp=[this.data.members[0]]
     this.setData({
-      NavCur: app.globalData.NavCur
+      NavCur: app.globalData.NavCur,
+      members:temp
     })
   },
 

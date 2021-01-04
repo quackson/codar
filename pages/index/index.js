@@ -4,8 +4,10 @@ const app = getApp()
 
 Page({
   data: {
+    hidden:false,
     StatusBar: app.globalData.StatusBar,
     CustomBar: app.globalData.CustomBar,
+    userID:app.globalData.userID,
     motto: 'Welcome to Codar！',
     userInfo: {},
     hasUserInfo: false,
@@ -80,13 +82,17 @@ Page({
         }
       })
     }
+    this.setData({
+      hidden:true
+    })
   },
   getUserInfo: function(e) {
     //console.log(e)
     app.globalData.userInfo = e.detail.userInfo
     this.setData({
       userInfo: e.detail.userInfo,
-      hasUserInfo: true
+      hasUserInfo: true,
+      userID:app.globalData.userID
     })
   }
 })
