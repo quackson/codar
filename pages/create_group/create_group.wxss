@@ -1,0 +1,19 @@
+/* pages/create_group/create_group.wxss */
+.pagecontainer{
+  min-height: 100vh;
+  background-color: rgb(255, 255, 255);
+}
+.creategroup{
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 60px;
+  bottom: 42px;
+}
+.creategroup-scroll{
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}

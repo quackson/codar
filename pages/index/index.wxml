@@ -1,0 +1,43 @@
+<cu-custom bgColor="bg-gradual-pink">
+  <view slot="content">Codar</view>
+</cu-custom>
+<loading hidden="{{hidden}}">
+  加载中...
+</loading>
+<view class="margin-xl padding-xl bg-white radius shadow shadow-lg" wx:if = "{{hidden}}">
+  <view class="flex justify-center">
+    <button wx:if="{{!hasUserInfo && canIUse}}" open-type="getUserInfo" bindgetuserinfo="getUserInfo" class='cu-btn round bg-green shadow'> 获取头像昵称 </button>
+    <block wx:else>
+      <view class='text-center'>
+        <view class="cu-avatar xl round solids" style="background-image:url({{userInfo.avatarUrl}})"></view>
+            
+      </view>
+    </block>
+    
+  </view>
+</view>
+
+
+
+<view class="cu-bar tabbar bg-white shadow foot">
+  <view class="action" bindtap="NavChange" data-cur="groupList">
+    <view class="cuIcon-group {{NavCur=='groupList'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='groupList'?'text-orange':'text-gray'}}">团队列表</view>
+  </view>
+  <view class="action" bindtap="NavChange" data-cur="createGroup">
+    <view class="cuIcon-add {{NavCur=='createGroup'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='createGroup'?'text-orange':'text-gray'}}">创建团队</view>
+  </view>
+  <view class="action" bindtap="NavChange" data-cur="index">
+    <view class="cuIcon-home {{NavCur=='index'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='index'?'text-orange':'text-gray'}}">主页</view>
+  </view>
+  <view class="action" bindtap="NavChange" data-cur="personalCalendar">
+    <view class="cuIcon-calendar {{NavCur=='personalCalendar'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='personalCalendar'?'text-orange':'text-gray'}}">个人日历</view>
+  </view>
+  <view class="action" bindtap="NavChange" data-cur="messages">
+    <view class="cuIcon-message {{NavCur=='messages'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='messages'?'text-orange':'text-gray'}}">消息</view>
+  </view>
+</view>

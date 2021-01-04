@@ -1,0 +1,146 @@
+<!--pages/group_list/group_list.wxml-->
+<cu-custom bgColor="bg-cyan light">
+  <view slot="content">我的团队</view>
+</cu-custom>
+<view class="bg-white">
+  <scroll-view scroll-x class="nav">
+      <view class="flex bg-cyan light text-center">
+        <view class="cu-item flex-sub {{item.id==TabCur?'text-cyan cur':''}}" wx:for="{{listname}}" wx:key bindtap="tabSelect" data-id="{{item.id}}">
+          {{item.title}}
+        </view>
+      </view>
+  </scroll-view>
+  <view class="cu-list menu-avatar " wx:if="{{TabCur==0}}">
+    <view class="cu-item" wx:for="{{created_groups}}" wx:key="key"  wx:if="{{index < created_groups.length-1 || index < 7}}" id="{{key}}" bindtap="gotogroupcalendar" data-role="{{item.role}}" data-groupid="{{item.groupID}}" data-groupname="{{item.groupName}}">
+      <view class="cu-avatar bg-white round lg">
+        <text class="cuIcon-group"></text>
+      </view>
+      <view class="content">
+        <text class="text-grey text-lg">{{item.groupName}}</text>
+      </view>
+      <view class="action">
+        <button class="cu-btn round bg-blue text-center light" capture-catch:touchstart="gotogroupinfo" data-groupid="{{item.groupID}}" data-groupname="{{item.groupName}}" data-role="{{item.role}}">详情</button>
+      </view>
+      <view class="action">
+        <button class="cu-btn round bg-green text-center light" capture-catch:touchstart="gotodiscussboard" data-groupid="{{item.groupID}}">讨论</button>
+      </view>
+      <view class="action">
+        <button class="cu-btn round bg-red text-center light "capture-catch:touchstart="showModal" data-target="Modal" data-id="{{index}}">
+          <text class="cuIcon-delete"></text>
+        </button>
+      </view>
+    </view>
+    <view class="cu-item" wx:for="{{created_groups}}" wx:key="key" wx:if="{{index == created_groups.length-1 && index >= 7}}" id="{{key}}" bindtap="gotogroupcalendar" data-role="{{item.role}}" data-groupid="{{item.groupID}}" data-groupname="{{item.groupName}}" style="margin-bottom: 100rpx">
+      <view class="cu-avatar bg-white round lg">
+        <text class="cuIcon-group"></text>
+      </view>
+      <view class="content">
+        <text class="text-grey text-lg">{{item.groupName}}</text>
+      </view>
+      <view class="action">
+        <button class="cu-btn round bg-blue text-center light" capture-catch:touchstart="gotogroupinfo" data-groupid="{{item.groupID}}" data-groupname="{{item.groupName}}" data-role="{{item.role}}">详情</button>
+      </view>
+      <view class="action">
+        <button class="cu-btn round bg-green text-center light" capture-catch:touchstart="gotodiscussboard" data-groupid="{{item.groupID}}">讨论</button>
+      </view>
+      <view class="action">
+        <button class="cu-btn round bg-red text-center light "capture-catch:touchstart="showModal" data-target="Modal" data-id="{{index}}">
+          <text class="cuIcon-delete"></text>
+        </button>
+      </view>
+    </view>
+    <view class="cu-modal {{modalName=='Modal'?'show':''}}">
+      <view class="cu-dialog">
+        <view class="cu-bar bg-white justify-end">
+          <view class="content">{{'@group:'+checkbox.groupName}}</view>
+          <view class="action" bindtap="hideModal">
+            <text class="cuIcon-close text-red"></text>
+          </view>
+        </view>
+        <view class="padding-xl">{{"请确认是否删除该团队"}}</view>              
+        <button class="text-sm padding"
+          bindtap="deletegroup" data-id="{{groupIndex}}">
+          <text class="text-red">{{'确认删除'}}</text>
+        </button>
+      </view>
+    </view>
+  </view>
+  <view class="cu-list menu-avatar " wx:if="{{TabCur==1}}">
+    <view class="cu-item"  wx:for="{{joined_groups}}" wx:key="key" wx:if="{{index < joined_groups.length-1 || index < 7}}" id="{{key}}" bindtap="gotogroupcalendar" data-role="0" data-groupid="{{item.groupID}}" data-groupname="{{item.groupName}}">
+      <view class="cu-avatar bg-white round lg">
+        <text class="cuIcon-group"></text>
+      </view>
+      <view class="content">
+        <text class="text-grey text-lg">{{item.groupName}}</text>
+      </view>
+      <view class="action">
+        <button class="cu-btn round bg-blue text-center light" capture-catch:touchstart="gotogroupinfo" data-groupid="{{item.groupID}}" data-groupname="{{item.groupName}}" data-role="0">详情</button>
+      </view>
+      <view class="action">
+        <button class="cu-btn round bg-green text-center light" capture-catch:touchstart="gotodiscussboard" data-groupid="{{item.groupID}}">讨论</button>
+      </view>
+      <view class="action">
+        <button class="cu-btn round bg-red text-center light" capture-catch:touchstart="showModal" data-target="Modal" data-id="{{index}}">
+          <text class="cuIcon-exit"></text>
+        </button>
+      </view>
+    </view>
+    <view class="cu-item"  wx:for="{{joined_groups}}" wx:key="key" wx:if="{{index == joined_groups.length-1 && index >= 7}}" id="{{key}}" bindtap="gotogroupcalendar" data-role="0" data-groupid="{{item.groupID}}" data-groupname="{{item.groupName}}" style="margin-bottom: 100rpx">
+      <view class="cu-avatar bg-white round lg">
+        <text class="cuIcon-group"></text>
+      </view>
+      <view class="content">
+        <text class="text-grey text-lg">{{item.groupName}}</text>
+      </view>
+      <view class="action">
+        <button class="cu-btn round bg-blue text-center light" capture-catch:touchstart="gotogroupinfo" data-groupid="{{item.groupID}}" data-groupname="{{item.groupName}}" data-role="0">详情</button>
+      </view>
+      <view class="action">
+        <button class="cu-btn round bg-green text-center light" capture-catch:touchstart="gotodiscussboard" data-groupid="{{item.groupID}}">讨论</button>
+      </view>
+      <view class="action">
+        <button class="cu-btn round bg-red text-center light" capture-catch:touchstart="showModal" data-target="Modal" data-id="{{index}}">
+          <text class="cuIcon-exit"></text>
+        </button>
+      </view>
+    </view>
+    <view class="cu-modal {{modalName=='Modal'?'show':''}}">
+      <view class="cu-dialog">
+        <view class="cu-bar bg-white justify-end">
+          <view class="content">{{'@group:'+checkbox.groupName}}</view>
+          <view class="action" bindtap="hideModal">
+            <text class="cuIcon-close text-red"></text>
+          </view>
+        </view>
+        <view class="padding-xl">{{"请确认是否退出该团队"}}</view>              
+        <button class="text-sm padding"
+          bindtap="exitgroup" data-id="{{groupIndex}}">
+          <text class="text-red">{{'确认退出'}}</text>
+        </button>
+      </view>
+    </view>
+  </view>
+</view>
+
+<view class="cu-bar tabbar bg-white shadow foot">
+  <view class="action" bindtap="NavChange" data-cur="groupList">
+    <view class="cuIcon-group {{NavCur=='groupList'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='groupList'?'text-orange':'text-gray'}}">团队列表</view>
+  </view>
+  <view class="action" bindtap="NavChange" data-cur="createGroup">
+    <view class="cuIcon-add {{NavCur=='createGroup'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='createGroup'?'text-orange':'text-gray'}}">创建团队</view>
+  </view>
+  <view class="action" bindtap="NavChange" data-cur="index">
+    <view class="cuIcon-home {{NavCur=='index'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='index'?'text-orange':'text-gray'}}">主页</view>
+  </view>
+  <view class="action" bindtap="NavChange" data-cur="personalCalendar">
+    <view class="cuIcon-calendar {{NavCur=='personalCalendar'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='personalCalendar'?'text-orange':'text-gray'}}">个人日历</view>
+  </view>
+  <view class="action" bindtap="NavChange" data-cur="messages">
+    <view class="cuIcon-message {{NavCur=='messages'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='messages'?'text-orange':'text-gray'}}">消息</view>
+  </view>
+</view>

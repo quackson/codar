@@ -1,0 +1,91 @@
+<!--pages/create_group/create_group.wxml-->
+<view class="pagecontainer">
+<cu-custom bgColor="bg-cyan light">
+  <view slot="content">创建团队</view>
+</cu-custom>
+<view class="creategroup">
+	<scroll-view class="creategroup-scroll" scroll-y style="height: 100%">
+<form >
+	<view class="cu-form-group">
+		<view class="title">团队名称</view>
+		<input name="title" bindinput="groupNameInput" placeholder="输入名称" value="{{groupName}}"></input>
+	</view>
+	<view class="cu-form-group">
+		<view class="title">邀请成员</view>
+    <input name="title" bindinput="memNameInput" placeholder="输入用户ID" value="{{newMemberid}}"></input>
+    <view class="action">
+            <button class="cu-btn round bg-cyan text-center light"         
+            bindtap="searchUser" data-target="Modal">
+              <text class="cuIcon-search"></text></button>
+    </view>
+  </view>   
+  <view class="cu-modal {{modalName=='Modal'?'show':''}}" wx:if="{{searchresult!='-1'}}">
+            <view class="cu-dialog">
+              <view class="cu-bar bg-white justify-end">
+              <view class="content">{{'搜索结果'}}</view>
+              <view class="action" bindtap="hideModal">
+                  <text class="cuIcon-close text-red"></text>
+                </view>
+              </view>
+              <view class="padding-xl" wx:if="{{searchresult=='1'}}">{{"请确认是否邀请:"+newMemberName}}</view>
+              <view class="padding-xl" wx:if="{{searchresult=='0'}}">{{"搜索失败，请重新输入"}}
+              </view>
+              <view class="padding-xl" wx:if="{{searchresult=='2'}}">{{"请勿重复添加"}}
+              </view>
+              <button class="text-sm padding"
+            bindtap="addMember" wx:if="{{searchresult==1}}">
+              <text class="text-olive">{{'确 认 邀 请'}}</text></button>              
+            </view>
+          </view>  
+  <view class="cu-list menu-avatar " >
+        <view class="cu-item" wx:for="{{members}}" wx:key="key">
+          <view class="cu-avatar bg-white round lg">
+            <text class="cuIcon-peoplelist"></text>
+          </view>
+          <view class="content">
+            <view class="text-grey">{{item}}</view>
+          </view> 
+        </view>
+        <view class="createGroup padding-xl bg-white">
+          <button class="cu-btn block bg-cyan light lg" bindtap="createGroup" data-target="Modal">
+            <text class="cuIcon-upload"></text> 提交</button>
+        </view>
+        <view class="cu-modal {{modalName=='created'?'show':''}}">
+            <view class="cu-dialog">
+              <view class="cu-bar bg-white justify-end">
+              <view class="content text-olive" wx:if="{{result=='1'}}">{{'SUCCESS'}}</view>
+              <view class="content text-red" wx:if="{{result=='0'}}">{{'FAIL'}}</view>
+              <view class="action" bindtap="hideModal">
+                  <text class="cuIcon-close text-red"></text>
+                </view>
+              </view>                          
+            </view>
+        </view> 
+  </view>
+</form>
+
+</scroll-view>
+</view>
+<view class="cu-bar tabbar bg-white shadow foot">
+  <view class="action" bindtap="NavChange" data-cur="groupList">
+    <view class="cuIcon-group {{NavCur=='groupList'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='groupList'?'text-orange':'text-gray'}}">团队列表</view>
+  </view>
+  <view class="action" bindtap="NavChange" data-cur="createGroup">
+    <view class="cuIcon-add {{NavCur=='createGroup'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='createGroup'?'text-orange':'text-gray'}}">创建团队</view>
+  </view>
+  <view class="action" bindtap="NavChange" data-cur="index">
+    <view class="cuIcon-home {{NavCur=='index'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='index'?'text-orange':'text-gray'}}">主页</view>
+  </view>
+  <view class="action" bindtap="NavChange" data-cur="personalCalendar">
+    <view class="cuIcon-calendar {{NavCur=='personalCalendar'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='personalCalendar'?'text-orange':'text-gray'}}">个人日历</view>
+  </view>
+  <view class="action" bindtap="NavChange" data-cur="messages">
+    <view class="cuIcon-message {{NavCur=='messages'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='messages'?'text-orange':'text-gray'}}">消息</view>
+  </view>
+</view>
+</view>

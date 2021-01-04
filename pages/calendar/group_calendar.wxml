@@ -1,0 +1,247 @@
+<!--pages/calendar/group_calendar.wxml-->
+<cu-custom bgColor="bg-cyan light" isBack="{{true}}">
+  <view slot="backText">返回</view>
+  <view slot="content">{{groupName}}</view>
+</cu-custom>
+<calendar
+  calendarConfig="{{calendarConfig}}"
+  bind:onTapDay="onTapDay"
+  bind:afterTapDay="afterTapDay"
+  bind:onSwipe="onSwipe"
+  bind:whenChangeWeek="whenChangeWeek"
+  bind:whenChangeMonth="whenChangeMonth"
+  bind:afterCalendarRender="afterCalendarRender"
+/>
+<scroll-view scroll-x class="nav">
+  <view class="flex bg-cyan light text-center">
+    <view class="cu-item flex-sub {{item.id==TabCur?'text-cyan cur':''}}" wx:for="{{listname}}" wx:key bindtap="tabSelect" data-id="{{item.id}}">
+      {{item.title}}
+    </view>
+  </view>
+</scroll-view>
+<view class="cu-list menu-avatar" wx:if="{{TabCur==0}}">
+  <view class="cu-item" bindtap="gotocreategroupactivity" wx:if="{{isAdmin}}">
+    <view class="cu-avatar bg-white round lg">
+      <text class="cuIcon-add line-green"></text>
+    </view>
+    <view class="content">
+      <text class="text-grey text-lg">添加团队任务</text>
+    </view>
+  </view>
+  <view class="cu-item bg-grey" wx:for="{{assignments}}" wx:if="{{index < assignments.length-1 || index < 1}}" wx:key="key">
+    <view class="cu-avatar bg-white round lg">
+      <text class="cuIcon-form line-red" wx:if="{{item.prior == 4}}"></text>
+      <text class="cuIcon-form line-orange" wx:elif="{{item.prior == 3}}"></text>
+      <text class="cuIcon-form line-yellow" wx:elif="{{item.prior == 2}}"></text>
+      <text class="cuIcon-form line-green" wx:elif="{{item.prior == 1}}"></text>
+      <text class="cuIcon-form line-blue" wx:else></text>
+    </view>
+    <view class="content">
+      <text class="text-grey text-lg">{{item.assignmentName}}</text>
+      <view class="text-gray text-sm flex">
+        {{item.startTime+"~"+item.endTime}}
+      </view>
+    </view>
+    <view class="action">
+      <button class="cu-btn round bg-green text-center light" bindtap="showModal" data-target="Modal" data-id="{{index}}" data-op="0">查看</button>
+    </view>
+    <view class="action" wx:if="{{isAdmin}}">
+      <button class="cu-btn round bg-red text-center light" bindtap="showModal" data-target="Modal" data-id="{{index}}" data-op="1">取消</button>
+    </view>
+  </view>
+  <view class="cu-item bg-grey" wx:for="{{assignments}}" wx:if="{{index == assignments.length-1 && index >= 1}}" wx:key="key" style="margin-bottom: 100rpx">
+    <view class="cu-avatar bg-white round lg">
+      <text class="cuIcon-form line-red" wx:if="{{item.prior == 4}}"></text>
+      <text class="cuIcon-form line-orange" wx:elif="{{item.prior == 3}}"></text>
+      <text class="cuIcon-form line-yellow" wx:elif="{{item.prior == 2}}"></text>
+      <text class="cuIcon-form line-green" wx:elif="{{item.prior == 1}}"></text>
+      <text class="cuIcon-form line-blue" wx:else></text>
+    </view>
+    <view class="content">
+      <text class="text-grey text-lg">{{item.assignmentName}}</text>
+      <view class="text-gray text-sm flex">
+        {{item.startTime+"~"+item.endTime}}
+      </view>
+    </view>
+    <view class="action">
+      <button class="cu-btn round bg-green text-center light" bindtap="showModal" data-target="Modal" data-id="{{index}}" data-op="0">查看</button>
+    </view>
+    <view class="action" wx:if="{{isAdmin}}">
+      <button class="cu-btn round bg-red text-center light" bindtap="showModal" data-target="Modal" data-id="{{index}}" data-op="1">取消</button>
+    </view>
+  </view>
+  <view class="cu-modal {{modalName=='Modal'?'show':''}}">
+    <view class="cu-dialog" wx:if="{{op == 0}}">
+      <view class="cu-bar bg-white justify-end">
+        <view class="content">{{checkbox.assignmentName}}</view>
+        <view class="action" bindtap="hideModal">
+          <text class="cuIcon-close text-red"></text>
+        </view>
+      </view>
+      <view class="cu-list menu-avatar ">
+        <view class="cu-item">
+          <view class="cu-avatar bg-white round lg">
+            <text class="cuIcon-tag"></text>
+          </view>
+          <view class="content">
+            <text class="text-grey text-lg">{{checkbox.prior}}</text>
+          </view>
+        </view>
+        <view class="cu-bar bg-white margin-top">
+          <view class="action">
+            <text class="cuIcon-title text-pink"></text> 任务内容
+          </view>
+        </view>
+        <view class="cu-text bg-white">
+          <text class="text-grey text-lg">{{checkbox.assignmentContent}}</text>
+        </view>
+        <view class="cu-bar bg-white margin-top">
+          <view class="action">
+            <text class="cuIcon-title text-pink"></text> 执行者
+          </view>
+        </view>
+        <view class="cu-item" wx:for="{{checkbox.executors}}" wx:key="key">
+          <view class="cu-avatar bg-white round lg">
+            <text class="cuIcon-people"></text>
+          </view>
+          <view class="content">
+            <text class="text-grey text-lg">{{item.userName}}</text>
+          </view>
+        </view>
+      </view>
+      <view class="solid-bottom text-sm padding">
+        <text class="text-grey">{{checkbox.startTime+"~"+checkbox.endTime}}</text>
+      </view>
+    </view>
+    <view class="cu-dialog" wx:if="{{op == 1}}">
+      <view class="cu-bar bg-white justify-end">
+        <view class="content">{{checkbox.assignmentName}}</view>
+        <view class="action" bindtap="hideModal">
+          <text class="cuIcon-close text-red"></text>
+        </view>
+      </view>
+      <view class="padding-xl">{{"请确认是否取消该团队任务"}}</view>              
+      <button class="text-sm padding" bindtap="deleteAssignment" data-id="{{assignmentIndex}}">
+        <text class="text-red">{{'确认取消'}}</text>
+      </button>
+    </view>
+  </view> 
+</view>
+<view class="cu-list menu-avatar" wx:if="{{TabCur==1}}">
+  <view class="cu-item" bindtap="gotocreatepersonaltask">
+    <view class="cu-avatar bg-white round lg">
+      <text class="cuIcon-add line-green"></text>
+    </view>
+    <view class="content">
+      <text class="text-grey text-lg">添加个人事项</text>
+    </view>
+  </view>
+  <view class="cu-item bg-grey" wx:for="{{tasks}}" wx:if="{{index < tasks.length-1 || index < 1}}" wx:key="key">
+    <view class="cu-avatar bg-white round lg">
+      <text class="cuIcon-form line-red" wx:if="{{item.prior == 4}}"></text>
+      <text class="cuIcon-form line-orange" wx:elif="{{item.prior == 3}}"></text>
+      <text class="cuIcon-form line-yellow" wx:elif="{{item.prior == 2}}"></text>
+      <text class="cuIcon-form line-green" wx:elif="{{item.prior == 1}}"></text>
+      <text class="cuIcon-form line-blue" wx:else></text>
+    </view>
+    <view class="content">
+      <text class="text-grey text-lg">{{item.userName}} - {{item.taskName}}</text>
+      <view class="text-gray text-sm flex">
+        {{item.startTime+"~"+item.endTime}}
+      </view>
+    </view>
+    <view class="action">
+      <button class="cu-btn round bg-green text-center light" bindtap="showModal" data-target="Modal" data-id="{{index}}" data-op="0">查看</button>
+    </view>
+    <view class="action" wx:if="{{item.userID == third_session}}">
+      <button class="cu-btn round bg-red text-center light" bindtap="showModal" data-target="Modal" data-id="{{index}}" data-op="1">取消</button>
+    </view>
+  </view>
+  <view class="cu-item bg-grey" wx:for="{{tasks}}" wx:if="{{index == tasks.length-1 && index >= 1}}" wx:key="key" style="margin-bottom: 100rpx">
+    <view class="cu-avatar bg-white round lg">
+      <text class="cuIcon-form line-red" wx:if="{{item.prior == 4}}"></text>
+      <text class="cuIcon-form line-orange" wx:elif="{{item.prior == 3}}"></text>
+      <text class="cuIcon-form line-yellow" wx:elif="{{item.prior == 2}}"></text>
+      <text class="cuIcon-form line-green" wx:elif="{{item.prior == 1}}"></text>
+      <text class="cuIcon-form line-blue" wx:else></text>
+    </view>
+    <view class="content">
+      <text class="text-grey text-lg">{{item.userName}} - {{item.taskName}}</text>
+      <view class="text-gray text-sm flex">
+        {{item.startTime+"~"+item.endTime}}
+      </view>
+    </view>
+    <view class="action">
+      <button class="cu-btn round bg-green text-center light" bindtap="showModal" data-target="Modal" data-id="{{index}}" data-op="0">查看</button>
+    </view>
+    <view class="action" wx:if="{{item.userID == third_session}}">
+      <button class="cu-btn round bg-red text-center light" bindtap="showModal" data-target="Modal" data-id="{{index}}" data-op="1">取消</button>
+    </view>
+  </view>
+  <view class="cu-modal {{modalName=='Modal'?'show':''}}">
+    <view class="cu-dialog"  wx:if="{{op == 0}}">
+      <view class="cu-bar bg-white justify-end">
+        <view class="content">{{checkbox.taskName}}</view>
+        <view class="action" bindtap="hideModal">
+          <text class="cuIcon-close text-red"></text>
+        </view>
+      </view>
+      <view class="cu-list menu-avatar ">
+        <view class="cu-item">
+          <view class="cu-avatar bg-white round lg">
+            <text class="cuIcon-people"></text>
+          </view>
+          <view class="content">
+            <text class="text-grey text-lg">{{checkbox.userName}}</text>
+          </view>
+        </view>
+        <view class="cu-bar bg-white margin-top">
+          <view class="action">
+            <text class="cuIcon-title text-pink"></text> 事项内容
+          </view>
+        </view>
+        <view class="cu-text bg-white">
+          <text class="text-grey text-lg">{{checkbox.taskContent}}</text>
+        </view>
+      </view>
+      <view class="solid-bottom text-sm padding">
+        <text class="text-grey">{{checkbox.startTime+"~"+checkbox.endTime}}</text>
+      </view>
+    </view>
+    <view class="cu-dialog" wx:if="{{op == 1}}">
+      <view class="cu-bar bg-white justify-end">
+        <view class="content">{{checkbox.taskName}}</view>
+        <view class="action" bindtap="hideModal">
+          <text class="cuIcon-close text-red"></text>
+        </view>
+      </view>
+      <view class="padding-xl">{{"请确认是否取消该个人事项"}}</view>              
+      <button class="text-sm padding" bindtap="deleteTask" data-id="{{taskIndex}}">
+        <text class="text-red">{{'确认取消'}}</text>
+      </button>
+    </view>
+  </view> 
+</view>
+
+<view class="cu-bar tabbar bg-white shadow foot">
+  <view class="action" bindtap="NavChange" data-cur="groupList">
+    <view class="cuIcon-group {{NavCur=='groupList'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='groupList'?'text-orange':'text-gray'}}">团队列表</view>
+  </view>
+  <view class="action" bindtap="NavChange" data-cur="createGroup">
+    <view class="cuIcon-add {{NavCur=='createGroup'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='createGroup'?'text-orange':'text-gray'}}">创建团队</view>
+  </view>
+  <view class="action" bindtap="NavChange" data-cur="index">
+    <view class="cuIcon-home {{NavCur=='index'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='index'?'text-orange':'text-gray'}}">主页</view>
+  </view>
+  <view class="action" bindtap="NavChange" data-cur="personalCalendar">
+    <view class="cuIcon-calendar {{NavCur=='personalCalendar'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='personalCalendar'?'text-orange':'text-gray'}}">个人日历</view>
+  </view>
+  <view class="action" bindtap="NavChange" data-cur="messages">
+    <view class="cuIcon-message {{NavCur=='messages'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='messages'?'text-orange':'text-gray'}}">消息</view>
+  </view>
+</view>

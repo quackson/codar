@@ -1,0 +1,221 @@
+<cu-custom bgColor="bg-cyan light" >
+  <view slot="content">我的消息</view>
+</cu-custom>
+<view class="bg-white">
+<scroll-view scroll-x class="nav">
+    <view class="flex bg-cyan light text-center">
+      <view class="cu-item flex-sub {{item.id==TabCur?'text-cyan cur':''}}" wx:for="{{listname}}" wx:key="key" bindtap="tabSelect" data-id="{{item.id}}">   
+    <view wx:if="{{item.id=='0'}}" class="cuIcon-refresharrow {{TabCur=='0'?'line-cyan':'line-gray'}}">{{item.title}}</view>     
+    <view wx:if="{{item.id==1}}" class="cuIcon-refresharrow {{TabCur=='1'?'line-cyan':'line-gray'}}">{{item.title}}</view>
+    <view wx:if="{{item.id==2}}"  class="{{TabCur=='2'?'line-cyan':'line-gray'}}">{{item.title}}</view>
+    <view wx:if="{{item.id==3}}" class="cuIcon-forward {{TabCur=='3'?'line-cyan':'line-gray'}}">{{item.title}}</view>
+    <view wx:if="{{item.id==4}}" class="cuIcon-forward {{TabCur=='4'?'line-cyan':'line-gray'}}">{{item.title}}</view>
+      </view>
+    </view>
+</scroll-view>
+  <view class="cu-list menu-avatar " wx:if="{{TabCur==0}}">
+        <view class="cu-item"  wx:for="{{invatation}}" wx:key="key" >
+          <view class="cu-avatar bg-white round lg">
+            <text class="cuIcon-message"></text>
+          </view>
+          <view class="content">
+            <text class="text-grey text-lg">{{item.groupName}}</text>
+          </view>
+          <view class="action">
+            <button class="cu-btn round bg-red text-center light"            
+            bindtap="showModal" data-target="Modal" data-id="{{index}}" data-sub="1">
+              <text class="cuIcon-close"></text></button>
+          </view>
+          <view class="action">
+            <button class="cu-btn round bg-olive text-center light"            
+            bindtap="showModal" data-target="Modal" data-id="{{index}}" data-sub="2">
+              <text class="cuIcon-check"></text></button>
+          </view>
+        </view>
+        <view class="cu-modal {{modalName=='Modal'?'show':''}}">
+            <view class="cu-dialog">
+              <view class="cu-bar bg-white justify-end">
+              <view class="content">{{'@group:'+checkbox.groupName}}</view>
+              <view class="action" bindtap="hideModal">
+                  <text class="cuIcon-close text-red"></text>
+                </view>
+              </view>
+              <view class="padding-xl" wx:if="{{sub=='1'}}">{{"请确认是否拒绝该邀请"}}</view>
+              <view class="padding-xl" wx:if="{{sub=='2'}}">{{"请确认是否接受该邀请"}}</view>
+              <button class="text-sm padding"
+            bindtap="rejectGroupInvatation" data-id="{{index}}" wx:if="{{sub==1}}">
+              <text class="text-red">{{'坚持拒绝'}}</text></button>
+              <button class="text-sm padding"
+            bindtap="acceptGroupInvatation" data-id="{{index}}" wx:if="{{sub==2}}">
+              <text class="text-olive">{{'确认接受'}}</text></button>
+            </view>
+          </view> 
+  </view>
+  <view class="cu-list menu-avatar " wx:if="{{TabCur==1}}">
+        <view class="cu-item"  wx:for="{{newtask}}" wx:key="key" >
+          <view class="cu-avatar bg-white round lg">
+            <text class="cuIcon-edit"></text>
+          </view>
+          <view class="content">
+            <view class="text-grey">{{item.assignmentName}}</view>
+            <view class="text-gray text-sm flex">
+              <text class="text-cut">
+                  <text class="cuIcon-calendar margin-right-xs"></text> {{'importance:'+item.prior}}</text>
+            </view>
+          </view>     
+          <view class="action">
+            <button class="cu-btn round bg-blue text-center light" bindtap="showModal" data-target="Modal" data-id="{{index}}" data-sub="1">
+              <text class="cuIcon-form"></text></button>
+          </view>    
+          <view class="action">
+            <button class="cu-btn round bg-red text-center light"
+            bindtap="showModal" data-target="Modal" data-id="{{index}}" data-sub="2">
+              <text class="cuIcon-close"></text></button>
+          </view>
+          <view class="action">
+            <button class="cu-btn round bg-olive text-center light"
+            bindtap="showModal" data-target="Modal" data-id="{{index}}" data-sub="3">
+              <text class="cuIcon-check"></text></button>
+          </view>
+        </view>
+        <view class="cu-modal {{modalName=='Modal'?'show':''}}">
+            <view class="cu-dialog">
+              <view class="cu-bar bg-white justify-end">
+              <view class="content">{{'@group:'+checkbox.groupName}}</view>
+              <view class="action" bindtap="hideModal">
+                  <text class="cuIcon-close text-red"></text>
+                </view>
+              </view>
+              <view class="padding-xl" wx:if="{{sub=='1'}}">
+                {{checkbox.assignmentContent}}
+              </view>
+              <view class="padding-xl" wx:if="{{sub=='2'}}">{{"请确认是否拒绝该任务"}}</view>
+              <view class="padding-xl" wx:if="{{sub=='3'}}">{{"请确认是否接受该任务"}}</view>
+              <view class="solid-bottom text-sm padding" wx:if="{{sub==1}}">
+                <text class="text-grey" >{{checkbox.startTime+"~"+checkbox.endTime+' '+(checkbox.category==1?'独占时间':'非独占时间')}}</text>
+              </view>
+              <button class="text-sm padding"
+            bindtap="rejectTask" data-id="{{index}}" wx:if="{{sub==2}}">
+              <text class="text-red">{{'坚持拒绝'}}</text></button>
+              <button class="text-sm padding"
+            bindtap="acceptTask" data-id="{{index}}" wx:if="{{sub==3}}">
+              <text class="text-olive">{{'确认接受'}}</text></button>
+            </view>
+        </view> 
+  </view>
+  <view class="cu-list menu-avatar " wx:if="{{TabCur==2}}">
+        <view class="cu-item"  wx:for="{{myquitinformation}}" wx:key="key" >
+          <view class="cu-avatar bg-white round lg">
+            <text class="cuIcon-exit"></text>
+          </view>
+          <view class="content">
+            <text class="text-grey text-lg">{{item.groupName+"：您已被迫退出"}}</text>
+          </view>
+          <view class="action">
+            <button class="cu-btn round bg-blue text-center light"            
+            bindtap="refineQuitInformation" data-id="{{index}}">
+              <text>{{"确认"}}</text></button>
+          </view>
+        </view>
+        
+  </view>
+  <view class="cu-list menu-avatar " wx:if="{{TabCur==3}}">
+        <view class="cu-item"  wx:for="{{myInvatation}}" wx:key="key" >
+          <view class="cu-avatar bg-white round lg">
+            <text class="cuIcon-forward"></text>
+          </view>
+          <view class="content">
+            <text class="text-grey text-lg">{{item.groupName}}</text>
+          </view>
+          <view class="action">
+            <button class="cu-btn round bg-blue text-center light"
+            bindtap="showModal" data-target="Modal" data-id="{{index}}" data-sub="1">
+              <text class="cuIcon-form"></text></button>
+          </view>
+          <view class="action">
+            <button class="cu-btn round bg-red text-center light"            
+            bindtap="showModal" data-target="Modal" data-id="{{index}}" data-sub="2">
+              <text class="cuIcon-close"></text></button>
+          </view>
+        </view>
+        <view class="cu-modal {{modalName=='Modal'?'show':''}}">
+            <view class="cu-dialog">
+              <view class="cu-bar bg-white justify-end">
+                <view class="content">{{checkbox.groupName}}</view>
+                <view class="action" bindtap="hideModal">
+                  <text class="cuIcon-close text-red"></text>
+                </view>
+              </view>
+              <view class="padding-xl" wx:if="{{sub==1}}">
+                {{"waiting for: "+checkbox.accepts}}
+              </view>
+              <view class="padding-xl" wx:if="{{sub==2}}">
+                {{"请确认是否解散该群组"}}
+              </view>
+              <button class="text-sm padding"
+            bindtap="truncateGroup" data-id="{{index}}" wx:if="{{sub==2}}">
+              <text class="text-red">{{'坚持解散'}}</text></button>
+            </view>
+          </view> 
+  </view>
+  <view class="cu-list menu-avatar " wx:if="{{TabCur==4}}">
+        <view class="cu-item"  wx:for="{{mydelivertask}}" wx:key="key" >
+          <view class="cu-avatar bg-white round lg">
+            <text class="cuIcon-forward"></text>
+          </view>
+          <view class="content">
+            <text class="text-grey text-lg">{{item.assignmentName}}</text>
+          </view>
+          <view class="action">
+            <button class="cu-btn round bg-blue text-center light"
+            bindtap="showModal" data-target="Modal" data-id="{{index}}" data-sub="1" >
+              <text class="cuIcon-form"></text></button>
+          </view>
+          <view class="action">
+            <button class="cu-btn round bg-red text-center light"
+            bindtap="showModal" data-target="Modal" data-id="{{index}}" data-sub="2" >
+              <text class="cuIcon-close"></text></button>
+          </view>
+        </view>
+        <view class="cu-modal {{modalName=='Modal'?'show':''}}">
+            <view class="cu-dialog">
+              <view class="cu-bar bg-white justify-end">
+              <view class="content">{{'@group:'+checkbox.groupName}}</view>
+              <view class="action" bindtap="hideModal">
+                  <text class="cuIcon-close text-red"></text>
+                </view>
+              </view>
+              <view class="padding-xl" wx:if="{{sub=='1'}}">
+                {{checkbox.accepts}}
+              </view>
+              <view class="padding-xl" wx:if="{{sub=='2'}}">{{"请确认是否取消该任务"}}</view>              
+              <button class="text-sm padding"
+            bindtap="truncateTask" data-id="{{index}}" wx:if="{{sub==2}}">
+              <text class="text-red">{{'坚持取消'}}</text></button>
+            </view>
+        </view> 
+  </view>
+</view>
+
+<view class="cu-bar tabbar bg-white shadow foot">
+  <view class="action" bindtap="NavChange" data-cur="groupList">
+    <view class="cuIcon-group {{NavCur=='groupList'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='groupList'?'text-orange':'text-gray'}}">团队列表</view>
+  </view>
+  <view class="action" bindtap="NavChange" data-cur="createGroup">
+    <view class="cuIcon-add {{NavCur=='createGroup'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='createGroup'?'text-orange':'text-gray'}}">创建团队</view>
+  </view>
+  <view class="action" bindtap="NavChange" data-cur="index">
+    <view class="cuIcon-home {{NavCur=='index'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='index'?'text-orange':'text-gray'}}">主页</view>
+  </view>
+  <view class="action" bindtap="NavChange" data-cur="personalCalendar">
+    <view class="cuIcon-calendar {{NavCur=='personalCalendar'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='personalCalendar'?'text-orange':'text-gray'}}">个人日历</view>
+  </view>
+  <view class="action" bindtap="NavChange" data-cur="messages">
+    <view class="cuIcon-message {{NavCur=='messages'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='messages'?'text-orange':'text-gray'}}">消息</view>
+  </view>
+</view>

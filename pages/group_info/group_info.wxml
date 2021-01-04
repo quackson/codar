@@ -1,0 +1,133 @@
+<!--pages/group_info/group_info.wxml-->
+<cu-custom bgColor="bg-cyan light" isBack="{{true}}">
+  <view slot="backText">返回</view>
+  <view slot="content">团队信息</view>
+</cu-custom>
+<view class="bg-white">
+  <view class="cu-list menu-avatar ">
+    <view class="cu-bar bg-white margin-top">
+      <view class="action">
+        <text class="cuIcon-title text-pink"></text> 团队名称
+      </view>
+    </view>
+    <view class="cu-item">
+      <view class="cu-avatar bg-white round lg">
+        <text class="cuIcon-group"></text>
+      </view>
+      <input wx:if="{{inputChangeName}}" name="title" bindinput="groupNameInput" placeholder="输入名称" value="{{groupName}}"></input>
+      <view class="content" wx:else>
+        <text class="text-grey text-lg">{{groupName}}</text>
+      </view>
+      <view class="action" wx:if="{{inputChangeName}}">
+        <button class="cu-btn round bg-green text-center light" bindtap="changename">
+          <text class="cuIcon-check"></text>
+        </button>
+      </view>
+      <view class="action" wx:if="{{inputChangeName}}">
+        <button class="cu-btn round bg-red text-center light" bindtap="inputchangename">
+          <text class="cuIcon-close"></text>
+        </button>
+      </view>
+      <view class="action" wx:if="{{role != 0 && !inputChangeName}}">
+        <button class="cu-btn round bg-green text-center light" bindtap="inputchangename">更改</button>
+      </view>
+    </view>
+    <view class="cu-bar bg-white margin-top">
+      <view class="action">
+        <text class="cuIcon-title text-pink"></text> 团队成员
+      </view>
+      <checkbox bindtap="gotosetmanager" wx:if="{{role == 2}}">
+        <text class="text-green">管理员设置</text>
+      </checkbox>
+    </view>
+    <view class="cu-item" bindtap="gotoaddmember" wx:if="{{role != 0}}">
+      <view class="cu-avatar bg-white round lg">
+        <text class="cuIcon-add line-green"></text>
+      </view>
+      <view class="content">
+        <text class="text-grey text-lg">添加团队成员</text>
+      </view>
+    </view>
+    <view class="cu-item" wx:for="{{members}}" wx:if="{{index < members.length-1 || index < 3}}" wx:key="key">
+      <view class="cu-avatar bg-white round lg">
+        <text class="cuIcon-people line-red" wx:if="{{item.role == 2}}"></text>
+        <text class="cuIcon-people line-orange" wx:elif="{{item.role == 1}}"></text>
+        <text class="cuIcon-people" wx:else></text>
+      </view>
+      <view class="content">
+        <text class="text-grey text-lg" wx:if="{{item.role == 2}}">{{item.userName}} (创建者)</text>
+        <text class="text-grey text-lg" wx:elif="{{item.role == 1}}">{{item.userName}} (管理员)</text>
+        <text class="text-grey text-lg" wx:else>{{item.userName}}</text>
+      </view>
+      <view class="action" wx:if="{{setManager == 1 && item.role == 1 && role == 2}}">
+        <button class="cu-btn round bg-blue text-center light" bindtap="setmanager" data-managerid="{{item.userID}}" data-operation="-1" >撤销</button>
+      </view>
+      <view class="action" wx:if="{{setManager == 1 && item.role == 0 && role == 2}}">
+        <button class="cu-btn round bg-green text-center light" bindtap="setmanager" data-managerid="{{item.userID}}" data-operation="1" >添加</button>
+      </view>
+      <view class="action" wx:if="{{setManager == 0 && item.role == 0 && role != 0}}">
+        <button class="cu-btn round bg-red text-center light" bindtap="showModal" data-target="Modal" data-id="{{index}}">删除</button>
+      </view>
+    </view>
+    <view class="cu-item" wx:for="{{members}}" wx:if="{{index == members.length-1 && index >= 3}}" wx:key="key" style="margin-bottom: 100rpx">
+      <view class="cu-avatar bg-white round lg">
+        <text class="cuIcon-people line-red" wx:if="{{item.role == 2}}"></text>
+        <text class="cuIcon-people line-orange" wx:elif="{{item.role == 1}}"></text>
+        <text class="cuIcon-people" wx:else></text>
+      </view>
+      <view class="content">
+        <text class="text-grey text-lg" wx:if="{{item.role == 2}}">{{item.userName}} (创建者)</text>
+        <text class="text-grey text-lg" wx:elif="{{item.role == 1}}">{{item.userName}} (管理员)</text>
+        <text class="text-grey text-lg" wx:else>{{item.userName}}</text>
+      </view>
+      <view class="action" wx:if="{{setManager == 1 && item.role == 1 && role == 2}}">
+        <button class="cu-btn round bg-blue text-center light" bindtap="setmanager" data-managerid="{{item.userID}}" data-operation="-1" >撤销</button>
+      </view>
+      <view class="action" wx:if="{{setManager == 1 && item.role == 0 && role == 2}}">
+        <button class="cu-btn round bg-green text-center light" bindtap="setmanager" data-managerid="{{item.userID}}" data-operation="1" >添加</button>
+      </view>
+      <view class="action" wx:if="{{setManager == 0 && item.role == 0 && role != 0}}">
+        <button class="cu-btn round bg-red text-center light" bindtap="showModal" data-target="Modal" data-id="{{index}}" >删除</button>
+      </view>
+    </view>
+    <view class="cu-modal {{modalName=='Modal'?'show':''}}">
+      <view class="cu-dialog">
+        <view class="cu-bar bg-white justify-end">
+          <view class="content">{{'成员：'+checkbox.userName}}</view>
+          <view class="action" bindtap="hideModal">
+            <text class="cuIcon-close text-red"></text>
+          </view>
+        </view>
+        <view class="padding-xl">{{"请确认是否删除该成员"}}</view>              
+        <button class="text-sm padding"
+          bindtap="deletemember" data-id="{{checkbox.userID}}">
+          <text class="text-red">{{'确认删除'}}</text>
+        </button>
+      </view>
+    </view>
+  </view>
+</view>
+
+<view class="cu-bar tabbar bg-white shadow foot">
+  <view class="action" bindtap="NavChange" data-cur="groupList">
+    <view class="cuIcon-group {{NavCur=='groupList'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='groupList'?'text-orange':'text-gray'}}">团队列表</view>
+  </view>
+  <view class="action" bindtap="NavChange" data-cur="createGroup">
+    <view class="cuIcon-add {{NavCur=='createGroup'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='createGroup'?'text-orange':'text-gray'}}">创建团队</view>
+  </view>
+  <view class="action" bindtap="NavChange" data-cur="index">
+    <view class="cuIcon-home {{NavCur=='index'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='index'?'text-orange':'text-gray'}}">主页</view>
+  </view>
+  <view class="action" bindtap="NavChange" data-cur="personalCalendar">
+    <view class="cuIcon-calendar {{NavCur=='personalCalendar'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='personalCalendar'?'text-orange':'text-gray'}}">个人日历</view>
+  </view>
+  <view class="action" bindtap="NavChange" data-cur="messages">
+    <view class="cuIcon-message {{NavCur=='messages'?'line-orange':'line-gray'}}"></view>
+    <view class="{{NavCur=='messages'?'text-orange':'text-gray'}}">消息</view>
+  </view>
+</view>
+
