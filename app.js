@@ -92,6 +92,7 @@ App({
                               success(res){
                                 //console.log(res.data.userID)
                                 this_.globalData.userID=res.data.userID
+                                //this_.globalData.userID=1
                               }
                               })
                               if (this_.userInfoReadyCallback) {

@@ -146,11 +146,16 @@
                   <text class="cuIcon-close text-red"></text>
                 </view>
               </view>
-              <view class="padding-xl" wx:if="{{sub==1}}">
-                {{"waiting for: "+checkbox.accepts}}
-              </view>
+              <view class="cu-item"  wx:for="{{waiting}}" wx:key="key">
+                    <view class="text-black text-lg">
+                      <text class="cuIcon-peole text-center">{{waiting[index]}}</text>
+                    </view>
+                  </view>
               <view class="padding-xl" wx:if="{{sub==2}}">
                 {{"请确认是否解散该群组"}}
+              </view>
+              <view class="padding-xl" wx:if="{{sub==1}}">
+                {{"上述成员尚未回复"}}
               </view>
               <button class="text-sm padding"
             bindtap="truncateGroup" data-id="{{index}}" wx:if="{{sub==2}}">
@@ -185,10 +190,15 @@
                   <text class="cuIcon-close text-red"></text>
                 </view>
               </view>
-              <view class="padding-xl" wx:if="{{sub=='1'}}">
-                {{checkbox.accepts}}
-              </view>
-              <view class="padding-xl" wx:if="{{sub=='2'}}">{{"请确认是否取消该任务"}}</view>              
+              <view class="cu-item"  wx:for="{{waiting}}" wx:key="key">
+                    <view class="text-black text-lg">
+                      <text class="cuIcon-peole text-center">{{waiting[index]}}</text>
+                    </view>
+                  </view>
+              <view class="padding-xl" wx:if="{{sub=='2'}}">{{"请确认是否取消该任务"}}</view>  
+              <view class="padding-xl" wx:if="{{sub==1}}">
+                {{"上述成员已接受"}}
+              </view>            
               <button class="text-sm padding"
             bindtap="truncateTask" data-id="{{index}}" wx:if="{{sub==2}}">
               <text class="text-red">{{'坚持取消'}}</text></button>

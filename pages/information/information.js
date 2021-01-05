@@ -12,6 +12,7 @@ Page({
     TabCur: 0,
     sub:0,
     scrollLeft:0,
+    waiting:[],
     listname:[
       {
         title:"群邀请",
@@ -479,18 +480,22 @@ Page({
             'content-type': 'application/x-www-form-urlencoded'
           },
           success(res){
+            var tempwait=[]
           for(var i=0;i<res.data.users.length;i++)
           {
             console.log(res.data.users[i]['userName'])
             temp['accepts']+=res.data.users[i]['userName']
+            tempwait.push(res.data.users[i]['userName'])
             if(i!=res.data.users.length-1)
               temp['accepts']+=';'
           }
           temp['groupID']=this_.data.checkbox['groupID']
           temp['groupName']=this_.data.checkbox['groupName']
           this_.setData({
-            checkbox:temp
+            checkbox:temp,
+            waiting:tempwait
           })
+          console.log(this_.data.waiting)
           }
         })        
       }
@@ -525,10 +530,12 @@ Page({
             'content-type': 'application/x-www-form-urlencoded'
           },
           success(res){
+            var tempwait=[]
             for(var i=0;i<res.data.executors.length;i++)
             {
               temp['accepts']+=res.data.executors[i]['userName']
-              if(i!=res.data.users.length-1)
+              tempwait.push(res.data.executors[i]['userName'])
+              if(i!=res.data.executors.length-1)
                 temp['accepts']+=';'
             }
             temp['assignmentName']=res.data.assignmentName
@@ -536,7 +543,8 @@ Page({
             temp['startTime']=res.data.startTime
             temp['endTime']=res.data.endTime
             this_.setData({
-              checkbox:temp
+              checkbox:temp,
+              waiting:tempwait
             })
             console.log(this_.data.checkbox)
           }
@@ -546,7 +554,8 @@ Page({
   },
   hideModal(e) {
     this.setData({
-      modalName: null
+      modalName: null,
+      waiting:[]
     })
   },
   NavChange:function(e){
