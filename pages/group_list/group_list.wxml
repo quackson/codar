@@ -24,7 +24,7 @@
       <view class="action">
         <button class="cu-btn round bg-green text-center light" capture-catch:touchstart="gotodiscussboard" data-groupid="{{item.groupID}}">讨论</button>
       </view>
-      <view class="action">
+      <view class="action" wx:if="{{item.role == 2}}">
         <button class="cu-btn round bg-red text-center light "capture-catch:touchstart="showModal" data-target="Modal" data-id="{{index}}">
           <text class="cuIcon-delete"></text>
         </button>
@@ -43,7 +43,7 @@
       <view class="action">
         <button class="cu-btn round bg-green text-center light" capture-catch:touchstart="gotodiscussboard" data-groupid="{{item.groupID}}">讨论</button>
       </view>
-      <view class="action">
+      <view class="action" wx:if="{{item.role == 2}}">
         <button class="cu-btn round bg-red text-center light "capture-catch:touchstart="showModal" data-target="Modal" data-id="{{index}}">
           <text class="cuIcon-delete"></text>
         </button>
